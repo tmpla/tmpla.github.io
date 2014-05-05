@@ -1,0 +1,52 @@
+---
+layout: post
+title: ECCubeで都道府県とか文字化け
+categories:
+- ECCube
+tags:
+- ECCube
+- "文字化け"
+- "都道府県"
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+  ti: http://tmpla.info/wp-content/uploads/2010/08/eccube_banner_120_70.gif
+  _thumbnail_id: '1153'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>ECCubeをインストールしてみた（ローカルで）</p>
+<p>環境は<br />
+ECCube 2.4.4<br />
+Windows Vista<br />
+MySQL 5.1.33-community<br />
+xampp 1.7.1</p>
+<p>いつもながら、eccubeのデータベースは最初に作成しておく。<br />
+ここで照合順序をちゃんと指定しておく。（utf8_general_ciで良いと思う）</p>
+<p>インストール・設定方法については以下マニュアルがあるのでそれを参照。</p>
+<p><a href="http://wiki.ec-cube.net/index.php?EC-CUBE%A1%CA2%A1%A5x%B7%CF%A1%CB%2F1_%A5%A4%A5%F3%A5%B9%A5%C8%A1%BC%A5%EB%2F01_%A5%B5%A1%BC%A5%D0%C0%DF%C4%EA%CA%FD%CB%A1">EC-CUBEマニュアルサイト - EC-CUBE（2．x系）/1_インストール</a></p>
+<p>php.iniの設定は多分そんなに問題ないかと思うが、MySQLを使う場合はソースコードを触る必要がありそう。</p>
+<blockquote><p>※注4:文字化け等が発生する場合には、環境にあわせて変更して下さい。<br />
+※データベース内が文字化けする場合の対処<br />
+　eccube_dir/data/class/SC_DbConn.php<br />
+　の33行目の<br />
+　$this-&gt;dsn = $dsn;の下に下記2行を追加。<br />
+　$buf = $objDbConn-&gt;prepare('SET NAMES データベースの文字コード');<br />
+　$objDbConn-&gt;execute($buf);<br />
+元：http://xoops.ec-cube.net/modules/newbb/viewtopic.php?topic_id=1145&amp;forum=2&amp;post_id=3641#forumpost3641 </p></blockquote>
+<p>最初に照合順序を指定せずにDBを作成してしまったらしく、全般的に文字化けしている。<br />
+(latin1_general_ciかなんかになってしまっていたよう）<br />
+なので、一度DBを削除して、照合順序を「utf8_general_ci」にしてインストールをやりなおしてみた。</p>
+<p>しかし、何というかところどころ文字化けが直っていない。phpMyAdminでデータ自体を確認してみると、化けていないようなので、<br />
+出力時に化けているのだな、と思ったが・・・。</p>
+<p>EC-CUBE 開発コミュニティサイト - フォーラム<br />
+<a href="http://xoops.ec-cube.net/modules/newbb/viewtopic.php?topic_id=5995&amp;forum=2&amp;post_id=28610">http://xoops.ec-cube.net/modules/newbb/viewtopic.php?topic_id=5995&amp;forum=2&amp;post_id=28610</a></p>
+<p>で解決した。キャッシュなんかあったのか・・・。<br />
+と言うことで、/data/cache以下の「mtb_constants.php」以外を削除したら化け解消できた。<br />
+まあレアケースかもしれないのですが一応メモっときます。</p>

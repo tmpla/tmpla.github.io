@@ -1,0 +1,46 @@
+---
+layout: post
+title: "タグライブラリの記述子が見つかりませんエラー"
+categories:
+- Java
+tags: []
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>新しいJavaプロジェクトを作成したら、あるjspの検証エラーが出ていた。</p>
+<p>"http://java.sun.com/jsp/jstl/core" のタグ・ライブラリー記述子が見つかりません<br />
+"http://java.sun.com/jsp/jstl/fmt" のタグ・ライブラリー記述子が見つかりません<br />
+"http://java.sun.com/jsp/jstl/functions" のタグ・ライブラリー記述子が見つかりません</p>
+<p>jspを見ると、以下記載の部分が上記エラーを出しているようだった。</p>
+<p> </p>
+<p>&lt;%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%&gt;<br />
+&lt;%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%&gt;<br />
+&lt;%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%&gt;</p>
+<p> </p>
+<p>他のstruts等のタグライブラリ指定はエラーになっていないのに・・・と思って調べると<a href="http://d.hatena.ne.jp/tetsuya411/20080125/1201257732">http://d.hatena.ne.jp/tetsuya411/20080125/1201257732</a></p>
+<p>で同様のエラーが出ており、解決されているようだ。あ、なるほど、jstlのライブラリがないからか・・・<br />
+早速mavenのdependencyに追記して再検証してみた。↓な感じで</p>
+<pre>    &lt;dependency&gt;
+    	&lt;groupId&gt;jstl&lt;/groupId&gt;
+    	&lt;artifactId&gt;jstl&lt;/artifactId&gt;
+    	&lt;version&gt;1.1.2&lt;/version&gt;
+    	&lt;optional&gt;false&lt;/optional&gt;
+    &lt;/dependency&gt;</pre>
+<p>が、ダメだった。よくよく見たらstandard.jarも必要とのことなので追加。</p>
+<pre>    &lt;dependency&gt;
+    	&lt;groupId&gt;taglibs&lt;/groupId&gt;
+    	&lt;artifactId&gt;standard&lt;/artifactId&gt;
+    	&lt;version&gt;1.1.2&lt;/version&gt;
+    	&lt;optional&gt;false&lt;/optional&gt;
+    &lt;/dependency&gt;</pre>
+<p>そして再検証したらエラーが消えた、よかったよかった。（Mavenのmaven-dependency-pluginの出力先の間違いもあったけれども・・・）</p>
+<p> </p>

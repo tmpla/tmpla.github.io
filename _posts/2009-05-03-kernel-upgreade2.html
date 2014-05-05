@@ -1,0 +1,35 @@
+---
+layout: post
+title: Kernel Upgreade(2)
+categories:
+- "サーバー管理"
+tags: []
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p><span style="color: #551a8b"><span style="text-decoration: underline">Kernel upgrade<span style="color: #000000">からの続き</span></span></span></p>
+<p>その後iptablesを起動するシェルを実行してみたのだが、どうしても以下のようにエラーになってしまう。<br />
+ </p>
+<pre lang="bash">ファイアウォールルールを適用中:           [  OK  ]
+チェインポリシーを ACCEPT に設定中securyty nat filter      [ 失敗 ]
+iptables モジュールを取り外し中                                  [  OK  ]
+
+ファイアウォールのルールを /etc/sysconfig/iptables に保存中[  OK  ]
+ファイアウォールルールを適用中:                                   [  OK  ]
+チェインポリシーを ACCEPT に設定中filter                       [  OK  ]
+iptables モジュールを取り外し中                                  [  OK  ]
+iptables ファイアウォールルールを適用中:                       [  OK  ]
+iptables モジュールを読み込み中ip_conntrack_netbios_ns     [  失敗  ]</pre>
+<p>この原因がさっぱりわからなかったのだが、カーネルの再構築をする際、どうもカーネルに組み込む場合と、動的にモジュールを読み込むやり方があって、以前の記事のやり方だと、make menuconfigのモジュールの指定を「Y」にして(指定されるシンボルはアスタリスク）設定ファイルを指定するのではなく、「M」を指定してモジュールに組み込む必要があるらしい。</p>
+<p><a href="http://tmpla.info/wp-content/uploads/2009/05/menuconfig.png"><img class="alignnone size-medium wp-image-46" src="http://tmpla.info/wp-content/uploads/2009/05/menuconfig.png" alt="" width="300" height="240" /></a></p>
+<p>（よく見ればPressing  includes,  excludes,  modularizes features.と書いてある）<br />
+この設定をしたら、iptablesの起動時のエラーが出なくなりました。詳細原因は不明。</p>

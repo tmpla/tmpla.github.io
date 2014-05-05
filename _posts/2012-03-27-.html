@@ -1,0 +1,80 @@
+---
+layout: post
+title: ''
+categories:
+- "未分類"
+tags: []
+status: draft
+type: post
+published: false
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<style type="text/css">
+.container {<br />
+position: relative;<br />
+height: 120px;<br />
+}<br />
+#circle1 {<br />
+width: 100px;<br />
+height: 100px;<br />
+border-radius: 100px;<br />
+background: red;<br />
+position: absolute;<br />
+margin: 0 auto;<br />
+}<br />
+</style>
+<p><script type="text/javascript"><br />
+jQuery(document).ready(function($){<br />
+$('#b1').click(function(){<br />
+var c = $('#circle1');<br />
+var tid = c.attr('tid');<br />
+if (tid === undefined){<br />
+    tid = setInterval(function(){<br />
+var front = c.attr('front');<br />
+var duration = 300;<br />
+var baseWidth = 100;<br />
+if (front === undefined){<br />
+    front = true;<br />
+    c.attr('front', front);<br />
+}<br />
+var start = c.attr('start');<br />
+if (start === undefined){<br />
+    start = new Date().getTime();<br />
+    c.attr('start', start);<br />
+}<br />
+var laptime = c.attr('laptime');<br />
+if (laptime === undefined){<br />
+    laptime = 0;<br />
+    c.attr('laptime', laptime);<br />
+}<br />
+laptime++;<br />
+var progress = laptime / duration;<br />
+if (progress > 1){<br />
+progress = 1;<br />
+}<br />
+var newWidth;<br />
+if (progress < 0.5){<br />
+newWidth = baseWidth - (progress * 2 * baseWidth);<br />
+}else{<br />
+newWidth = ((progress - 0.5) * 2) * baseWidth;<br />
+}<br />
+c.css('width', newWidth);<br />
+});<br />
+}else{<br />
+    clearInterval(tid);<br />
+}<br />
+});<br />
+});<br />
+</script></p>
+<div class="container">
+<div id="circle1">
+</div>
+</div>
+<p><button type="button" id="b1">Flip1</button></p>

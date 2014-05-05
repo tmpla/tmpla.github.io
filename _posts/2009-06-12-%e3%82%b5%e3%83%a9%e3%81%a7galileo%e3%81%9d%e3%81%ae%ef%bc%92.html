@@ -1,0 +1,44 @@
+---
+layout: post
+title: "サラでGalileoその２"
+categories:
+- Eclipse
+tags:
+- Eclipse
+- I AM
+- Java
+- maven
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+  _oembed_3ec2a9aab369f96fa353e15ad140594b: "{{unknown}}"
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p><a href="http://blog.4sure.jp/yokoshima/2009/06/11/eclipse35galileoを入れた/">eclipse35galileoを入れた</a>の続きです。</p>
+<p>SVN Connectorがない件は、Subversiveプラグインを一度アンインストールして、<br />
+<a href="http://www.polarion.com/products/svn/subversive.php">http://www.polarion.com/products/svn/subversive.php</a>からコネクタ毎入れてみたらなぜか正常にインストール出来た。<br />
+（原因がちょっとわからないが・・・）</p>
+<p>そしてもともと作成しておいたサンプルプロジェクトをチェックアウトしたら、<a href="http://blog.4sure.jp/yokoshima/2009/04/11/q4e/">q4e</a>がないのでMavenが使えない。</p>
+<p>じゃあq4e入れるかと思い、<a href="http://code.google.com/p/q4e/wiki/Installation">q4eのサイト</a>を見たら</p>
+<blockquote><p>Q4E is now Eclipse IAM</p></blockquote>
+<p>と書いてある。<br />
+その<a href="http://www.eclipse.org/iam/">リンクに飛んで</a>みたらEclipse本体のプラグインになってる。I AMというのだそうだ。</p>
+<p>更新サイトに<br />
+http://q4e.googlecode.com/svn/trunk/updatesite-iam/<br />
+を指定してインストールしてみる。</p>
+<p>Toolingの子に</p>
+<blockquote><p>Eclipse IAM Dependency Viewer<br />
+Eclipse IAM Editors</p></blockquote>
+<p>とあり、ああ、あのER図みたいに依存関係を表示してくれるやつとエディタだな、と思い、必要だと思ったので選択して「インストール」したら。</p>
+<blockquote><p>Cannot complete the install because one or more required items could not be found.<br />
+  Software being installed: org.eclipse.iam.feature.dependencyviewer.feature.group 0.9.0.200905051159<br />
+  Missing requirement: org.eclipse.iam.feature.dependencyviewer.feature.group 0.9.0.200905051159 requires 'com.ibm.icu [3.6.0,4.0.0)' but it could not be found</p></blockquote>
+<p>なんか前にもq4eでこんなエラーを見たような・・・。com.ibm.icuがないと言ってると思うのだが・・・。前も解決できなかったと思ったけど調べてみるしかない。</p>
+<p>Toolingを選択しなければ他は問題なくインストール出来たが、やはり「view dependencies」や、pom.xmlのエディタが入ってない。</p>

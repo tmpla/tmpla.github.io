@@ -1,0 +1,82 @@
+---
+layout: post
+title: WordPressプラグインの作成（３）
+categories:
+- Plugin
+tags:
+- Plugin
+- WordPress
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p><a href="http://tmpla.info/2009/06/27/wordpressプラグインの作成（２）/">WordPressプラグインの作成（２）</a>の続きです。</p>
+<p>前回は管理画面で表示できるまでが出来ましたが、その設定値はどこに保存するか？というのが問題です。</p>
+<p><a href="http://wpdocs.sourceforge.jp/Creating_Options_Pages">Creating Options Pages</a>を見ると、すごく簡単そう。<br />
+WordPress MUでも、ブログ毎に設定が保存されるようなので、これが使えそうです。</p>
+<pre lang="php" line="1" escaped="true">
+function wp_head() {
+	echo "\n<!-- My CSS Editor $this-&gt;version -->\n";
+	if( get_option($this-&gt;option_name) ){
+		echo '&lt;style type="text/css"&gt;';
+		echo '&lt;--';
+		echo get_option($this-&gt;option_name);
+		echo '--&gt;';
+		echo '&lt;/style&gt;';
+	}
+}
+
+function edit_setting() {
+	if ( isset($_POST['action']) &amp;&amp; $_POST['action'] == 'update' ){
+		update_option($this-&gt;option_name, $_POST['css_value']);
+		echo '<div id="message" class="updated fade"><p><strong>Your Style Sheet was preserved. </strong></p></div>';
+	}elseif(isset($_POST['action']) &amp;&amp; $_POST['action'] == 'delete'){
+		delete_option($this-&gt;option_name);
+		echo '<div id="message" class="updated fade"><p><strong>Your Style Sheet setting was deleted. </strong></p></div>';
+	}
+	echo '<div class="wrap">';
+	echo '<h2>Edit of your Style Sheet</h2>';
+	echo '<form>option_name}\"",  ' action="'.$_SERVER['REQUEST_URI'].'" method="post"&gt;';
+	wp_nonce_field('update-options');
+	echo '<table class="form-table">';
+
+	echo '<p>Your Style Sheet setting can be made by editing the text area. <br />';
+	echo 'The setting can be deleted with the delete button. </p>';
+	echo '<tr valign="top">';
+	echo '<th scope="row">$this-&gt;option_name</th>';
+	echo '<td>';
+	echo '<textarea name="css_value">';
+
+	if($settings = get_option($this-&gt;option_name)){
+		echo $settings;
+	}else{
+		;
+	}
+
+	echo '</textarea>';
+
+	echo '</td>';
+	echo '</tr>';
+	echo '</table>';
+	echo "function delete_setting(){alert('delete?');document.getElementById('action').value='delete';document.getElementById('{$this-&gt;option_name}').submit();}";
+	echo '';
+	echo '<p> </p>';
+	echo '<p> </p>';
+	echo '</form>';
+	echo '</div>';
+}
+</pre>
+<p>コード書いてもちょっと見難いのですが、<br />
+名前を「My CSS Editor」に変更しました。<br />
+wp_head()関数では、$this-&gt;option_nameでオプションを取得して表示させています。（option_nameというインスタンス変数にオプション名を持たせています）<br />
+edit_setting()関数では、つまりは、actionというhiddenの値で、updateとdeleteを切り替えています。<br />
+メッセージはプラグインを公開するためにとりあえず英語にしました。<br />
+あとは、国際化とWordpress.comに公開することです。</p>

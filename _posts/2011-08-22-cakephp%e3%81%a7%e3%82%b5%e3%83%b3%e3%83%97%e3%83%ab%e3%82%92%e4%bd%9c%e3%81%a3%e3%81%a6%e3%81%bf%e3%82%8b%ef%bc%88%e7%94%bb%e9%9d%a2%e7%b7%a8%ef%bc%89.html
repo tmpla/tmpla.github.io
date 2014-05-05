@@ -1,0 +1,127 @@
+---
+layout: post
+title: CakePHPでサンプルを作ってみる（画面編）
+categories:
+- CakePHP
+- jQuery
+- PHP
+tags:
+- CakePHP
+- DVD LabelMaker
+- jQuery
+- Twitter Bootstrap
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p><a href="http://tmpla.info/2011/07/25/cakephpのインストール/">前回</a>導入したCakePHPでサンプルを作ってみる。<br />
+データベースはとりあえず使用しないことにして、config/databse.phpは内容コメントアウトしました。</p>
+<p>どんなサンプルにするかと言うと、とりあえずハードディスクにある仕事関係の書類とか写真等をDVDに焼いて保存しておきたいので、<br />
+DVDラベルをオンラインで出来るようなWebアプリをつくろうと思います。</p>
+<p>あとは、下記のを使ってみたいのでCSSはこれベースでやってみます。</p>
+<p>Twitter Bootstrap<br />
+<a href="http://twitter.github.com/bootstrap/">http://twitter.github.com/bootstrap/</a></p>
+<p>で、デフォルト表示されてる画面</p>
+<p><a href="http://tmpla.info/wp-content/uploads/2011/08/cakephp-default-page.jpg"><img src="http://tmpla.info/wp-content/uploads/2011/08/cakephp-default-page-300x214.jpg" alt="" title="cakephp-default-page" width="300" height="214" class="alignnone size-medium wp-image-1330" /></a></p>
+<p>を見ると、</p>
+<blockquote><p>To change the content of this page, create: APP/views/pages/home.ctp.<br />
+To change its layout, create: APP/views/layouts/default.ctp.<br />
+You can also add some CSS styles for your pages at: APP/webroot/css.</p></blockquote>
+<p>とあるので、まずはレイアウトからやってみよう。レイアウトは画面全体のレイヤー、ビューはその中にハマるパーツみたいなもんだと思ってます。<br />
+これは、「APP/views/layouts/default.ctp」を作っておけばOK。下記のように作りました。<br />
+あと、jQueryも使用したいのでそれも読みこむようにしてます。（読み込み先はGoogleでホストされてるやつ）<br />
+また、jQueryUIで使用しているスタイルシートもあるので、それも予め/webroot/css/に配置しておきます。</p>
+<pre lang="php" escaped="false">
+<?php echo $this->Html->docType(); ?>
+<html>
+<head>
+<title>DVD LabelMaker</title>
+<?php 
+echo $this->Html->css(array(
+	'http://twitter.github.com/bootstrap/assets/css/bootstrap-1.0.0.min.css'
+	,'/css/jquery-ui-1.8.16.custom.css'));
+
+echo $this->Html->script(
+	array('https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js'
+		,'https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js'));
+?>
+</head>
+<body>
+<div class="container">
+<div class="header"></div>
+<div class="contents">
+<?php echo $content_for_layout; ?>
+</div>
+<div class="footer"></div>
+</div>
+</body>
+</html>
+</pre>
+<p>キモはcontentsのところに「$content_for_layout」を出力しておく事です。ここに基本的には個々のViewの内容が出力されます。<br />
+titleも「$title_for_layout」とか出力すべきですがとりあえずこのまま。</p>
+<p>そして、Viewを作成します。「APP/views/pages/home.ctp」です。<br />
+これには先程の$contents_for_layoutに出力される事を意識して作成します。<br />
+こんな感じ。</p>
+<pre lang="php" escaped="false">
+<?php 
+echo $this->Html->scriptStart();
+?>
+$(document).ready(function(){
+	$('#create_date').datepicker();
+});
+<?php
+echo $this->Html->scriptEnd();
+?>
+
+<?php 
+echo $this->Form->create();
+?>
+<fieldset>
+<legend>ラベルに出力する情報を入力してください。</legend>
+
+<div class="clearfix">
+<label for>タイトル</label>
+<div class="input">
+<?php echo $this->Form->text('title', array('label' => 'false', 'class' => 'xlarge'));?>
+</div>
+</div>
+<div class="clearfix">
+<label for>作成日</label>
+<div class="input">
+<?php echo $this->Form->text('create_date', array('label' => 'false', 'class' => 'xlarge'));?>
+</div>
+</div>
+<div class="clearfix">
+<label for>背景画像</label>
+<div class="input">
+<?php echo $this->Form->file('background_image', array('label' => 'false', 'class' => ''));?>
+</div>
+</div>
+<div class="clearfix">
+<div class="input">
+<?php echo $this->Form->submit("作成", array('class' => 'btn primary'));?>
+</div>
+</div>
+</fieldset>
+<?php echo $this->Form->end(); ?>
+
+</pre>
+<p>上記を出力したり、Formをsubmitして処理を受け取るControllerというのが必要になります。<br />
+Controllerは今回デフォルトのパス（ルート）を使うので、「APP/Controllers/PagesController.php」に「PageController」という名前のクラスを作成します。<br />
+これは、「lib/Cake/Controller/PagesController.php」をコピーしてくればとりあえず良いと思います。<br />
+このControllerやViewで汎用的な処理をしてくれるhelperというのを使いますが、今回Viewで、「FormHelper」を使いたいので追加しておきます。</p>
+<pre lang="php" escaped="false">
+public $helpers = array('Html', 'Session', 'Form');
+</pre>
+<p>とりあえず画面だけ出来た。</p>
+<p><a href="http://tmpla.info/wp-content/uploads/2011/08/labelmaker-preview.jpg"><img src="http://tmpla.info/wp-content/uploads/2011/08/labelmaker-preview-300x188.jpg" alt="" title="labelmaker-preview" width="300" height="188" class="alignnone size-medium wp-image-1333" /></a></p>
+<p>今回Twitter Bootstrapのcssを使ってみたんだけど、これは楽ですな。<br />
+あとはController側で画像を生成して出力する処理をやればOK。</p>

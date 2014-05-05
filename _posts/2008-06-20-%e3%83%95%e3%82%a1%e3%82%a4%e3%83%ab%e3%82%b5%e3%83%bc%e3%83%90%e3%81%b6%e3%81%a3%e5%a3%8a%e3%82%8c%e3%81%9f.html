@@ -1,0 +1,26 @@
+---
+layout: post
+title: "ファイルサーバぶっ壊れた"
+categories:
+- "サーバー管理"
+tags: []
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>内部で使ってたファイルサーバーが壊れた。あまり大したファイルはなかったのだが、せっかくなので復旧させてみたい。</p>
+<p>SCSI2つのHDDだったのだが、見るとほとんど1つしか使ってなかった。OSはCentOS。</p>
+<p>色々調べたが、fsckはあんまりしてはいけないらしい。（10回くらいはしたが・・・）</p>
+<p>二つ目のHDD(dev/sda2)は問題なさそうなので、そこに新たにCentOSをインストールして、そこからddしている最中。</p>
+<p>dd if=/dev/sda1 of=/dev/sda2 bs=512 conv=noerror,sync</p>
+<p>最初は「conv=noerror,sync」をつけないでやってもすぐ終わってしまったので、つけてみたらうまく行ってそう。</p>
+<p>参考→<a href="http://x68000.q-e-d.net/~68user/unix/pickup?dd">UNIXの部屋 コマンド検索: dd</a><br />
+<a href="http://d.hatena.ne.jp/pyopyopyo/20061118/p1">壊れたHDDからデータを取り出す方法</a></p>

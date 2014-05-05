@@ -1,0 +1,59 @@
+---
+layout: post
+title: AndroidでActivityを含む別プロジェクトをライブラリとして参照する方法
+categories:
+- Android
+tags:
+- Activity
+- android
+- library
+- "ライブラリ"
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+  _wp_old_slug: ''
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>現在、東日本大地震で大変なときです。そんな時にこんな記事もなんなんですが、<br />
+地震・Facebook・Flash・Twitter・mixiなどなどでChromeのタブがこんなことになってるので、</p>
+<p><a href="http://tmpla.info/wp-content/uploads/2011/03/chrometab.jpg"><img src="http://tmpla.info/wp-content/uploads/2011/03/chrometab-300x7.jpg" alt="" title="chrometab" width="300" height="7" class="alignnone size-medium wp-image-1212" /></a></p>
+<p>とりあえずメモ出来ることからメモっていってタブを閉じる作業をしたいと思います。</p>
+<p>まず、Androidでは、画面は大体「Activity」という単位で作成します。アプリを起動したときにとにかく画面がないと始まらないので<br />
+通常は1つ以上のActivityを定義するのが普通だと思います。</p>
+<p>また、アプリ作成時に共通して使用するとか既存のライブラリを使用したいなんていう場合はライブラリjarファイルをとり込むなどして自アプリ内に取り込む事ができます。</p>
+<p>しかし、Activityを含むライブラリを取り込む方法が、とりあえず日本語でズバリの方法を見つけられなかったのでメモしておきます。</p>
+<p>参照元は下記記事です。<br />
+開発環境はEclipseですのでよろしく。</p>
+<p>Managing Projects from Eclipse with ADT | Android Developers<br />
+<a href="http://developer.android.com/guide/developing/projects/projects-eclipse.html">http://developer.android.com/guide/developing/projects/projects-eclipse.html</a></p>
+<p>まずは普通に自分のアプリケーションを作成します。これはとりあえず今んとこ普通に作れば良いです。<br />
+そして今度は、ライブラリとして使用するプロジェクトを作成（か、インポートか）します。<br />
+このプロジェクトのプロパティをひらいて、android-Is libraryのチェックを付けます。<br />
+<a href="http://tmpla.info/wp-content/uploads/2011/03/library_property.jpg"><img src="http://tmpla.info/wp-content/uploads/2011/03/library_property-300x265.jpg" alt="" title="library_property" width="300" height="265" class="alignnone size-medium wp-image-1213" /></a></p>
+<p>そしたら多分Androidプロジェクトでは、ライブラリと認識されると思います。<br />
+この後、取り込み元のプロジェクトのプロパティをひらいて、さっきと同じ「android」設定項目の「追加」を押してみると、先ほどライブラリにしたプロジェクトが参照出来るはずだと思いますので、それを選択します。<br />
+<a href="http://tmpla.info/wp-content/uploads/2011/03/main_property.jpg"><img src="http://tmpla.info/wp-content/uploads/2011/03/main_property-297x300.jpg" alt="" title="main_property" width="297" height="300" class="alignnone size-medium wp-image-1214" /></a></p>
+<p>これでライブラリのソースフォルダやらなにやらがメインプロジェクトの方にリンクされていると思います。<br />
+まだです。これだとまだライブラリ側のActivityが使えません。</p>
+<p>ちょっと元ソースが英語であんまりちゃんと読めてないのですが、ライブラリ側のActivityをフルパッケージ名で指定すれば良さそうです。</p>
+<pre lang="xml" >
+<manifest>
+  ...
+  <application>
+    ...
+    <activity android:name="com.example.android.tictactoe.library.GameActivity" />
+    ...
+  </application>
+</manifest>
+</pre>
+<p>上記は情報元のTicTacToeMainのAndroidManifst.xmlですがフルパッケージ指定すれば良いです。<br />
+ただ、ライブラリの方にもAndroidManifest.xmlも残ってますが、それは使わないのかな？<br />
+これで普通にIntentからActivityを呼び出せば使えました。</p>
+<p>以上！これでタブを一つ閉じれます。</p>

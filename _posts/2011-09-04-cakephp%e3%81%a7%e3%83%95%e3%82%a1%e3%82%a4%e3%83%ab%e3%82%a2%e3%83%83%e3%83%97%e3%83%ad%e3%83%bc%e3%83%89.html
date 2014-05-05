@@ -1,0 +1,60 @@
+---
+layout: post
+title: CakePHPでファイルアップロード
+categories:
+- CakePHP
+- PHP
+tags:
+- "$_FILES"
+- CakePHP
+- FileUpload
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>CakePHPというよりも、PHPの仕組みを踏まえてのファイルアップロード処理のメモです。</p>
+<p>HTML側は普通に&lt;input type =&quot;file&quot; /&gt;を設置します。<br />
+CakeのFoｒｍヘルパーを使うならこんな感じで。</p>
+<pre lang="php" escaped="false">
+<?php
+echo $this->Form->create(array('action' => '../images/outputLabel',
+				'enctype' => 'multipart/form-data'));
+echo $this->Form->file('background_image', array('label' => 'false', 'class' => ''));
+echo $this->Form->submit("作成", array('class' => 'btn primary'));
+?>
+</pre>
+<p>Form::createのオプションに'enctype'= 'multipart/form-data'とする位なもんで。</p>
+<p>それを受けるController側では、$this->data['ファイル名']に$_FILES変数がそのまま入っているようなのでそれを使います。<br />
+$_FILES変数については、下記に説明があります。<br />
+PHP: POST メソッドによるアップロード - Manual<br />
+<a href="http://www.php.net/manual/ja/features.file-upload.post-method.php">http://www.php.net/manual/ja/features.file-upload.post-method.php</a></p>
+<p>引用すると</p>
+<blockquote><p>$_FILES の内容は次のようになります。ここでは、上の例のスクリプトで使われたように、 アップロードファイルの名前として userfile を 使用することを仮定していることに注意してください。 実際にはどんな名前にすることもできます。</p>
+<p>$_FILES['userfile']['name']<br />
+クライアントマシンの元のファイル名。</p>
+<p>$_FILES['userfile']['type']<br />
+ファイルの MIME 型。ただし、ブラウザがこの情報を提供する場合。 例えば、"image/gif" のようになります。 この MIME 型は PHP 側ではチェックされません。そのため、 この値は信用できません。</p>
+<p>$_FILES['userfile']['size']<br />
+アップロードされたファイルのバイト単位のサイズ。</p>
+<p>$_FILES['userfile']['tmp_name']<br />
+アップロードされたファイルがサーバー上で保存されているテンポラ リファイルの名前。</p>
+<p>$_FILES['userfile']['error']<br />
+このファイルアップロードに関する エラーコード ['error']は、PHP 4.2.0 で追加されました。</p></blockquote>
+<p>よく使いそうなのは、sizeとtmp_nameでしょうね。ファイル指定されたかの判定はsize=0かどうかで判定して、<br />
+ファイルの実体はtmp_nameなので、これを一度コピーするなりそのまま使うなりで使用すると。<br />
+実際の処理時にはどうかわかりませんが、ステップ実行でtmp_nameで指定されているファイルの生存期間を見てみたところ、リクエスト処理中はファイルが生きているようでしたので一度そこかに退避させたりしなくても大丈夫な気がしました。</p>
+<p>お決まり処理的にはこんな感じだと思います。（動作させていませんが・・・）</p>
+<pre lang="php" escaped="false">
+if (is_uploaded_file($this->data['fileName'])){
+     $file = $this->data['fileName']['tmp_name'];
+     //$ファイルに対しての処理云々・・・
+}
+</pre>

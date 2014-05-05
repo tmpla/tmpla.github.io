@@ -1,0 +1,53 @@
+---
+layout: post
+title: JenkinsにBASIC認証を掛ける場合のハマりどころ
+categories:
+- "サーバー管理"
+tags:
+- BASIC
+- BASIC認証
+- jenkins
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>普通にJenkinsを導入して、Jenkinsにもユーザは作ってそれはそれで管理するけれども、<br />
+Jenkins自体をとりあえずBASIC認証掛けたいと言う場合があると思うが、それにはこんなかんじにすると思う。<br />
+（Apache2.2系、mod_proxy_ajpを使った場合）</p>
+<pre lang="conf">
+ProxyPass /jenkins ajp://localhost:8009/jenkins
+<Location /jenkins>
+   AuthUserFile /etc/httpd/conf/.htpasswd
+   AuthGroupFile /dev/null
+   AuthName "Enter Your Password"
+   AuthType Basic
+   Require valid-user
+</Location>
+</pre>
+<p>が、これだと、このBASIC認証を通った後、さらにJenkins側でのBASIC認証に引っかかるような状況になってしまい401になってしまう。<br />
+上記設定だと「Enter Your Password」とダイアログメッセージ出るはずだが「jenkins」とか出てるので気づいた。</p>
+<p>どうも、Jenkins側にリクエストが渡るときに、Authorizationヘッダがあるとそれを見ちゃうらしいので、<br />
+それを渡さない設定にした。</p>
+<pre lang="conf">
+ProxyPass /jenkins ajp://localhost:8009/jenkins
+<Location /jenkins>
+   RequestHeader unset Authorization #←これ
+   AuthUserFile /etc/httpd/conf/.htpasswd
+   AuthGroupFile /dev/null
+   AuthName "Enter Your Password"
+   AuthType Basic
+   Require valid-user
+</Location>
+</pre>
+<p>ちなみにこちらで発見した情報でした。<br />
+jenkinsをApache経由でBasic認証するときに401が出て困る問題の対処（ハマったメモ） - 256bitの殺人メニュー<br />
+<a href="http://d.hatena.ne.jp/akuwano/20130128/1359373111">http://d.hatena.ne.jp/akuwano/20130128/1359373111</a></p>
+<p>上記だと、useSecurityオプションを書き換えても良さそうだったが、自分のケースの場合はhttpd.conf(proxy_ajp.confだが）の設定で回避出来たのでこれで良しとする。</p>

@@ -1,0 +1,82 @@
+---
+layout: post
+title: Nmap for Windows
+categories:
+- "サーバー管理"
+tags:
+- nmap
+- zenmap
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>コンピュータ（特にサーバー）の環境設定をしていると、どうしても「このポートが空いているかどうかを調べたい！」時がある。<br />
+例えば良くあるのが、メールの送信が出来ない場合に、そもそも自分のマシン（ネットワーク環境）のSMTPポート（25番）がファイアウォールでふさがってたりするのは良くあるお話だと思う。</p>
+<p>いまどきのLinuxでは（たぶん）nmapというツールが付いており、このツールで例えば自分のマシンのどのポートが空いているかをリストしたり出来る。例えばこんな感じ。</p>
+<pre lang="bash">
+
+[yokoshima@localhost ~]$ nmap localhost
+
+Starting Nmap 4.11 ( http://www.insecure.org/nmap/ ) at 2010-01-21 22:56 JST
+Interesting ports on localhost.localdomain (127.0.0.1):
+Not shown: 1660 closed ports
+PORT     STATE    SERVICE
+22/tcp   open     ssh
+25/tcp   open     smtp
+53/tcp   open     domain
+80/tcp   open     http
+111/tcp  open     rpcbind
+135/tcp  filtered msrpc
+137/tcp  filtered netbios-ns
+138/tcp  filtered netbios-dgm
+139/tcp  filtered netbios-ssn
+443/tcp  open     https
+445/tcp  filtered microsoft-ds
+631/tcp  open     ipp
+662/tcp  open     unknown
+875/tcp  open     unknown
+892/tcp  open     unknown
+953/tcp  open     rndc
+2049/tcp open     nfs
+3306/tcp open     mysql
+5432/tcp open     postgres
+8009/tcp open     ajp13
+
+Nmap finished: 1 IP address (1 host up) scanned in 11.350 seconds
+[yokoshima@localhost ~]$
+
+</pre>
+<p>Linuxならいいのですが、Windowsにはポートスキャナみたいなツールは多分付いてない(nslookupはあるけど）ので、自分の場合はずっとポート番号を指定してtelnetしたりしてました。<br />
+ただ、情報としては全然優しくないので、NmapのWindows版をちょっと使ってみることにしました。<br />
+環境はWindows Vista Home SP2です。</p>
+<p>ダウンロードは<br />
+<a href="http://nmap.org/download.html#windows">http://nmap.org/download.html#windows</a><br />
+からします。<br />
+今回はnmap-5.20-setup.exeをダウンロードしました。<br />
+インストールといっても、先のnmap-5.20-setup.exeを実行してI AgreeとNextを押すだけ。</p>
+<p>これで実行してみた。（下記は、無線LANの親機に対して実行してみた。）</p>
+<pre lang="dos">
+Starting Nmap 5.20 ( http://nmap.org ) at 2010-01-22 10:38 東京 (標準時)
+Nmap scan report for buffalo.setup (192.168.11.1)
+Host is up (0.0039s latency).
+Not shown: 997 closed ports
+PORT      STATE SERVICE
+53/tcp    open  domain
+80/tcp    open  http
+49152/tcp open  unknown
+MAC Address: 00:16:01:D9:44:94 (Buffalo)
+
+Nmap done: 1 IP address (1 host up) scanned in 1.12 seconds
+</pre>
+<p>おおお。出来た。<br />
+ちなみにGUIのツールもある。それがZenmapというやつだ。<br />
+使い倒せばすごそうだけど、今はとりあえず内部LANのDNSへのリクエストが通らないのを調べたいのでいつか使ってみよう。<br />
+<a href="http://tmpla.info/wp-content/uploads/2010/01/Zenmap.jpg"><img src="http://blog.4sure.jp/yokoshima/files/2010/01/Zenmap-300x223.jpg" alt="Zenmap" width="300" height="223" class="alignnone size-medium wp-image-882" /></a></p>

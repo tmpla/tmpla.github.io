@@ -1,0 +1,73 @@
+---
+layout: post
+title: PHP short_open_tag
+categories:
+- PHP
+tags:
+- asp_tags
+- PHP
+- short_open_tag
+- y2k_compliance
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>PHP開発でビューと処理を分けて開発するのはMVCモデルに代表されるように良くある話です。<br />
+フレームワークを使用する場合は良いのですが、スクラッチ開発の場合にはやはり気をつけて分離しておかないと、と思い知りました。<br />
+既存プログラムの改修をしていたのですが、その構成は</p>
+<p>・メイン実行プログラム<br />
+・テンプレートとして読み込む（require()で）HTML</p>
+<p>この、テンプレートとして読み込むHTMLのテキストボックスの値が</p>
+<pre lang="php" escaped="true">
+&lt;input type=&quot;test&quot; value=&quot;&lt;?=$htmlspecialchars($value)?&gt;&quot; &gt;
+</pre>
+<p>みたいに、変数の値を表示させていたのですが、ローカルで動かしてみたらテキストボックスの中に<br />
+&quot;&lt;?=$htmlspecialchars($value)?&gt;&quot;がそのまま表示されていました。</p>
+<p>なぜかと色々調べた結果、php.iniの「short_open_tag」という属性の値がoffになっていた。</p>
+<pre lang="ini" escaped="false">
+; This directive determines whether or not PHP will recognize code between
+;  tags as PHP source which should be processed as such. It's been
+; recommended for several years that you not use the short tag "short cut" and
+; instead to use the full  tag combination. With the wide spread use
+; of XML and use of these tags by other languages, the server can become easily
+; confused and end up parsing the wrong code in the wrong context. But because
+; this short cut has been a feature for such a long time, it's currently still
+; supported for backwards compatibility, but we recommend you don't use them.
+; Default Value: On
+; Development Value: Off
+; Production Value: Off
+; http://php.net/short-open-tag
+short_open_tag = Off
+</pre>
+<p>デフォルト値はOnなので気付きにくいのですが、XAMPPは開発用だからなのかOffになっていました。<br />
+これをOnにすれば解決しました。</p>
+<p>この設定の次に、以下のような設定があり</p>
+<pre lang="ini" escaped="false">
+; Allow ASP-style  tags.
+; http://php.net/asp-tags
+asp_tags = Off
+</pre>
+<p>これはもしやASPとの互換性のためなのかな？と思ったのですが、<br />
+そもそもお決まりの定数名とかグローバル変数名とかが違うのでどの程度便利なのかな？と思いました。<br />
+というか、php→aspとかasp→phpとか言う移行ってやるものかな？</p>
+<p>あとその次の次の設定も気になったので調べてみました</p>
+<pre lang="ini" escaped="false">
+; Enforce year 2000 compliance (will cause problems with non-compliant browsers)
+; http://php.net/y2k-compliance
+y2k_compliance = On
+</pre>
+<p>2000年問題？と読めたので気になりましたが、<br />
+<a href="http://www.php.net/manual/ja/ini.core.php">コア php.ini ディレクティブに関する説明</a><br />
+の</p>
+<blockquote><p>
+y2k_compliance boolean<br />
+2000年問題対応を強制します (2000年問題非対応のブラウザにおいて、 問題が発生する可能性があります)。</p></blockquote>
+<p>ぐらいなことしか調べられませんでした。まあもう過去の話だしいいか。</p>

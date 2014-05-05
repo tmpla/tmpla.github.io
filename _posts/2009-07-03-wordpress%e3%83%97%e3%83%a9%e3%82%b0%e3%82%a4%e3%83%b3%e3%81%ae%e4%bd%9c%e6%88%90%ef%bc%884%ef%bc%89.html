@@ -1,0 +1,51 @@
+---
+layout: post
+title: WordPressプラグインの作成（4）
+categories:
+- Plugin
+tags:
+- My CSS Editor
+- Plugin
+- WordPress
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p><a href="http://tmpla.info/2009/06/30/wordpressプラグインの作成（３）/">WordPressプラグインの作成（３）</a>の続きです。</p>
+<p>せっかく作成したPluginなので、WordpressのPluginディレクトリに公開したいと思います。<br />
+<a href="http://wordpressgogo.com/development/wordpress-plugin-directory.html">WordPress.orgのプラグインディレクトリに自作プラグインを登録する方法</a>に詳しく書かれているのでそのままやってみます。</p>
+<h4>WordPress.orgのアカウントを取得する</h4>
+<p><a href="http://wordpress.org/support/register.php">http://wordpress.org/support/register.php</a>からアカウントを取得します。<br />
+ユーザ名、emailが必須なのでそれを入力します。<br />
+Wordpress.comのアカウントと同じなのかと思ったら違うものなので注意。</p>
+<h4>プラグインの登録申請を出す</h4>
+<p><a href="http://wordpress.org/extend/plugins/add/">http://wordpress.org/extend/plugins/add/</a></p>
+<p>プラグイン名、プラグイン説明を記入して待ちます。<br />
+今回は、２日位で返事が来ました。</p>
+<h4>SVNからチェックアウト</h4>
+<p>SVNクライアントならEclipseのPluginでもいいとは思いますが、SubversionのクライアントはTortoiseSVNが一番操作性がいいです。<br />
+登録申請の返事に記載のある、Subversionのリポジトリをローカルの作業フォルダにチェックアウトします。<br />
+チェックアウトすると「trunk」「branches」「tags」フォルダがチェックアウトされるので（ちょうど<a href="http://blog.4sure.jp/yokoshima/2009/07/01/subversionリポジトリこれだけやっとけ/">ちょっと前に書いた記事</a>が役に立った）</p>
+<h4>readme.txtの準備</h4>
+<p>これが一番大変でした。<br />
+英語部分は翻訳サイトのやつでもとりあえず大丈夫だとは思いますが、Donate linkで<a href="http://blog.4sure.jp/yokoshima/2009/07/03/paypal寄付は今出来ない/">PayPalを色々調べていた</a>ら時間がかかってしまいました。</p>
+<h4>Wordpress.orgリポジトリにコミット</h4>
+<p>readme.txtとプラグインのファイル（my-css-editor.php）をtrunkに保存してコミットします。<br />
+コミットの際にWordpress.orgアカウントが必要になってきます。</p>
+<h4>タグ付け</h4>
+<p>現在のバージョン名でタグ付をします。今回は0.2なので、tags/フォルダを選択状態でTortoiseSVNのBranch/Tagを選び、先URLを「tags/0.2」にしてOKを押します。</p>
+<h4>確認</h4>
+<p>タグ付してからしばらくすると<br />
+<a href="http://wordpress.org/extend/plugins/browse/updated/">http://wordpress.org/extend/plugins/browse/updated/</a></p>
+<p>に表示されていました。<br />
+URLは「<a href="http://wordpress.org/extend/plugins/my-css-editor/">http://wordpress.org/extend/plugins/my-css-editor/</a>」です。<br />
+なんだか嬉しい。英語は大丈夫だろうか。<br />
+次は更新時の方法を記載したいと思います。</p>

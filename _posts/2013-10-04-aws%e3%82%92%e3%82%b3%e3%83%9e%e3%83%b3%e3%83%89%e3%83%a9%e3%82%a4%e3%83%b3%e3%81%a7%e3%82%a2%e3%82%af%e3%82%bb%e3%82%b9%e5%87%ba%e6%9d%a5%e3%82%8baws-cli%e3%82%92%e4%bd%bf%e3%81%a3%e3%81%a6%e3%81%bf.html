@@ -1,0 +1,90 @@
+---
+layout: post
+title: AWSをコマンドラインでアクセス出来るAWS-CLIを使ってみた話
+categories:
+- "未分類"
+tags:
+- AWS
+- CLI
+- Console
+- EC2
+- IAM
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>みんな大好きAWSをシェルで操作出来るAWS-CLIと言うのがあると言う話なのでとりあえずセットアップだけしてみた。</p>
+<p>What Is the AWS Command Line Interface? - AWS Command Line Interface<br />
+<a href="http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html">http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html</a></p>
+<p>尚環境はMacのMountain Lionである。</p>
+<pre lang="bash">
+$ sw_vers 
+ProductName:	Mac OS X
+ProductVersion:	10.8.5
+BuildVersion:	12F37
+</pre>
+<p>あとAWSのアカウントは当然必要ですので作っておく。<br />
+クラウドコンピューティングならアマゾン ウェブ サービス | 仮想サーバー、ストレージ、データベースのための Amazon のクラウドプラットフォーム（AWS 日本語）<br />
+<a href="http://aws.amazon.com/jp/">http://aws.amazon.com/jp/</a></p>
+<h3>IAMでアカウントを作る</h3>
+<p>AWSにEC2やらS3やら色々サービスがあるけど、その中で「IAM」と言うのがある。<br />
+これはAWSで使用するアカウントを管理するようなサービスだそうで、このアカウントを使ってCLIにアクセスするようだ。<br />
+IAM Management Console<br />
+<a href="https://console.aws.amazon.com/iam/home">https://console.aws.amazon.com/iam/home</a></p>
+<p>IAMでUserを作り、UserActionsから「Manage Access Keys」-「Create Access Key」でAccess Key IDとSecret Access Keyを作成してDownload Credentialsボタンでダウンロードしておく。（ここにAccess Key Idと Secret Access Keyが書かれている）<br />
+どうもCredentialのファイルは作成時に一度しかダウンロード出来ないようなのでダウンロードせずにウインドウを閉じてしまうとやり直しになってしまうよう。（また作れば良いだけではあるが）</p>
+<p>あと、Groupには特に属させなくても大丈夫のようだが、Permissionは与えておかないよとダメなようだ。<br />
+Policy Templateに「Administrator Access」のようなのがあるのでとりあえずはそれを選ぶ。</p>
+<p><a href="http://tmpla.info/wp-content/uploads/2013/10/ffd3a397426a56f8fc2526938b1e1c56.png"><img src="http://tmpla.info/wp-content/uploads/2013/10/ffd3a397426a56f8fc2526938b1e1c56-273x300.png" alt="" title="スクリーンショット 2013-10-04 1.12.14" width="273" height="300" class="alignnone size-medium wp-image-1713" /></a></p>
+<p>これでアカウントの前準備としては完了であるが、ダウンロードしたCredentialファイルはあとで使うので開いといてもいいかも。</p>
+<h3>ツールのセットアップ</h3>
+<p>コマンドラインツールのセットアップにはPython2.6以上が最低限いるようであった。<br />
+その他、easy_installやpipがあれば良いが、自分の環境ではeasy_installが入っていたのでそれを使う。<br />
+ちなみにeasy_installはpythonのgemみたいなもん。pipはpythonのPEARみたいなもんかな？<br />
+下記コマンドでOK。</p>
+<pre lang="bash">
+$ sudo easy_install awscli
+</pre>
+<p>インストールはこれだけ。簡単！</p>
+<h3>環境の設定</h3>
+<p>あとは先ほどダウンロードしたCredential等の情報をひもづけるので設定ファイルを作る。</p>
+<pre>
+$ mkdir ~/.aws
+</pre>
+<p>と言うディレクトリを作って、「config」と言うファイルを作成する。.ssh/configみたいに。<br />
+ここに先ほどのAccess Key IDとSecret Access Keyを書いておく。</p>
+<pre lang="conf">
+[default]
+aws_access_key_id = {取得したアクセスキーID}
+aws_secret_access_key = {取得した秘密アクセスキー}
+region = ap-northeast-1
+</pre>
+<p>regionはとりあえず東京にしてみた。</p>
+<h3>コード補完の設定</h3>
+<p>よく使うならタブキーなどでのコード補完の設定もやっといたら良いと思う。</p>
+<pre lang="bash">
+$ complete -C aws_completer aws
+</pre>
+<p>で補完してくれる。</p>
+<h3>疎通の確認</h3>
+<p>ここまで出来たらアクセス出来ているかを見てみる。</p>
+<pre lang="bash">
+$ aws ec2 describe-volumes
+{
+    "Volumes": []
+}
+</pre>
+<p>今のところなにもないはずなのでこうなる。<br />
+ここから色々やっていきたいが、Webインターフェースの方だとEC2のインスタンス作成の際にはウィザードがあったりして直感的にわかりやすいが、<br />
+コマンドラインの方はもうちょっと深く理解していないとなかなか操作が難しいかなと思う。<br />
+ただし、やはり慣れてきたらコマンドの方が速いとは思うのでWebのインターフェイスと併用して使うのがよさそうかな？<br />
+と思う。<br />
+EC2のインスタンス作成からElasticIPの割り当てあたりまでやりたいと思ったけどよく分からなかったのでとりあえずここまで。</p>

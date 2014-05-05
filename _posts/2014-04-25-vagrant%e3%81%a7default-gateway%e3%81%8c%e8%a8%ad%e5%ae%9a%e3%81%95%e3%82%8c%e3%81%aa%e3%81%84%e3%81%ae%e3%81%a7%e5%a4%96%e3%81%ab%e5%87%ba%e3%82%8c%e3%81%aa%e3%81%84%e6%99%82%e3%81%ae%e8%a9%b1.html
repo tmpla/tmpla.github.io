@@ -1,0 +1,31 @@
+---
+layout: post
+title: vagrantでdefault gatewayが設定されないので外に出れない時の話
+categories:
+- vagrant
+tags:
+- default
+- gateway
+- gw
+- vagrant
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>どんなケースがあるのかわからないのですが、下記で解決出来る可能性高いのではないでしょうか</p>
+<pre lang=ruby>
+config.vm.network "public_network",:use_dhcp_assigned_default_route => true
+</pre>
+<p>public_netoworkでもprivate_networkでも、DHCPサーバが居る普通の場合はこれで如何でしょう？</p>
+<p>参考リンク<br />
+use_dhcp_assigned_default_route doesn&#39;t works, doesn&#39;t make sense · Issue #2126 · mitchellh/vagrant · GitHub<br />
+<a href="https://github.com/mitchellh/vagrant/issues/2126">https://github.com/mitchellh/vagrant/issues/2126</a></p>
+<p>どうしてもdefault gatewayを任意にやるなら、execute "route default add xxxx"とかですかね？</p>

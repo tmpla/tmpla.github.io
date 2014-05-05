@@ -1,0 +1,47 @@
+---
+layout: post
+title: Lavie MにCentOSを入れて使ってみる
+categories:
+- Cent OS
+- Lavie M
+tags:
+- i18n
+- sysconfig
+- yum
+- "文字化け"
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p><a href="http://blog.4sure.jp/yokoshima/2010/05/11/hdd、cd-romが破損しているノートpcの復活メモ/">HDD、CD-ROMが破損しているノートPCの復活メモ</a>からの一連の流れで、</p>
+<p>・HDDが壊れた、NEC Lavie M(LM700/7)を貰った<br />
+・HDD換装<br />
+・Linuxでも入れて使おうと思った<br />
+・CDブートしてみようと思ったら、CDドライブも壊れてた<br />
+・外付けUSBFDDで起動可能そうなので、それでCentOSを入れて最新版（5.4）にした　←今ここ</p>
+<p>使用し始めてみたら、GNOMEでネットワーク設定ウィンドウで「状態」列が文字化けしていた。<br />
+日本語使用しようとしているので、ここはキッチリ日本語にしておきたい。</p>
+<p>そこでググって以下ページを発見</p>
+<p><a href="http://www.atmarkit.co.jp/flinux/rensai/linuxtips/807loginlang.html">Fedora Core 4の言語選択画面の項目を変更するには － ＠IT</a></p>
+<p>CentOSも5.4ともなれば、UTF-8でやってるに違いないと見切って以下のように修正</p>
+<pre lang="bash">
+# vi /etc/sysconfig/i18n
+
+LANG="ja_JP.UTF-8"
+SUPPORTED="jp_JP.UTF-8:en_US.UTF-8:en_US:en:ja_JP.eucJP:ja_JP:ja"
+   :
+</pre>
+<p>もちろんrootでやる。<br />
+これで一度ログアウトしてログインしなおしたら治った。<br />
+代わりにデスクトップの「古いデスクトップのショートカット」みたいなショートカット名が化けたがこれはいいや。</p>
+<p>そして無線LANを使用しようと、ndiswrapperというのが必要っぽいというところまで調べたので、<br />
+yumでないもんかyum searchをしてみたら、urlopen error (-3, '\xe5・・・）とか出る。<br />
+これはもしかして、yumのリポジトリを読む際に、さっき変更した文字コードが関連しているんじゃ・・・と思ったところで今日は終了。</p>

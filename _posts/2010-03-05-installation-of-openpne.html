@@ -1,0 +1,229 @@
+---
+layout: post
+title: Installation of OpenPNE
+categories:
+- Internet
+- PHP
+tags:
+- openpne
+- PHP
+- SNS
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+  _oembed_2c0a442b1290ffca9c26bc7b89ca73bd: "{{unknown}}"
+  _oembed_bc4a8db43f8f2e8dbc0b777397a7b858: "{{unknown}}"
+  _oembed_c98648facf5569030de3327337024903: "{{unknown}}"
+  _oembed_fd045e7a4860aedeacffe8d0d5d0fba6: "{{unknown}}"
+  _oembed_a45454b8d0adac639a150e00aef219a0: "{{unknown}}"
+  _oembed_b02469a0ac8b58ac95dbf469df8ac54e: "{{unknown}}"
+  _oembed_d9f7628bc18fbd4b7554f6bfb0fed499: "{{unknown}}"
+  _oembed_398f4cab3a93542f04026fcdf92b7d36: "{{unknown}}"
+  _oembed_01a72dd6774d1dc631174e751f98425e: "{{unknown}}"
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>Open PNEとは、自前でソーシャルネットワーキングシステムを作れるシステムです。<br />
+mixiほどデカくはなくとも、例えば近所のフットサルコミュニティとか、幼稚園ママ仲間用のや、社内グループ用などなど・・・。<br />
+そんな仲間同士のコミュニティをネット上でに作成出来るツールです。</p>
+<p>今回は、OpenPNEという特に日本ではメジャーどころのツールを使います。</p>
+<p>環境は</p>
+<pre lang="bash" escaped="true">
+# cat /etc/redhat-release
+CentOS release 5.3 (Final)
+
+#httpd -v
+Server version: Apache/2.2.3
+Server built:   Jan 21 2009 22:01:41
+
+#php -v
+PHP 5.2.12 (cli) (built: Feb 16 2010 17:42:46)
+Copyright (c) 1997-2009 The PHP Group
+Zend Engine v2.2.0, Copyright (c) 1998-2009 Zend Technologies
+
+# mysql -u root -p
+Enter password:
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 724
+Server version: 5.0.45 Source distribution
+
+</pre>
+<p>で、Open PNE 3.4を入れます。<br />
+セットアップ手順は<br />
+OpenPNE 3.4 セットアップ手順<br />
+<a href="http://github.com/openpne/OpenPNE3/raw/OpenPNE-3.4.1/doc/ja/OpenPNE3_Setup_Guide.txt">http://github.com/openpne/OpenPNE3/raw/OpenPNE-3.4.1/doc/ja/OpenPNE3_Setup_Guide.txt<br />
+</a><br />
+を参考にしました。</p>
+<p>現在の最新安定版は、OpenPNE 3.4.1だそうですのでそれを取得。</p>
+<pre lang="bash">
+#wget http://github.com/openpne/OpenPNE3/zipball/OpenPNE-3.4.1
+</pre>
+<p>それを解凍して、公開フォルダ以下にシンボリックリンクを張ります。<br />
+（http://server/openpne/でweb以下をアクセスさせたいので）</p>
+<pre lang="bash">
+#unzip openpne-OpenPNE3-48b30f0.zip
+#ln -s openpne-OpenPNE3-48b30f0/web/ openpne
+</pre>
+<p>設定ファイルを付属サンプルを基に修正します。<br />
+とりあえずは、base_urlとmail_domainだけ。</p>
+<pre lang="bash">
+# cp ProjectConfiguration.class.php.sample ProjectConfiguration.class.php
+# cp OpenPNE.yml.sample OpenPNE.yml
+# vi OpenPNE.yml
+
+#とりあえず書き換えたところだけ
+# SNS の URL
+# URL of the SNS
+base_url: "http://labs.4sure.jp/openpne/"
+
+# SNS からのメール送信に使うドメイン
+# Domain to use for sending e-mail from the SNS
+mail_domain: "4sure.jp"
+
+</pre>
+<p>インストールコマンド実行<br />
+./symfony openpne:install<br />
+コマンドでインストールをします。<br />
+DBやユーザー等は、最初に作っておかないとダメかな？と思っていたのですが、勝手に作成してくれるようでした。</p>
+<pre lang="bash">
+# ./symfony openpne:install
+
+  Choose DBMS:
+  - mysql
+  - pgsql (unsupported)
+  - sqlite (unsupported)
+
+mysql
+
+  Type database username
+
+openpne
+
+  Type database password (optional)
+
+password
+
+  Type database hostname
+
+localhost
+
+  Type database port number (optional)
+
+
+
+  Type database name
+
+openpne
+
+  Type database socket path (optional)
+
+
+
+  The DBMS                 : mysql
+  The Database Username    : openpne
+  The Database Password    : ******
+  The Database Hostname    : localhost
+  The Database Port Number :
+  The Database Name        : openpne
+  The Database Socket      :
+
+  Is it OK to start this task? (Y/n)
+
+Y
+
+</pre>
+<p>なんかディレクトリのchmodなどもやってくれているみたいで便利だこれは。<br />
+しかし、赤地に白文字でエラーメッセージが出た。</p>
+<p>Couldn't locate driver named mysql</p>
+<p>mysqlの話なので、セットアップ手順を見返してみると、</p>
+<p>* PHP の PDO 拡張モジュールを使用可能 (利用する DBMS のドライバも含む)</p>
+<p>となっている。現在の環境は</p>
+<pre lang="bash">
+#php -i
+	：
+PDO
+
+PDO support =&gt; enabled
+PDO drivers =&gt; sqlite, sqlite2
+	：
+</pre>
+<p>あれ、mysqlが有効になっていない。<br />
+そこで調べてみると、そもそも標準で使っていたはずのphpが変な所にもう一つは言っていた。そこはphp.iniの場所が別だったらしく、全く設定が効いていなかった。</p>
+<p>そこで色々して、標準のphp.iniを使用するようにし、php -iでPDOサポートの欄を見たら問題なさそう。</p>
+<pre lang="bash">
+#php -i
+PDO
+
+PDO support =&gt; enabled
+PDO drivers =&gt; mysql, sqlite
+
+pdo_mysql
+
+PDO Driver for MySQL, client library version =&gt; 5.0.45
+
+</pre>
+<p>そしてまたインストールコマンドを実行してみたら、今度は以下エラーが</p>
+<pre lang="bash">
+&gt;&gt; plugin    installing plugin "opAuthMailAddressPlugin"
+&gt;&gt; opPluginManager Plugin is already installed
+PHP Fatal error:  Allowed memory size of 16777216 bytes exhausted (tried to allocate 16 bytes) in /openpne-OpenPNE3-48b30f0/lib/vendor/PEAR/PEAR/Registry.php on line 1061
+</pre>
+<p>メモリが足りないと言ってるのだな、と思い再度php.iniを確認すると、16Mしかなかった。これをとりあえず64Mに増やそう。</p>
+<pre lang="ini">
+memory_limit = 64M      ; Maximum amount of memory a script may consume
+</pre>
+<p>再度また実行すると今度は・・・。</p>
+<pre lang="bash">
+ PDO Connection Error: SQLSTATE[28000] [1045] Access denied for user 'openpne'@'localhost' (using password: YES)
+</pre>
+<p>あ、やっぱりユーザーは作っておかないとダメなのね。まあ当たり前か・・・。<br />
+以下設定でデータベースを作成します。</p>
+<p>データベース名：openpne<br />
+データベースユーザー名：openpne</p>
+<pre lang="mysql">
+mysql&gt; create database openpne;
+Query OK, 1 row affected (0.00 sec)
+mysql&gt; grant all on openpne.* to openpne@localhost identified by 'openpne';
+Query OK, 0 rows affected (0.07 sec)
+
+</pre>
+<p>これで再度実行。ついに成功した。以下メッセージが出たらOK。</p>
+<pre lang="bash">
+
+&gt;&gt; installer installation is completed!
+
+</pre>
+<p>これでブラウザから以下URLを表示してみる。<br />
+（あんまりアクセス多いと制限せざるをえないのでご了承ください）</p>
+<p>http://labs.4sure.jp/openpne/</p>
+<p>ここで以下デフォルトアカウントでログインしてみる。</p>
+<p>sns@examble.com<br />
+password</p>
+<p>あれ？404エラーのようだな。権限の設定か・・・。<br />
+ちょっと調べてみると、</p>
+<p><a href="http://redmine.openpne.jp/issues/201">http://redmine.openpne.jp/issues/201</a></p>
+<p>を見つけた。(redmine使ってますね）<br />
+.htaccessのmod_rewriteの設定が、とありますが、今回の場合は、.htaccessを使う設定にしていないのが原因でした。<br />
+なので、httpd.confで、openPNEを配置しているディレクトリに対して以下設定にします。<br />
+もともとは、AllowOverride Noneになっていました。</p>
+<pre lang="conf" escaped="true">
+&lt;Directory /openpne&gt;
+    AllowOverride All
+&lt;/Directory&gt;
+</pre>
+<p>これで動くようになりました。<br />
+あんまり無茶苦茶なことになったら制限を掛けますが、以下URLで公開しているのでもし触ってみたい方は試してみてください。<br />
+http://labs.4sure.jp/openpne/<br />
+ID:sns@example.com<br />
+PASS:password</p>
+<p>管理画面は以下です。<br />
+http://labs.4sure.jp/openpne/pc_backend.php</p>
+<p>ID:sampleadmin<br />
+PASS:sampleadmin</p>
+<p>しかしmixiだなこれはｗ</p>
