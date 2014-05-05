@@ -1,0 +1,7 @@
+name: 日本の天ぷら情報
+markdown: redcarpet
+pygments: true
+exclude: ["vendor", "Gemfile", "*.lock"]
+
+safe: true
+lsi: false
