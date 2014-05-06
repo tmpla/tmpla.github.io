@@ -1,7 +1,73 @@
+title:            日本の天ぷら情報
+description:      Webコンテンツに関するメモなど
 name: 日本の天ぷら情報
-markdown: redcarpet
 pygments: true
-exclude: ["vendor", "Gemfile", "*.lock"]
 
 safe: true
 lsi: false
+
+
+# Owner/author information
+owner:
+  name:           kyokoshima
+  avatar:         avatar.jpg
+  bio:            "面白そうなWebサービスを考えるのが好きです"
+  # email:          you@email.com
+  # Social networking links used in footer. Update and remove as you like.
+  twitter:        kyokoshima
+  facebook:
+  github:         kyokoshima
+  stackexchange:
+  linkedin:
+  instagram:
+  flickr:
+  tumblr:
+  # For Google Authorship https://plus.google.com/authorship
+  google_plus:
+
+# Background image to be tiled on all pages
+background:
+
+# Analytics and webmaster tools stuff goes here
+google_analytics:
+google_verify:
+# https://ssl.bing.com/webmaster/configure/verify/ownership Option 2 content= goes here
+bing_verify:
+
+# Links to include in top navigation
+# For external links add external: true
+# links:
+#   - title: Theme Setup
+#     url: /theme-setup
+#   - title: External Link
+#     url: http://mademistakes.com
+#     external: true
+
+# http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+timezone:    Asia/Tokyo
+future:      true
+pygments:    true
+markdown:    kramdown
+
+# https://github.com/mojombo/jekyll/wiki/Permalinks
+permalink:   /:categories/:title/
+
+# Amount of post to show on home page
+paginate: 5
+
+kramdown:
+  auto_ids: true
+  footnote_nr: 1
+  entity_output: as_char
+  toc_levels: 1..6
+  use_coderay: true
+
+  coderay:
+    coderay_line_numbers: nil
+    coderay_line_numbers_start: 1
+    coderay_tab_width: 4
+    coderay_bold_every: 10
+    coderay_css: class
+
+include: [".htaccess"]
+exclude: ["lib", "config.rb", "Capfile", "config", "log", "Rakefile", "Rakefile.rb", "tmp", "less", "*.sublime-project", "*.sublime-workspace", "test", "spec", "Gruntfile.js", "package.json", "node_modules","vendor"]
