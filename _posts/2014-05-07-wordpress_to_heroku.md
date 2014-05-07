@@ -12,7 +12,9 @@ WordPressのブログをherokuで立ち上げて、何かメリットあるの�
 <http://blog.mah-lab.com/2013/05/01/wordpress-on-heroku/>
 
 ## Herokuアプリの作成
+
 ### Webアプリ作成
+
 herokuのアカウントは既に持っていたので、あとは作ってみるだけ、の状態で行った。
 なので、前述のリンクのStep 1から（ほとんど元記事のままですが・・・）
 
@@ -53,6 +55,10 @@ PATH:                 /app/vendor/bin:/app/local/bin:/app/vendor/nginx/sbin:/app
 ~~~
 
 これは後でWordpressの設定で使用するものなのでどこかへ転記しておく。
+
+### Wordpressのインストール
+
+インストールというか、ソースコードを取ってきてgitを使ってプッシュするということである。
 
 
 
