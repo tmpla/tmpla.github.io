@@ -6,7 +6,7 @@ published: false
 ---
 このなかの、ユーザ名、パスワード、ホスト名、データベース名をwp-config.phpの下記の場所へ転記する。
 
-~~~ php
+{% highlight php %}
  :
 // ** MySQL 設定 - こちらの情報はホスティング先から入手してください。 ** //
 /** WordPress のためのデータベース名 */
@@ -21,4 +21,5 @@ define('DB_PASSWORD', '[パスワード]');
 /** MySQL のホスト名 */
 define('DB_HOST', '[ホスト名]');
  :
-~~~
+ aaaa
+{% endhilight %}
