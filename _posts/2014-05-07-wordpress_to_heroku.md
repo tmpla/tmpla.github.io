@@ -1,5 +1,5 @@
 ---
-lauout: post
+layout: post
 title: レンタルサーバのWordpressからHerokuへ移行に失敗した話
 status: publish
 ---
