@@ -1,4 +1,8 @@
-cygwinでchef環境を整える（難易度激高）
+---
+layout: post
+title: cygwinでchef環境を整える（難易度激高）
+status: publish
+---
 
 Windows7にcygwinをインストールし、chefをインストールするのに苦労した話。
 
@@ -107,7 +111,7 @@ $ git clone https://github.com/berkshelf/berkshelf
 $ cd berkshelf
 $ gem build berkshelf.gemspec
 $ gem i berkshelf-3.1.2.gem
-~~
+~~~
 
 で出来る（出来ないが）
 
