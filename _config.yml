@@ -1,10 +1,13 @@
 title:            日本の天ぷら情報
 description:      Webコンテンツに関するメモなど
 name: 日本の天ぷら情報
-pygments: true
+# pygments: true
+highlighter: pygments
 
 safe: true
 lsi: false
+
+encoding: utf-8
 
 
 # Owner/author information
@@ -46,8 +49,8 @@ bing_verify:
 # http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 timezone:    Asia/Tokyo
 future:      true
-pygments:    true
-markdown:    kramdown
+# pygments:    true
+markdown:    redcarpet
 
 # https://github.com/mojombo/jekyll/wiki/Permalinks
 permalink:   /:categories/:title/
