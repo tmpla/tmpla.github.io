@@ -10,7 +10,7 @@ image:
 comments: 
 share: 
 status: draft
-publised: false
+published: false
 ---
 [jekyll](http://jekyllrb.com/)は、Markdownのように、テキスト＋いくつかのシンタックスルールを使って書いたものを、
 Webブラウザで見れるようにHTMLへ変換してくれるものである。
