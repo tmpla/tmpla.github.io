@@ -1,0 +1,84 @@
+---
+layout: post
+title: gitの使い方メモ
+categories:
+- "未分類"
+tags: []
+status: draft
+type: post
+published: false
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>gitのコマンドの話。</p>
+<p>環境はMacのXCodeのCommand Line Toolsが入っている状態で、gitのバージョンは下記です。</p>
+<pre lang="bash">
+$ git --version
+git version 1.7.7.5 (Apple Git-26)
+</pre>
+<h3>管理ファイルを追加する</h3>
+<p>あるディレクトリ以下のファイルを全部追加する場合は下記手順でやります。主に自分だけでバージョン管理するとき用じゃないかな。</p>
+<pre lang="bash">
+$ cd project
+$ git init
+$ git add .
+$ git commit
+</pre>
+<p>git add . でピリオド（カレントディレクトリ）を指定しています。<br />
+git commit時にはコメントを入力しないとコミットされません。コメントは推奨は</p>
+<pre>
+サマリ
+(空白行）
+詳細
+</pre>
+<p>の様に書くのが良いそうです。</p>
+<p>例えば~/repo/test-file<br />
+という感じでrepoディレクトリ配下にtest-fileというファイルがあるだけの場合に、「git status」をいちいち発行してみた場合の例です。</p>
+<pre lang="bash">
+$ mkdir repo
+$ touch repo/test-file
+$ cd repo/
+$ git status
+fatal: Not a git repository (or any of the parent directories): .git
+$ git init
+Initialized empty Git repository in /Users/kenichi/repo/.git/
+$ git status
+# On branch master
+#
+# Initial commit
+#
+# Untracked files:
+#   (use "git add <file>..." to include in what will be committed)
+#
+#	test-file
+nothing added to commit but untracked files present (use "git add" to track)
+$ git add .
+$ git status
+# On branch master
+#
+# Initial commit
+#
+# Changes to be committed:
+#   (use "git rm --cached <file>..." to unstage)
+#
+#	new file:   test-file
+#
+$ git commit
+[master (root-commit) df6bedd] test
+ 0 files changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 test-file
+$ git status
+# On branch master
+nothing to commit (working directory clean)
+</pre>
+<p>下記のページに全部書いてありました。</p>
+<p>Git入門 - ドキュメント<br />
+<a href="http://www8.atwiki.jp/git_jp/">http://www8.atwiki.jp/git_jp/</a></p>
+<p>textdrop &raquo; Git Cheat Sheet 日本語版<br />
+<a href="http://www.textdrop.net/doc/git-cheat-sheet-ja/">http://www.textdrop.net/doc/git-cheat-sheet-ja/</a></p>
