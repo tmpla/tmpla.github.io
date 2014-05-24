@@ -1,0 +1,49 @@
+---
+layout: post
+title: Zend Framworkの導入
+categories:
+- "未分類"
+tags: []
+status: draft
+type: post
+published: false
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>ZendといえばPHPの総元締めという印象があるが、Zend DebuggerやZendのPHP開発用IDE等のツールは正直イマイチな印象がある。<br />
+そのZendの名が付いた、Zend FrameworkというPHPのFrameworkがあるのですが、<br />
+それを試してみようと思います。</p>
+<p>PHPの開発も、現在はあまりスクラッチ開発するということは少ない風潮があり、なんらかのフレームワークを使って開発を行うことが<br />
+多くなっているようでした。今のところ名前を知っているのは、Synfony, CakePHPとこのZendFramework位なものでしたが、<br />
+その他にも結構出てきているようでした。</p>
+<p>PHP Frameworks<br />
+<a href="http://www.phpframeworks.com/">http://www.phpframeworks.com/</a></p>
+<p>今回の目的は諸事情により、SOAPサーバーの構築ということにしておきます。<br />
+環境はローカルでのみ。なので、<br />
+・Windows Vista Home<br />
+・Xampp 1.7.4(Apache 2.2.17 & PHP 5.3.5)</p>
+<p>開発環境はEclipse(PDT)です。</p>
+<p>参考にしたのは</p>
+<ul>
+<li>Zend Framework: Documentation: Zend Framework Manual<br />
+<a href="http://framework.zend.com/manual/ja/manual.html">http://framework.zend.com/manual/ja/manual.html</a></p>
+<li>Zend Framework を使って SOAP サービスを実装する<br />
+<a href="http://www.ibm.com/developerworks/jp/xml/library/x-zsoap/">http://www.ibm.com/developerworks/jp/xml/library/x-zsoap/</a>
+</ul>
+<p>あたりです。</p>
+<h3>導入</h3>
+<p>まずダウンロードします。<br />
+Zend Framework: Downloads<br />
+<a href="http://framework.zend.com/download/latest">http://framework.zend.com/download/latest</a></p>
+<p>上記ページから「Zend Framework 1.11.10 Full」というの（現時点で最新）を選択してダウンロードしました。<br />
+「Zend Framework + Zend Server Community Edition(CE)」でもいいと思いますがZend Serverの使い方がよく分からないのと、<br />
+「Zend Framework Full Package」はメールアドレスの登録が必要（私は登録済みではありますが）で面倒だったので前者のにしましたが、どれでも基本は変わらないと思います。</p>
+<p>ダウンロードしたアーカイブを展開すると、下記のようになりました。<br />
+このうち、とりあえず必要なのは「library」フォルダになります。<br />
+<a href="http://tmpla.info/wp-content/uploads/2011/08/zend-framework-extract.jpg"><img src="http://tmpla.info/wp-content/uploads/2011/08/zend-framework-extract-300x225.jpg" alt="" title="zend-framework-extract" width="300" height="225" class="alignnone size-medium wp-image-1328" /></a></p>
