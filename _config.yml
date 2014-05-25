@@ -7,7 +7,7 @@ pygments: true
 safe: true
 lsi: false
 
-encoding: utf-8
+# encoding: utf-8
 
 
 # Owner/author information
