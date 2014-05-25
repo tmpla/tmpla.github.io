@@ -1,0 +1,107 @@
+---
+layout: post
+title: rubyのコンソールを使うならpryを使ったらいいよ
+categories:
+- Ruby
+tags:
+- irb
+- pry
+- Ruby
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>テストではないんだけどあれこの処理をやってみるとどうなるんだろうか、なんて時、rubyを使っている場合はirbと言うツールがあってこれを使って実行結果等を確認することが出来る。<br />
+これはrubyを実行するためのコンソール機能で下記のような感じ。<br />
+(Railsでしか使ったことはないけど）</p>
+<p>下記は、railsでdeviseを使っていてUserを作成して何も設定せずにsaveしてerrorsを表示してみたところです。</p>
+<pre lang="ruby">
+$ rails c
+Loading development environment (Rails 3.2.6)
+irb(main):001:0> u=User.new
+=> #<User id: nil, email: "", encrypted_password: "", reset_password_token: nil, reset_password_sent_at: nil, remember_created_at: nil, sign_in_count: 0, current_sign_in_at: nil, last_sign_in_at: nil, current_sign_in_ip: nil, last_sign_in_ip: nil, created_at: nil, updated_at: nil>
+irb(main):002:0> u.save
+   (0.1ms)  begin transaction
+   (0.1ms)  rollback transaction
+=> false
+irb(main):003:0> u.errors
+=> #<ActiveModel::Errors:0x007fe049d06e80 @base=#<User id: nil, email: "", encrypted_password: "", reset_password_token: nil, reset_password_sent_at: nil, remember_created_at: nil, sign_in_count: 0, current_sign_in_at: nil, last_sign_in_at: nil, current_sign_in_ip: nil, last_sign_in_ip: nil, created_at: nil, updated_at: nil>, @messages={:email=>["can't be blank"], :password=>["can't be blank"]}>
+</pre>
+<p>これはこれで超便利である。ここでClassを定義して使ったりも出来ちゃう優れもの。</p>
+<p>ところで、rubyみたいな動的な言語を使うとき、どんなメソッドあるのかとかを知りたい時がある。<br />
+標準的なものならまだしも、誰かが作ったgemを使うときなんかはリファレンス見てもよくわからなくて、もうソースコードを確認したい時がある。<br />
+こんな時、どんなメソッドがあるのかを見たい時はmethodsメソッドで定義されているメソッドが確認できる。<br />
+下記は、先程のdeviseのUserのインスタンスのメソッドを確認したところ。</p>
+<pre lang="ruby">
+irb(main):004:0> u.methods
+=> [:devise_modules, :devise_modules?, :_one_time_conditions_valid_8?, 
+:_one_time_conditions_valid_10?, :password, :current_password, :password_confirmation,
+ :password_confirmation=, :_callback_before_11_object, :_callback_before_11,
+ :_one_time_conditions_valid_14?, :_callback_before_15_object, :_callback_before_15,
+ :_one_time_conditions_valid_18?, :_callback_before_19_object, :_callback_before_19,
+ :_one_time_conditions_valid_22?, :_callback_before_23_object, :_callback_before_23,
+ :_one_time_conditions_valid_26?, :_callback_before_27_object, :_callback_before_27,
+ :_one_time_conditions_valid_30?, :_callback_before_31_object, :_callback_before_31,
+ :_one_time_conditions_valid_32?,
+ 　（…長すぎて中略）
+ :silence_stderr, :silence_stream, :suppress, :capture, :silence, :quietly, :class_eval, :debugger,
+ :breakpoint, :suppress_warnings, :pretty_inspect, :equal?, :!, :!=, :instance_eval, :instance_exec,
+ :__send__, :__id__]
+</pre>
+<p>ソースコードを見る場合は、メソッド名から大体処理を想像してこれ！と決め手grep的な手段でソースコードを検索して当てる、ということをやってたんですが、いちいちこれは面倒だからmethodsを順次ownerでグループ化して表示できたりするスクリプトでも書いたら楽かな、と思ってたらpryというのを見つけた。</p>
+<p>pryならこうして探せる。</p>
+<p>インストールは（railsならば）こうやる。<br />
+Genfileに下記のように書いてbundle install</p>
+<pre lang="ruby">
+gem 'pry-rails'
+</pre>
+<p>そんで、rails cでコンソールを立ち上げればpryが立ち上がる。<br />
+さっきのように、メソッドを確認するにはこうやる。</p>
+<pre lang="bash">
+$ rails c
+Loading development environment (Rails 3.2.6)
+[1] pry(main)> u=User.new
+=> #<User id: nil, email: "", encrypted_password: "", reset_password_token: nil, reset_password_sent_at: nil, remember_created_at: nil, sign_in_count: 0, current_sign_in_at: nil, last_sign_in_at: nil, current_sign_in_ip: nil, last_sign_in_ip: nil, created_at: nil, updated_at: nil>
+[2] pry(main)> ls u
+ActiveRecord::Persistence#methods: becomes  decrement  decrement!  delete  destroyed?  increment  increment!  new_record?  persisted?  toggle  toggle!  update_attribute  update_attributes  update_attributes!  update_column
+ActiveRecord::Scoping#methods: populate_with_current_scope_attributes
+ActiveRecord::Sanitization#methods: quoted_id
+ActiveRecord::Integration#methods: cache_key
+ActiveRecord::AttributeAssignment#methods: assign_attributes  attributes=
+ActiveModel::Conversion#methods: to_model  to_param  to_partial_path
+  (…やはり長いので以下略）
+</pre>
+<p>見ると、なんと定義されているクラス毎にメソッドが出力されてるのでまさにこれは求めてた奴だった。<br />
+また、rubyのモジュールは、階層構造の名前空間で定義されるのが普通なので、unixのディレクトリ移動のように「ls」でリストを<br />
+「cd」でクラス（インスタンス）階層を登ったり降りたり出来るので直感的にわかりやすい。</p>
+<p>さらに、元々の目的はソースコードを確認したいことだったのですが、これも出来ちゃう。<br />
+試しに「_callback_berore_11」と言う動的に定義されているっぽいメソッドのコードを参照してみる。</p>
+<pre lang="bash">
+[4] pry(main)> show-method u._callback_before_11
+
+From: /Users/kenichi/.rbenv/versions/1.9.3-p194/lib/ruby/gems/1.9.1/gems/activesupport-3.2.6/lib/active_support/callbacks.rb @ line 309:
+Number of lines: 7
+Owner: User
+Visibility: public
+
+    def #{method_name}(&blk)
+      #{method_name}_object.send(:#{method_to_call}, self, &blk)
+    end
+  RUBY_EVAL
+
+  method_name
+end
+
+</pre>
+<p>これは凄すぎて参った。その他ドキュメントは下記で。<br />
+もちろん、irbで出来るようなことは出来るのでどうせならこれにしといたら良いと思った。</p>
+<p>Pry - an IRB alternative and runtime developer console<br />
+<a href="http://pryrepl.org/">http://pryrepl.org/</a></p>

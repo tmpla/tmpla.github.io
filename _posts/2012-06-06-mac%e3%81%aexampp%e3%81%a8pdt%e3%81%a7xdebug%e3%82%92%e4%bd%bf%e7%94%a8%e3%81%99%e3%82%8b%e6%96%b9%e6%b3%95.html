@@ -1,0 +1,96 @@
+---
+layout: post
+title: MacのXAMPPとPDTでxdebugを使用する方法
+categories:
+- PHP
+tags:
+- Eclipse
+- PDT
+- PHP
+- xampp
+- xdebug
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>短めに。</p>
+<p>MacでPHPのデバッグというかステップ実行をしたいのですが、Windowsとはちょっとだけ勝手が違っていたので<br />
+参考用に。</p>
+<p>OSはMacのLionとEclipseのHelios(3.7.1)にEclipse for PHP Developersの3.0.2が乗っかっているやつ。<br />
+Eclipse側の設定は超簡単に環境設定 > PHP > debug > PHP DebuggerをXdebugにすれば良いだけである。<br />
+PHP executableはxamppの奴を指定しておく。xamppのexecutableの指定はPHP Executablesでしておく。</p>
+<p><a href="http://tmpla.info/wp-content/uploads/2012/06/68b37adafadad21908aeee6d4cca70e1.png"><img src="http://tmpla.info/wp-content/uploads/2012/06/68b37adafadad21908aeee6d4cca70e1-300x255.png" alt="" title="スクリーンショット 2012-06-06 0.21.03" width="300" height="255" class="alignnone size-medium wp-image-1516" /></a><br />
+XAMPP側の方は、シンプルに書かれた下記サイトを参照させていただいた。</p>
+<p>Mac で Eclipse PDT (Helios) と XAMPP で PHP の Debug - hig3の言い忘れたこと書き間違えたこと<br />
+<a href="http://d.hatena.ne.jp/hig3/20100818/1282120814">http://d.hatena.ne.jp/hig3/20100818/1282120814</a></p>
+<p>XdebugはXAMPPに同梱されているようなのでそれを使う。下記パスのような場所にライブラリがある。</p>
+<pre lang="bash">
+sh-3.2# pwd
+/Applications/XAMPP/xamppfiles/lib/php/php-5.3.1/extensions/no-debug-non-zts-20090626
+sh-3.2# ls -la
+total 24864
+drwxr-xr-x@ 27 root  admin      918  2 28  2010 .
+drwxr-xr-x@  3 root  admin      102  2 28  2010 ..
+-rwxr-xr-x@  1 root  admin    62612  2 28  2010 bz2.so
+-rwxr-xr-x@  1 root  admin   152404  2 28  2010 curl.so
+-rwxr-xr-x@  1 root  admin   135916  2 28  2010 exif.so
+-rwxr-xr-x@  1 root  admin   744344  2 28  2010 gd.so
+-rwxr-xr-x@  1 root  admin  2942524  2 28  2010 imap.so
+-rwxr-xr-x@  1 root  admin   116016  2 28  2010 ldap.so
+-rwxr-xr-x@  1 root  admin  4257612  2 28  2010 mbstring.so
+-rw-r--r--@  1 root  admin   264468  2 28  2010 ming.so
+-rwxr-xr-x@  1 root  admin   107348  2 28  2010 mysql.so
+-rwxr-xr-x@  1 root  admin   276044  2 28  2010 mysqli.so
+-rwxr-xr-x@  1 root  admin    80216  2 28  2010 pdo_mysql.so
+-rwxr-xr-x@  1 root  admin    76160  2 28  2010 pdo_pgsql.so
+-rwxr-xr-x@  1 root  admin    67836  2 28  2010 pdo_sqlite.so
+-rwxr-xr-x@  1 root  admin   294140  2 28  2010 pgsql.so
+-rwxr-xr-x@  1 root  admin    38620  2 28  2010 shmop.so
+-rwxr-xr-x@  1 root  admin    76212  2 28  2010 snmp.so
+-rwxr-xr-x@  1 root  admin   900220  2 28  2010 soap.so
+-rwxr-xr-x@  1 root  admin   101172  2 28  2010 sockets.so
+-rwxr-xr-x@  1 root  admin   872260  2 28  2010 sqlite.so
+-rwxr-xr-x@  1 root  admin    96864  2 28  2010 sqlite3.so
+-rwxr-xr-x@  1 root  admin   465280  2 28  2010 xdebug.so
+-rwxr-xr-x@  1 root  admin   201772  2 28  2010 xmlrpc.so
+-rwxr-xr-x@  1 root  admin    73208  2 28  2010 xsl.so
+-rwxr-xr-x@  1 root  admin   198892  2 28  2010 zip.so
+-rwxr-xr-x@  1 root  admin    81072  2 28  2010 zlib.so
+</pre>
+<p>ここのxdebug.soをphp.iniに指定してあげれば良い。<br />
+とりあえず下記のようにした。</p>
+<pre lang="ini">
+[xdebug]
+zend_extension="/Applications/XAMPP/xamppfiles/lib/php/php-5.3.1/extensions/no-debug-non-zts-20090626/xdebug.so"
+xdebug.remote_enable=On
+</pre>
+<p>これでEclipseで実行したいあたりの適当なPHPファイルを右クリックしてDebug as > PHP Web Applicationをすれば良い。（初回はDebug Configurationの作成画面が出るかも）</p>
+<p>しかしこれでステップ実行してみたのだが、Variablesのローカル変数が全部Uninitializedになったまま更新されない。<br />
+php.iniを下記のように拡張設定をしてみたが状況変わらなかった。<br />
+（参考： ゲキカワXdebugでモテモテPHP開発 - 肉とご飯と甘いもの @ sotarok<br />
+<a href="http://d.hatena.ne.jp/sotarok/20101108/stylish_xdebug">http://d.hatena.ne.jp/sotarok/20101108/stylish_xdebug</a><br />
+）</p>
+<pre lang="ini">
+[xdebug]
+zend_extension="/Applications/XAMPP/xamppfiles/lib/php/php-5.3.1/extensions/no-debug-non-zts-20090626/xdebug.so"
+xdebug.remote_enable=On
+splay_max_depth="2"
+xdebug.show_local_vars="On"
+xdebug.show_mem_delta="On"
+xdebug.trace_options="4"
+xdebug.collect_includes="On"
+xdebug.collect_params="4"
+xdebug.collect_return="On"
+xdebug.collect_vars="On"
+xdebug.dump_globals="On"
+xdebug.scream="1"
+</pre>
+<p>なのでこれで我慢する。Variablesでは見えないが、Watch式で一応見れるようだし、何よりWindows版はVariablesビューを表示させると原因不明でApacheが落ちたりしてたからマシかな…。</p>

@@ -1,0 +1,49 @@
+---
+layout: post
+title: MacでEclipseを使う際にやっておくと良い事
+categories:
+- Eclipse
+- Mac
+tags:
+- Eclipse
+- Mac
+- Shotrcut
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>Eclipseマニアの戯れ言です。</p>
+<p>EclipseはWindowsで長い事使っているのですが、Macで使い始めるとちょっと困ったなと思う事がありました。<br />
+（まだ２週間くらいですが）<br />
+大した話ではないですがそのいくつかの解決方法をメモします。</p>
+<h3>コード補完のショートカット</h3>
+<p>コード補完というのは、Classとかメソッドを記述する際に、頭文字だけタイプするとその候補のリストが出てくる機能のことです。<br />
+正直これを使いたいがためにEclipseを使っているといっても過言ではないほどの重要な機能だと思ってます。<br />
+例えば、流れるようなプログラミングとかって、コード補完前提の考え方じゃないすか？</p>
+<p><a href="http://tmpla.info/wp-content/uploads/2012/03/12b34f21f678b31e2752ae8b02605a49.png"><img src="http://tmpla.info/wp-content/uploads/2012/03/12b34f21f678b31e2752ae8b02605a49-300x172.png" alt="" title="スクリーンショット 2012-03-20 19.15.36" width="300" height="172" class="alignnone size-medium wp-image-1436" /></a></p>
+<p>これはWindowsではCtrl+Spaceで補完されるのですが、これがまた絶妙な設定だと思ってます。（XcodeではESCのようだけどちょっと遠いね。VSはもっとよくわからない設定だった気がする）<br />
+Mac版EclipseでもControl + Spaceがデフォルト設定のようなのですが、これだと検索窓（Spotlight）の表示が割り当てられているのでだめでした。</p>
+<p><a href="http://tmpla.info/wp-content/uploads/2012/03/0a72b3105457bb672c2e2c43a64443c1.png"><img src="http://tmpla.info/wp-content/uploads/2012/03/0a72b3105457bb672c2e2c43a64443c1-300x45.png" alt="" title="スクリーンショット 2012-03-20 19.20.44" width="300" height="45" class="alignnone size-medium wp-image-1437" /></a></p>
+<p>Spotlightはそれはそれで今後使う事もあるかもしれないので、Eclipse側のキーバインド設定を変更するのがベストだと思うのですが、場所的にはCommand + Spaceがベストですが、これも言語の切り替え？みたいなのが割り当てられているようでした。</p>
+<p><a href="http://tmpla.info/wp-content/uploads/2012/03/f61a895181d315bed54407ac6b9d7091.png"><img src="http://tmpla.info/wp-content/uploads/2012/03/f61a895181d315bed54407ac6b9d7091.png" alt="" title="スクリーンショット 2012-03-20 19.23.25" width="251" height="252" class="alignnone size-full wp-image-1438" /></a></p>
+<p>なのでMacでは、Option + Spaceを割り当てるのが良さそうです。Eclipseのキーバインド設定の変更は<br />
+Eclipse > 環境設定 > General > Keysで「Content Assist」のところを変更すれば出来ます。<br />
+ここのBindingでそのキーを押下してOKで変更できます。今のところなかなか良いです。</p>
+<h3>実行・デバッグ</h3>
+<p>実行・・・というよりデバッグでのステップ実行は自分の場合はよく使うのですが、<br />
+Eclipseの場合F5でステップイン、F6でステップオーバー、F7でメソッドオーバー、F8でレジューム・・・は体に染み付いてます。</p>
+<p><a href="http://tmpla.info/wp-content/uploads/2012/03/3e62a472e37489fb4be3ec8fbd6dd29d.png"><img src="http://tmpla.info/wp-content/uploads/2012/03/3e62a472e37489fb4be3ec8fbd6dd29d.png" alt="" title="スクリーンショット 2012-03-23 3.48.36" width="297" height="250" class="alignnone size-full wp-image-1439" /></a></p>
+<p>が、使用しているMacの場合はファンクションキーは「fn」キーと組み合わせて使う前提になっているようで、それはかなり面倒くさい。<br />
+こりゃ困ったと思っていたのですが、ファンクションキーを普通のファンクションキーとして使う方法？があるようでした。<br />
+アップルメニュー > システム環境設定 > キーボード > キーボードで、「F1、F2などのすべてのキーを標準のファンクションキーとして使用」にチェックを入れればどうもファンクションキーの上に書いてあるアイコンの機能が裏に回る（fnキーとの組み合わせで動作）ようです。<br />
+これにしておけば、日本語入力の変換（全角入力後半角にするとか）も出来るようなのでよろしい。</p>
+<p><a href="http://tmpla.info/wp-content/uploads/2012/03/0501f38810c2b4ba7966c05926c15f57.png"><img src="http://tmpla.info/wp-content/uploads/2012/03/0501f38810c2b4ba7966c05926c15f57-300x267.png" alt="" title="スクリーンショット 2012-03-23 3.54.12" width="300" height="267" class="alignnone size-medium wp-image-1441" /></a></p>
+<p>こまいですがちょっとしたカスタマイズ方法でした。</p>

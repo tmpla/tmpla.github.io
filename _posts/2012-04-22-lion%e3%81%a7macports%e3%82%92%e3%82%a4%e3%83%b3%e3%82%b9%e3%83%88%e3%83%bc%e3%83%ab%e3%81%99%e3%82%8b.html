@@ -1,0 +1,182 @@
+---
+layout: post
+title: LionでMacPortsをインストールする
+categories:
+- Mac
+- "開発"
+tags:
+- Mac
+- MacPorts
+- Python
+- Xcode
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>EclpiseのPyDevを設定しようと思ったのですが、<br />
+どうもデフォルトでインストールされているPythonをうまく設定出来ないので、<br />
+普通のPythonをまず入れてみようと思った時にちょっとハマった話です。</p>
+<p>その、普通のPythonを入れるにも色々方法があるようなのですが、<br />
+MacPortsというツールを使用して入れるのがトレンドのようです。</p>
+<p>MacPortsはRHL系のrpmやyum、debian系のapt-getのようなものです。<br />
+つまり、いろんなパッケージを依存関係もろともインストールするような事ができます。</p>
+<p>The MacPorts Project -- Home<br />
+<a href="http://www.macports.org/">http://www.macports.org/</a></p>
+<p>環境はMacのLionと、Xcode4.3.2です、<br />
+Xcodeが必要なのでまだ入っていない場合はインストールしておいてください。</p>
+<h3>ダウンロード</h3>
+<p>The MacPorts Project -- Download & Installation<br />
+<a href="http://www.macports.org/install.php">http://www.macports.org/install.php</a></p>
+<p>上記の本文中のリンクからdmgファイルをダウンロードします。今回使うLionの他、Snow Leopard, Leopard, Tigerのも<br />
+あるようです。<br />
+今回ダウンロードしたのは、MacPorts-2.0.4-1.0.7.Lion.dmgです。</p>
+<h3>インストール</h3>
+<p>ダウンロードしたdmgファイルを解凍し、中に入っているMacPorts-2.0.4.pkgファイルをダブルクリック等すると<br />
+インストーラーが起動して適度に「続ける」「同意する」「accept」「continue」するとインストールが完了します。<br />
+インストール前にターミナルを立ち上げっぱなしの場合には、そのターミナルではまだMacPortsが使用できないと思うので、<br />
+ターミナルを新たに立ち上げて使用します。（rcファイルの読み込みだけの話だとは思いますが）</p>
+<h3>使用方法</h3>
+<p>ターミナルからportコマンドで色々やります。</p>
+<pre lang="bash">
+$ port -v
+MacPorts 2.0.4
+Entering interactive mode... ("help" for help, "quit" to quit)
+</pre>
+<h3>パッケージのインストール</h3>
+<p>今回はpython2.7をインストールするのでこうしてみます。</p>
+<pre lang="bash">
+$ port install python27
+Error: Insufficient privileges to write to MacPorts install prefix.
+</pre>
+<p>と、権限がどうの、と出るのでsudoでやります。</p>
+<pre lang="bash">
+$ sudo port install python27
+Warning: xcodebuild exists but failed to execute
+Error: Unable to open port: can't read "build.cmd": Failed to locate 'make' in path: '/opt/local/bin:/opt/local/sbin:/bin:/sbin:/usr/bin:/usr/sbin' or at its MacPorts configuration time location, did you move it?
+To report a bug, see <http://guide.macports.org/#project.tickets>
+</pre>
+<p>って、もっとややこしいエラーになってしまったので、色々調べてみたらどうもXcodeのツールを入れれば解決しそうなエントリを見つけました。</p>
+<p>macportsでなんか入れようとしたらbuild.cmdが読めないと言われた時の対処法 - konisimple log<br />
+<a href="http://d.hatena.ne.jp/konisimple/20100425/1272169805">http://d.hatena.ne.jp/konisimple/20100425/1272169805</a></p>
+<p>しかし、Xcode(4.3.2)のインストールディスクなんかなかったような？<br />
+なんとなくXcodeのpreferences > Downloadsにそれっぽいのがありました。</p>
+<p><a href="http://tmpla.info/wp-content/uploads/2012/04/ed433304c7d654b76922f53f1ba6b3b1.png"><img src="http://tmpla.info/wp-content/uploads/2012/04/ed433304c7d654b76922f53f1ba6b3b1-300x222.png" alt="" title="スクリーンショット 2012-04-22 10.37.57" width="300" height="222" class="alignnone size-medium wp-image-1488" /></a></p>
+<p>この写真はすでにインストールしたあとのですが、これの「Command Line Tools」というのが怪しい。<br />
+なのでこれの「Install」ボタンを押下してインストールします。</p>
+<p>この時に、Apple Developer IDを聞かれるのですが、ID（メールアドレス）を一度間違えて入力し、さらに<br />
+「このIDを記憶させる」（詳細忘れた）みたいなチェックボックスにチェックしてしまったのですが、<br />
+以降、どうやってもその間違えたメールアドレスでアクセスしようとしてしまい、Xcodeのどこかから変更できそうもないのです。<br />
+こ、これは一生この間違えたメールアドレスでやっていかなくては行けないのか・・・と思ったのですが、<br />
+どうやらこの手のアカウント管理は「キーチェーンストア」でやっているようです。<br />
+アプリケーション > ユーティリティ > キーチェーンアクセスの「ログイン」のなかで、http://daw2.apple.comにアクセスしている<br />
+「インターネットパスワード」のエントリがそうです。これを消せばOK。</p>
+<p>そして　Command Line Toolsをインストール後に再度installコマンドをやったら入ったみたいです。</p>
+<pre lang="bash">
+$ sudo port install python27
+Password:
+Warning: xcodebuild exists but failed to execute
+Warning: Xcode appears to be installed but xcodebuild is unusable; some ports will likely fail to build.
+Warning: You may need to run `sudo xcode-select -switch /Applications/Xcode.app`
+--->  Computing dependencies for python27
+--->  Dependencies to be installed: bzip2 db46 gettext expat libiconv gperf ncurses libedit openssl zlib python_select sqlite3 xz
+--->  Fetching archive for bzip2
+--->  Attempting to fetch bzip2-1.0.6_0.darwin_11.x86_64.tbz2 from http://packages.macports.org/bzip2
+--->  Attempting to fetch bzip2-1.0.6_0.darwin_11.x86_64.tbz2.rmd160 from http://packages.macports.org/bzip2
+--->  Installing bzip2 @1.0.6_0
+--->  Activating bzip2 @1.0.6_0
+--->  Cleaning bzip2
+--->  Fetching archive for db46
+--->  Attempting to fetch db46-4.6.21_6.darwin_11.x86_64.tbz2 from http://packages.macports.org/db46
+--->  Attempting to fetch db46-4.6.21_6.darwin_11.x86_64.tbz2.rmd160 from http://packages.macports.org/db46
+
+--->  Installing db46 @4.6.21_6
+--->  Activating db46 @4.6.21_6
+--->  Cleaning db46
+--->  Fetching archive for expat
+--->  Attempting to fetch expat-2.1.0_0.darwin_11.x86_64.tbz2 from http://packages.macports.org/expat
+--->  Attempting to fetch expat-2.1.0_0.darwin_11.x86_64.tbz2.rmd160 from http://packages.macports.org/expat
+--->  Installing expat @2.1.0_0
+--->  Activating expat @2.1.0_0
+--->  Cleaning expat
+--->  Fetching archive for gperf
+--->  Attempting to fetch gperf-3.0.4_2.darwin_11.x86_64.tbz2 from http://packages.macports.org/gperf
+--->  Attempting to fetch gperf-3.0.4_2.darwin_11.x86_64.tbz2.rmd160 from http://packages.macports.org/gperf
+--->  Installing gperf @3.0.4_2
+--->  Activating gperf @3.0.4_2
+--->  Cleaning gperf
+--->  Fetching archive for libiconv
+--->  Attempting to fetch libiconv-1.14_0.darwin_11.x86_64.tbz2 from http://packages.macports.org/libiconv
+--->  Attempting to fetch libiconv-1.14_0.darwin_11.x86_64.tbz2.rmd160 from http://packages.macports.org/libiconv
+--->  Installing libiconv @1.14_0
+--->  Activating libiconv @1.14_0
+--->  Cleaning libiconv
+--->  Fetching archive for ncurses
+--->  Attempting to fetch ncurses-5.9_1.darwin_11.x86_64.tbz2 from http://packages.macports.org/ncurses
+--->  Attempting to fetch ncurses-5.9_1.darwin_11.x86_64.tbz2.rmd160 from http://packages.macports.org/ncurses
+--->  Installing ncurses @5.9_1
+--->  Activating ncurses @5.9_1
+--->  Cleaning ncurses
+--->  Fetching archive for gettext
+--->  Attempting to fetch gettext-0.18.1.1_2.darwin_11.x86_64.tbz2 from http://packages.macports.org/gettext
+--->  Attempting to fetch gettext-0.18.1.1_2.darwin_11.x86_64.tbz2.rmd160 from http://packages.macports.org/gettext
+--->  Installing gettext @0.18.1.1_2
+--->  Activating gettext @0.18.1.1_2
+--->  Cleaning gettext
+--->  Fetching archive for libedit
+--->  Attempting to fetch libedit-20110802-3.0_0.darwin_11.x86_64.tbz2 from http://packages.macports.org/libedit
+--->  Attempting to fetch libedit-20110802-3.0_0.darwin_11.x86_64.tbz2.rmd160 from http://packages.macports.org/libedit
+--->  Installing libedit @20110802-3.0_0
+--->  Activating libedit @20110802-3.0_0
+--->  Cleaning libedit
+--->  Fetching archive for zlib
+--->  Attempting to fetch zlib-1.2.6_0.darwin_11.x86_64.tbz2 from http://packages.macports.org/zlib
+--->  Attempting to fetch zlib-1.2.6_0.darwin_11.x86_64.tbz2.rmd160 from http://packages.macports.org/zlib
+--->  Installing zlib @1.2.6_0
+--->  Activating zlib @1.2.6_0
+--->  Cleaning zlib
+--->  Fetching archive for openssl
+--->  Attempting to fetch openssl-1.0.1a_0.darwin_11.x86_64.tbz2 from http://packages.macports.org/openssl
+--->  Attempting to fetch openssl-1.0.1a_0.darwin_11.x86_64.tbz2.rmd160 from http://packages.macports.org/openssl
+--->  Installing openssl @1.0.1a_0
+--->  Activating openssl @1.0.1a_0
+--->  Cleaning openssl
+--->  Fetching archive for python_select
+--->  Attempting to fetch python_select-0.3_1.darwin_11.noarch.tbz2 from http://packages.macports.org/python_select
+--->  Attempting to fetch python_select-0.3_1.darwin_11.noarch.tbz2.rmd160 from http://packages.macports.org/python_select
+--->  Installing python_select @0.3_1
+--->  Activating python_select @0.3_1
+--->  Cleaning python_select
+--->  Fetching archive for sqlite3
+--->  Attempting to fetch sqlite3-3.7.11_0.darwin_11.x86_64.tbz2 from http://packages.macports.org/sqlite3
+--->  Attempting to fetch sqlite3-3.7.11_0.darwin_11.x86_64.tbz2.rmd160 from http://packages.macports.org/sqlite3
+--->  Installing sqlite3 @3.7.11_0
+--->  Activating sqlite3 @3.7.11_0
+--->  Cleaning sqlite3
+--->  Fetching archive for xz
+--->  Attempting to fetch xz-5.0.3_0.darwin_11.x86_64.tbz2 from http://packages.macports.org/xz
+--->  Attempting to fetch xz-5.0.3_0.darwin_11.x86_64.tbz2.rmd160 from http://packages.macports.org/xz
+--->  Installing xz @5.0.3_0
+--->  Activating xz @5.0.3_0
+--->  Cleaning xz
+--->  Fetching archive for python27
+--->  Attempting to fetch python27-2.7.3_0.darwin_11.x86_64.tbz2 from http://packages.macports.org/python27
+--->  Attempting to fetch python27-2.7.3_0.darwin_11.x86_64.tbz2.rmd160 from http://packages.macports.org/python27
+--->  Installing python27 @2.7.3_0
+--->  Activating python27 @2.7.3_0
+
+To make python 2.7 the default (i.e. the version you get when you run 'python'), please run:
+
+sudo port select --set python python27
+
+--->  Cleaning python27
+$ 
+</pre>
+<p>入ったといえば入ったっぽいが、どこにどうやって入ったんだろう？あと切り替えも必要だが、それはまたPythonを使う際に調べよう。</p>
