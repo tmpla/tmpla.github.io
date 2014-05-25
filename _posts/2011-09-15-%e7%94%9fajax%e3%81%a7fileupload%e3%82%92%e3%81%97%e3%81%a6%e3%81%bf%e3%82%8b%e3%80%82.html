@@ -1,0 +1,215 @@
+---
+layout: post
+title: "生AjaxでFileuploadをしてみる。"
+categories:
+- jQuery
+- PHP
+tags:
+- ajax
+- Chrome
+- FileUpload
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>サンプルで作成している<a href="http://labelmaker.korokoro.us/">DVDラベルメーカー</a>では、Ajaxのファイルアップロードをしたいなと思って素のjQueryで$.ajax等してみたのですがダメでした。<br />
+よくよく考えたらfile属性のフォーム項目があるので、ファイルをバイナリで読めないとダメなんだろなとか思ってたんですが、<br />
+jQueryでのFIleuploadプラグインはめちゃくちゃあるようだし、実際Ajaxではどうやってるのかが知りたくて試してみました。<br />
+ちなみに、前述のDVDラベルメーカーで使用しているjQuery.form.jsではどうもiframeを使ってなんかやっているように見える。</p>
+<p>まずは普通にFormをサブミットした場合はどんなリクエストが飛んでるのかチェック。<br />
+リクエストするHTML（index.html）がこんな感じ。</p>
+<pre lang="html" escaped="false">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-31j">
+<title>Ajax Test</title>
+</head>
+<body>
+<form action="upload.php" enctype="multipart/form-data" method="post" >
+<input type="file" name="file1"/>
+<input type="file" name="file2"/>
+<input type="text" name="text" value="text" />
+<input type="submit" value="GO"/>
+</form>
+</body>
+</html>
+</pre>
+<p>それを受けるサーバ側はPHPでこんな感じ。</p>
+<pre lang="php" escaped="false">
+<?php
+
+print_r($_FILES);
+print_r($_POST);
+print_r(file_get_contents("php://input"));
+</pre>
+<p>これでちょっとハマったのが、phpはfile upload(multipart/form-data)の場合は生リクエストを見る事が出来ないという話。<br />
+その場合は勝手に$_FILES変数に振り分けてくれてるとは知らなかった。<br />
+<a href="http://php.net/manual/ja/reserved.variables.httprawpostdata.php">$HTTP_RAW_POST_DATA</a>というのもあるんだけどこれも使えません。RAWって位だから生データそのまま返してくれれば良いのに。<br />
+なので、ApacheのSetEnvIfを使ってmultipart/form-dataじゃなくすれば見えるようになった。（下記参照）<br />
+PHPで multipart/form-data でPOSTされた生データを取得する: Usoinfo blog<br />
+<a href="http://blog.usoinfo.info/article/197068137.html">http://blog.usoinfo.info/article/197068137.html</a></p>
+<p>これでsubmitすると、下記のようなリクエストが飛んでいるのが見えます。</p>
+<pre>
+Array
+(
+)
+Array
+(
+)
+------WebKitFormBoundaryOAqZvGwO4RbeDbIX
+
+Content-Disposition: form-data; name="file1"; filename="circle.gif"
+
+Content-Type: image/gif
+
+
+
+GIF89a  ¢ÿÿÿÌÌÌ™™™fff333!ùÿ,  }ºÜþ0Ê9ƒB:oùà‡qM@„(Hlä¾àÀ¹p-KB­Bì;–ã¬¹¢®× )a7ÆsWšê„€¤õÅT8·¨hÌehÉ .à‡aíãK+Îdõ‚H>>ØdotOzs[v„K$k|F‚/#‘–›œ	;
+
+------WebKitFormBoundaryOAqZvGwO4RbeDbIX
+
+Content-Disposition: form-data; name="file2"; filename="circle.gif"
+
+Content-Type: image/gif
+
+
+
+GIF89a  ¢ÿÿÿÌÌÌ™™™fff333!ùÿ,  }ºÜþ0Ê9ƒB:oùà‡qM@„(Hlä¾àÀ¹p-KB­Bì;–ã¬¹¢®× )a7ÆsWšê„€¤õÅT8·¨hÌehÉ .à‡aíãK+Îdõ‚H>>ØdotOzs[v„K$k|F‚/#‘–›œ	;
+
+------WebKitFormBoundaryOAqZvGwO4RbeDbIX
+
+Content-Disposition: form-data; name="text"
+
+
+
+text
+
+------WebKitFormBoundaryOAqZvGwO4RbeDbIX--
+
+</pre>
+<p>見ると、フォームの内容を境界（boundary）で区切られて送られているのが分かりますな。<br />
+そのへんのルールは下記サイト参考にさせて頂きました。（まあ、あとRFC1867と）<br />
+[Studying HTTP] HTTP Message Body<br />
+<a href="http://www.studyinghttp.net/body#Multipart">http://www.studyinghttp.net/body#Multipart</a></p>
+<p>Ajaxリクエストする際にも、このルールでメッセージを作成してあげれば可能なはず。<br />
+そこで、UploadFileのバイナリを取得すれば後は簡単そうです。</p>
+<p>ですが、このバイナリを取得するのが難しく、多分IEでは無理。FirefoxならOK.ChromeもなんとかOK。<br />
+input type=fileのファイル情報を取得するには、W3C File APIを実装しているブラウザじゃないと無理そうです。</p>
+<p>File API<br />
+<a href="http://www.w3.org/TR/FileAPI/">http://www.w3.org/TR/FileAPI/</a></p>
+<p>あとはちょっと下記サイトを参考にChromeでやってみました。<br />
+Ajax file upload with pure JavaScript<br />
+<a href="http://igstan.ro/posts/2009-01-11-ajax-file-upload-with-pure-javascript.html">http://igstan.ro/posts/2009-01-11-ajax-file-upload-with-pure-javascript.html</a></p>
+<p>先ほどのindex.htmlを下記のようにAjaxスクリプトを追加してみました。</p>
+<pre lang="html" escaped="false">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-31j">
+<title>Ajax Test</title>
+<script type="text/javascript">
+window.onload = function(){
+	document.forms[0].onsubmit = function(){
+		var form = this;
+		var e1 = this.file1;
+		var e2 = this.file2;
+		var file1 = e1.files[0];
+		var file2 = e2.files[0];
+
+		var reader1 = new FileReader();
+		var reader2 = new FileReader();
+		var file1Content, file2Content;
+		reader1.onload = function(){
+			file1Content = reader1.result;
+		}
+		reader2.onload = function(){
+			file2Content = reader1.result;
+		}
+		reader1.readAsBinaryString(file1);
+		reader2.readAsBinaryString(file2);
+
+		var timer = setInterval(function(){
+			var r1 = reader1.readyState;
+			var r2 = reader2.readyState;
+			
+			if (r1 == 2 && r2 == 2){
+				clearInterval(timer);
+				var boundary = 'boundary';
+				var crlf = '\r\n';
+				var body = '--' + boundary + crlf;
+				if (e1){
+					body += 'Content-Disposition: form-data; name=' + e1.name 
+						+ '; filename="' + file1.name + '"' + crlf;
+					body += 'Content-Type: image/gif' + crlf + crlf;
+					body += file1Content + crlf;
+					body += '--' + boundary + crlf;
+				}
+				if (e2){
+					body += 'Content-Disposition: form-data; name=' + e2.name 
+						+ '; filename="' + file2.name + '"'+ crlf;
+					body += 'Content-Type: image/gif' + crlf + crlf;
+					body += file2Content + crlf;
+					body += '--' + boundary + '--'+ crlf;
+				}
+		
+				var xhr = new XMLHttpRequest();
+				xhr.open("POST", form.action, true);
+			    xhr.onreadystatechange = function() {
+			        if (xhr.readyState === 4) {
+			            alert(xhr.responseText);
+			        }
+			    };
+		
+			    var contentType = "multipart/form-data; boundary=" + boundary;
+			    xhr.setRequestHeader("Content-Type", contentType);
+		
+			    for (var header in this.headers) {
+			        xhr.setRequestHeader(header, headers[header]);
+			    }
+		
+			    xhr.sendAsBinary(body);
+			}
+		}, 100);
+	    return false;
+		
+	}
+	XMLHttpRequest.prototype.sendAsBinary = function(datastr) {
+	    function byteValue(x) {
+	        return x.charCodeAt(0) & 0xff;
+	    }
+	    var ords = Array.prototype.map.call(datastr, byteValue);
+	    var ui8a = new Uint8Array(ords);
+	    this.send(ui8a.buffer);
+	}
+}
+</script>
+</head>
+<body>
+<form action="upload.php" enctype="multipart/form-data" method="post" >
+<input type="file" name="file1"/>
+<input type="file" name="file2"/>
+<input type="text" name="text" value="text" />
+<input type="submit" value="GO"/>
+</form>
+</body>
+</html>
+</pre>
+<p>参考サイトはFIreFox用なのでちょっと違うトコがあります。Fileのコンテンツを読むには、FileReaderというのを使います。<br />
+これはファイルをメモリ上に展開してくれるそうなのですが、同期処理ではないので、読み終わるまで待つ必要があります。<br />
+ので、FileReader.onloadで、FileReader.resultの値を保持しておいて、FileReader.readyStateが2(DONE)になったら処理続行するようにしています。<br />
+複数ファイルを読むのにはもうちょっといい方法があるかもしれないけどまあとりあえずこれで。<br />
+あとは、multipart/form-dataのboundaryですが、最初と途中の境界は「--」で始まる必要があり、最後だけ「--」を頭とお尻に付与します。<br />
+boundary文字列が「aaa」ならば、最初と途中は「--aa」に、最後だけ「--aa--」にします。<br />
+また、XMLHttpRequestのsendAsBinaryというメソッドは前述の参考サイトにあったものですが、これはFireFoxにしかないやつだそうなので、Chrome用にちょっと拡張してます。（参考：<a href="http://choilog.com/katty0324/blog/23">ChromeでXMLHttpRequest.sendAsBinaryを使えるようにする - かってぃのブログ | choilog [チョイログ]</a>）<br />
+これでめでたくAjaxでFileUploadのようにサーバに送信できました。<br />
+ただ使い道はないだろう。jQueryは偉大だ。</p>
+<p>ただ、これが通用するのはFirefoxやChromeで、IEは実現方法があるのかどうかが不明。個人的にはIEはほとんど使わないのでいいのだけど気になりますね。</p>

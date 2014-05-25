@@ -1,0 +1,77 @@
+---
+layout: post
+title: Wordpressでアクションフックじゃないところで自前Pluginの関数を呼び出す方法
+categories:
+- PHP
+- Plugin
+- WordPress
+tags:
+- ActionFilter
+- ActionHook
+- WordPress
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>Wordpressのプラグインを作成する場合（テーマもかな）には、アクションフック・アクションフィルタというのを使います。<br />
+これはどんなのかというと、例えば記事投稿したタイミングでツイートする、なんかは記事投稿時のアクションフックで、<br />
+記事を表示するタイミングで「:D)」なんかの文字を絵文字に変換するとかは記事表示時のアクションフィルタで実行させるように、<br />
+関数を登録しておいてつかうものです。</p>
+<p>アクションフックやアクションフィルタには下記ページを見ると既に沢山種類があります。</p>
+<p><a href="http://wpdocs.sourceforge.jp/%E3%83%97%E3%83%A9%E3%82%B0%E3%82%A4%E3%83%B3_API/%E3%83%95%E3%82%A3%E3%83%AB%E3%82%BF%E3%83%BC%E3%83%95%E3%83%83%E3%82%AF%E4%B8%80%E8%A6%A7">プラグイン API/フィルターフック一覧 - WordPress Codex 日本語版</a></p>
+<p>これはこれで良いのですが、プラグインで任意のタイミングである関数を呼び出したい場合があります。<br />
+例えば、プラグインで使用するスタイルシートの記述をPHPで動的に出力したい場合とか、ユーザーの入力に応じてAjax問い合わせしたい場合とか。<br />
+まだ、通常の記事表示ページならプラグイン内のPHPファイルを直接呼ぶ手もアリかと思いますが（それでも、Wordpressの権限判定絡みはスルーしてしまいそうで嫌ですが）、<br />
+管理画面で何かする際にはちょっと直接プラグインPHPファイルを呼ばせるのはどうかと。<br />
+さらに、Wordpressの仕組みに乗ってないので、Wordpressて定義されている関数や定数も使いにくくなってしまいます。<br />
+で、色々調べてみたのですがありました。これが正当な使い方かどうかわかりませんが、やってみた2例だけメモします。</p>
+<h3>外部定義JSやCSSを管理画面で使用したい場合</h3>
+<p>CSSはともかく、JavaScriptはパスなんかを動的に取得して使いたい場合もあるんじゃないかと思います。(get_bloginfo等）<br />
+なので、プラグインの関数でJavaScriptを定義して、それを表示画面側から呼び出す際にはこんな感じでうまくいきました。</p>
+<pre lang="php" escaped="false" line="1">
+class ExternalJs{
+    function onAdminFooterScripts(){
+        $pluginJs = admin_url() . 'admin.php?action=ejs';
+        wp_register_script('ejs', $pluginJs);
+	wp_print_scripts('ejs');
+    }
+    function js(){
+        $adminUrl = admin_url();
+header('Content-Type: application/x-javascript; charset=UTF-8');
+echo <<<EOD
+        function getAdminUrl(){
+               return $adminUrl;
+        }
+EOD;
+    }
+}
+
+$ejs = new ExternalJs();
+if (is_admin()){
+    add_filter('admin_print_footer_scripts'
+			, array($ejs, 'onAdminPrintFooterScripts'));
+    add_action('admin_action_ejs', array($ejs, 'js'));
+}
+</pre>
+<p>（上記は妄想で実際に動かしていませんが）<br />
+上記で言えばExternalJs->jsがJavaScriptの中身の出力で、それは「admin_action_ejs」という名前で登録します。<br />
+これは、admin_actionの「ejs」という名前で登録することを意味します。<br />
+これを呼び出す場合は、「wp-admin/admin.php?action=ejs」でリクエストすると、js関数の結果が返ります。<br />
+上記では、admin_print_footer_scriptsというアクションフィルタで外部JavaScriptとして出力するようにしています。<br />
+ようするに</p>
+<ul>
+<li>「admin_action_xxxx」の「xxxx」の名称を決めて、</p>
+<li>「admin_action_xxxx」というアクションフックとして登録し、
+<li>「wp-admin/admin.php?action=xxxx」でアクセスする
+</ul>
+<p>という話です。</p>
+<p>同様に、今度はAjaxのPOST先を作っておきたい場合は、上記の「admin_action_xxxx」を「wp_ajax_xxxx」に、<br />
+「wp-admin/admin.php?action=xxxx」を「wp-admin/admin-ajax.php?action=xxxx」にすればAjaxで呼べます。</p>
