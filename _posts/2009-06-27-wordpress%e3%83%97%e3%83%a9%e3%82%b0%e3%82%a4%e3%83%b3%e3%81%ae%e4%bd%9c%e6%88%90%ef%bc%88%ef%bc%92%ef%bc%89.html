@@ -1,0 +1,84 @@
+---
+layout: post
+title: WordPressプラグインの作成（２）
+categories:
+- Plugin
+tags:
+- Plugin
+- WordPress
+- "作成"
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p><a href="http://tmpla.info/2009/06/26/wordpressプラグインの作成/ ‎">WordPressプラグインの作成</a></p>
+<p>の続きです。（・・・の続きが多いな～。こういうサブカテゴリ的なもののページャも欲しいです。）</p>
+<p>前回は、とりあえずプラグインを有効化したらページのヘッダにコメントが挿入されるまでを確認しました。<br />
+今度は、そのプラグインの編集が出来る画面を管理画面に入れたいと思います。</p>
+<p>WordPress2.7以降では、左に管理メニューが表示されており、</p>
+<ul>
+<li>ダッシュボード</li>
+<li>サイト管理</li>
+<li>投稿</li>
+<li>外観</li>
+<li>プラグイン</li>
+<li>設定</li>
+</ul>
+<p>[caption id="attachment_488" align="alignleft" width="87" caption="WordPress管理メニュー"]<img class="size-medium wp-image-488" src="http://blog.4sure.jp/yokoshima/files/2009/06/wordpressadminmenu-87x300.jpg" alt="WordPress管理メニュー" width="87" height="300" />[/caption]</p>
+<p>等がありますが、色々なプラグインを見ると、「設定」メニューにプラグインの設定を入れているものが多いので、ここにaddMyCSSプラグインの設定画面を作ることにします。<br />
+<a href="http://wpdocs.sourceforge.jp/Adding_Administration_Menus">Adding Administration Menus</a>を見ると以下のように記載があり</p>
+<blockquote><p>parent<br />
+サブメニューを挿入したいトップレベルメニューを提供するWordPressのコアadminファイル名。プラグインがトップレベルメニューをなしている場合は、そのプラグインファイル。<br />
+よくある例:</p>
+<ol>
+<li>投稿用: add_submenu_page('post-new.php',...)</li>
+<li>管理用: add_submenu_page('edit.php',...)</li>
+<li>外観用: add_submenu_page('themes.php',...)</li>
+<li>コメント用: add_submenu_page('edit-comments.php',...)</li>
+<li>設定用: add_submenu_page('options-general.php',...)</li>
+<li>プラグイン用: add_submenu_page('plugins.php',...)</li>
+<li>ユーザ用: add_submenu_page('users.php',...)</li>
+</blockquote>
+<p>とあるので、設定用に以下コードを追加しました。</p>
+<pre lang="php" escaped="true">
+&lt;?php
+ class Add_My_CSS {
+
+ 	var $version = "0.1";
+
+	function Add_My_CSS(){}
+
+	function wp_head() {
+		echo "\n<!-- add_my_css $this-&gt;version -->\n";
+	}
+	/* 今回追加した */
+	function edit_setting() {
+		echo '<div class="wrap">';
+		echo '<p>設定用のフォームが表示されるところ</p>';
+		echo '</div>';}
+	/* 今回追加した */
+	function amc_admin() {
+	  if (function_exists('add_options_page')) {
+	    add_options_page('Add My CSS' /* page title */,
+	                     'Add My CSS' /* menu title */,
+	                     8 /* min. user level */,
+	                     basename(__FILE__) /* php file */ ,
+	                     array($this, 'edit_setting') /* function for subpanel */);
+	  }
+}
+$_add_my_css = new Add_My_CSS();
+add_action('wp_head', array($_add_my_css, 'wp_head'));
+/* 今回追加した */
+add_action('admin_menu',  array($_add_my_css, 'amc_admin'));
+?&gt;
+</pre>
+<p>これでとりあえず、管理画面に追加は出来ました。<br />
+今回気づいたのですが、ファイルをそのブログの文字コード（ここはUTF-8）に合わせて作成しておくことを忘れずに。日本語なら化けます。</p>

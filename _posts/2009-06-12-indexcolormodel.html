@@ -1,0 +1,116 @@
+---
+layout: post
+title: IndexColorModel
+categories:
+- Java
+tags:
+- ColorModel
+- gif
+- Java
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p><a href="http://blog.4sure.jp/yokoshima/2009/06/11/gifイメージの出力/">gifイメージの出力</a>の続きです<br />
+じゃあIndexColorModelとはなんなのか。</p>
+<p>先回参照した<a href="カラーモデル">http://wisdom.sakura.ne.jp/system/java/awt/Gjava40.html</a><br />
+にわかりやすく記載されているのですが、ずっとどうもピンと来なかった。</p>
+<blockquote><p>
+bitsには1ピクセル当たりのビット数を<br />
+sizeには色成分の配列のサイズ（要素数）を指定します</p>
+<p>r[]には赤成分の配列、g[]には緑成分の配列、b[]には青成分の配列を指定します<br />
+たとえば r[0] = 255 , g[0] = 0 , b[0] = 0 で、インデックス0番が赤になります
+</p></blockquote>
+<p>ってこれがそのままズバリだったのですが、ピクセル？赤緑青の配列？<br />
+とか色々考えてしまいハマりました。</p>
+<p>ソースコードを引用させていただきます。</p>
+<pre lang="java" escaped="false">
+import java.applet.Applet;
+import java.awt.*;
+import java.awt.image.*;
+
+/*
+
+*/
+
+public class test extends Applet {
+	Image img;
+	MemoryImageSource mi;
+	public void init() {
+		byte a[] = { (byte)100 , (byte)255 , (byte)20 };
+		byte r[] = { (byte)255 , (byte)0 , (byte)0 };
+		byte g[] = { (byte)0 , (byte)255 , (byte)0 };
+		byte b[] = { (byte)0 , (byte)0 , (byte)255 };
+		IndexColorModel icm = new IndexColorModel(8 , 3 , r , g , b , a);
+
+		int ary[] = { 0 , 0 , 0 , 1 , 1 , 1 , 2 , 2 , 2 ,
+			   2 , 2 , 2 , 0 , 0 , 0 , 1 , 1 , 1 };
+		mi = new MemoryImageSource(9 , 2 , icm ,ary , 0 , 9);
+		img = createImage(mi);
+	}
+	public void paint(Graphics g) {
+		g.drawImage(img , 0 , 0 , 300 , 300 , this);
+	}
+}
+</pre>
+<p>で、言えば、以下のようなパレットが作成されることになります。<br />
+パレット番号0 → alpha 100, red 255, green   0, blue   0 = 0x64ff0000<br />
+パレット番号1 → alpha 255, red   0, green 255, blue   0 = 0xff00ff00<br />
+パレット番号2 → alpha  20, red   0, green   0, blue 255 = 0x140000ff</p>
+<p>alpha, red, green, blueのバイト配列を作成し、その添字が番号となるわけです。<br />
+上記は3パターンですが、これを増やせば扱う色のバリエーションも増えるわけです。<br />
+GIFであれば、<a href="http://wakabano.cool.ne.jp/dream/basic/point/poi_02.html">Webセーフカラー</a>の216色の<br />
+パレットを作れば良いかな？<br />
+配列の上限数が<a href="http://www.knowledge-ex.co.jp/blog/?p=90">[Java][Tips] Javaの配列の大きさは、いくつまで指定できるか</a>によれば</p>
+<blockquote><p>
+よって「Javaの配列の次元数あたりの長さに指定できる最大値は、int型の正の値の最大値である」ということになりそうです。
+</p></blockquote>
+<p>だそうなので、約21億通りの色が保持出来るのだろうか。やらないけど。ヒープが足りなくなりそうだから。</p>
+<p>そして透過色はどのようにするか？<br />
+IndexColorModelのソースコードを見ると（長いのでsetRGBsの一部だけ）</p>
+<pre lang="java" escaped="true">
+	int alpha = 0xff;
+        int transparency = OPAQUE;
+	boolean allgray = true;
+	for (int i = 0; i &lt; size; i++) {
+	    int rc = r[i] &amp; 0xff;
+	    int gc = g[i] &amp; 0xff;
+	    int bc = b[i] &amp; 0xff;
+	    allgray = allgray &amp;&amp; (rc == gc) &amp;&amp; (gc == bc);
+	    if (a != null) {
+		alpha = a[i] &amp; 0xff;
+		if (alpha != 0xff) {
+		    if (alpha == 0x00) {
+			if (transparency == OPAQUE) {
+			    transparency = BITMASK;
+			}
+			if (transparent_index &lt; 0) {
+			    transparent_index = i;
+			}
+		    } else {
+			transparency = TRANSLUCENT;
+		    }
+		    allgray = false;
+		}
+	    }
+	    rgb[i] = (alpha &lt;&lt; 24) | (rc &lt;&lt; 16) | (gc &lt;&lt; 8) | bc;
+	}
+</pre>
+<p>どうも、アルファ値が0xffでなくて、0xffの場合に<a href="http://java.sun.com/j2se/1.3/ja/docs/ja/api/java/awt/Transparency.html#OPAQUE">OPAQUE</a><br />
+（完全に不透明であることが保証される）<br />
+ならば<a href="http://java.sun.com/j2se/1.3/ja/docs/ja/api/java/awt/Transparency.html#BITMASK">BITMASK</a><br />
+（完全に不透明 (アルファ値が 1.0) である、あるいは完全に透明）に変更されるようです。<br />
+0xffと0x00以外なら<a href="http://java.sun.com/j2se/1.3/ja/docs/ja/api/java/awt/Transparency.html#TRANSLUCENT">TRANSLUCENT</a><br />
+（任意のアルファ値）<br />
+になるようです。gifの場合は透過色をひとつしか指定出来ないということで、BITMASKが指定されれば良い。<br />
+ということは、アルファ値を0x00にすれば良さそうですね。</p>
+<p>次回は実際にやってみます。<br />
+それにしても画像表示系の処理は論理演算やシフト演算が多いです。</p>

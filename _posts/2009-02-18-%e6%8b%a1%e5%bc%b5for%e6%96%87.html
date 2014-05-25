@@ -1,0 +1,33 @@
+---
+layout: post
+title: "拡張for文"
+categories:
+- "開発"
+tags: []
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>しばらくプログラミングから遠ざかっていたせいもあって、先日やっとJava6(1.6)に触る機会が出来た。</p>
+<p>1.3以降新機能（GenericsやEnumやらなんやら）の噂は知っていたが、体感し、壁にぶつかった（笑）</p>
+<p>拡張for文は以下のようにすらりとかけて、Iteratorを使う必要もないし、要素のキャストも必要ない。</p>
+<p>for(Element e : elementList){</p>
+<p>    System.out.println(e.toString());</p>
+<p>}</p>
+<p>しかし、例えば、最後の要素の場合ｘｘとか、Iteratorを使っているからこその技が出来ない。</p>
+<p>以下のようにしても、Iteratorインスタンスが今回しているのと別に出来てしまうようだ。</p>
+<p>for(Element e : elementList){</p>
+<p>    System.out.println(e.toString());</p>
+<p>    if(!elementList.iterator().hasNext()){</p>
+<p>        System.out.println("もう要素なし");</p>
+<p>    }</p>
+<p>}</p>
+<p>拡張for文でもCurrentなIteratorを触らせてほしいです。</p>

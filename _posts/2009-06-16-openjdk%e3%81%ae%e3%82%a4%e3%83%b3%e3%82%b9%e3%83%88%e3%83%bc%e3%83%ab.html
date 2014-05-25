@@ -1,0 +1,101 @@
+---
+layout: post
+title: OpenJDKのインストール
+categories:
+- Java
+- "サーバー管理"
+tags:
+- Java
+- jdk
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>Maven2, ServletAPI5等を使用可能にするために、CentOSにJDKを入れようと思っている。<br />
+ちょっと調べると「OpenJDK」なる言葉が良く出てくるようになっていた。</p>
+<p><a href="http://journal.mycom.co.jp/news/2008/05/09/002/index.html">"100%フリー"になったOpenJDKの最新動向 - JavaOne 2008</a></p>
+<p>yumでもインストール出来そうだし、今回はOpenJDKをインストールしてみることにする。</p>
+<pre lang="bash" escaped="true">
+yum install java-1.6.0-openjdk
+Loaded plugins: fastestmirror
+Loading mirror speeds from cached hostfile
+ * base: www.ftp.ne.jp
+ * updates: www.ftp.ne.jp
+ * addons: www.ftp.ne.jp
+ * extras: www.ftp.ne.jp
+Setting up Install Process
+Parsing package install arguments
+Resolving Dependencies
+--&gt; Running transaction check
+---&gt; Package java-1.6.0-openjdk.i386 1:1.6.0.0-0.30.b09.el5 set to be updated
+--&gt; Processing Dependency: jpackage-utils &gt;= 1.7.3-1jpp.2 for package: java-1.6.0-openjdk
+--&gt; Running transaction check
+---&gt; Package jpackage-utils.noarch 0:1.7.3-1jpp.2.el5 set to be updated
+--&gt; Finished Dependency Resolution
+
+Dependencies Resolved
+
+======================================================================================================================================================
+ Package                                 Arch                        Version                                       Repository                    Size
+======================================================================================================================================================
+Installing:
+ java-1.6.0-openjdk                      i386                        1:1.6.0.0-0.30.b09.el5                        updates                       28 M
+Installing for dependencies:
+ jpackage-utils                          noarch                      1.7.3-1jpp.2.el5                              base                          61 k
+
+Transaction Summary
+======================================================================================================================================================
+Install      2 Package(s)
+Update       0 Package(s)
+Remove       0 Package(s)
+
+Total download size: 28 M
+Is this ok [y/N]: y
+Downloading Packages:
+(1/2): jpackage-utils-1.7.3-1jpp.2.el5.noarch.rpm                                                                              |  61 kB     00:00
+(2/2): java-1.6.0-openjdk-1.6.0.0-0.30.b09.el5.i386.rpm                                                                        |  28 MB     00:55
+------------------------------------------------------------------------------------------------------------------------------------------------------
+Total                                                                                                                 518 kB/s |  28 MB     00:56
+Running rpm_check_debug
+Running Transaction Test
+Finished Transaction Test
+Transaction Test Succeeded
+Running Transaction
+  Installing     : jpackage-utils                                    [1/2]
+  Installing     : java-1.6.0-openjdk                                [2/2]
+
+Installed: java-1.6.0-openjdk.i386 1:1.6.0.0-0.30.b09.el5
+Dependency Installed: jpackage-utils.noarch 0:1.7.3-1jpp.2.el5
+Complete!
+</pre>
+<p>特に問題なくインストール完了。（上記では2つしか選択していないけど、後でjava-1-6-0.openjdk*を全部入れた）<br />
+バージョンが変わったかどうかの確認は/etc/alternativesのリンク先を見るのが確実かな</p>
+<pre lang="bash" escaped="true">
+[root@server alternatives]# ls -la java*
+lrwxrwxrwx 1 root root 39  6月 16 09:50 java -&gt; /usr/lib/jvm/jre-1.6.0-openjdk/bin/java
+lrwxrwxrwx 1 root root 48  6月 16 09:50 java.1.gz -&gt; /usr/share/man/man1/java-java-1.6.0-openjdk.1.gz
+lrwxrwxrwx 1 root root 31  6月 16 09:59 java_sdk -&gt; /usr/lib/jvm/java-1.6.0-openjdk
+lrwxrwxrwx 1 root root 31  6月 16 09:59 java_sdk_1.6.0 -&gt; /usr/lib/jvm/java-1.6.0-openjdk
+lrwxrwxrwx 1 root root 39  6月 16 09:59 java_sdk_1.6.0_exports -&gt; /usr/lib/jvm-exports/java-1.6.0-openjdk
+lrwxrwxrwx 1 root root 39  6月 16 09:59 java_sdk_exports -&gt; /usr/lib/jvm-exports/java-1.6.0-openjdk
+lrwxrwxrwx 1 root root 31  6月 16 09:59 java_sdk_openjdk -&gt; /usr/lib/jvm/java-1.6.0-openjdk
+lrwxrwxrwx 1 root root 39  6月 16 09:59 java_sdk_openjdk_exports -&gt; /usr/lib/jvm-exports/java-1.6.0-openjdk
+lrwxrwxrwx 1 root root 41  6月 16 09:59 javac -&gt; /usr/lib/jvm/java-1.6.0-openjdk/bin/javac
+lrwxrwxrwx 1 root root 49  6月 16 09:59 javac.1.gz -&gt; /usr/share/man/man1/javac-java-1.6.0-openjdk.1.gz
+lrwxrwxrwx 1 root root 43  6月 16 09:59 javadoc -&gt; /usr/lib/jvm/java-1.6.0-openjdk/bin/javadoc
+lrwxrwxrwx 1 root root 51  6月 16 09:59 javadoc.1.gz -&gt; /usr/share/man/man1/javadoc-java-1.6.0-openjdk.1.gz
+lrwxrwxrwx 1 root root 41  6月 16 10:00 javadocdir -&gt; /usr/share/javadoc/java-1.6.0-openjdk/api
+lrwxrwxrwx 1 root root 41  6月 16 09:59 javah -&gt; /usr/lib/jvm/java-1.6.0-openjdk/bin/javah
+lrwxrwxrwx 1 root root 49  6月 16 09:59 javah.1.gz -&gt; /usr/share/man/man1/javah-java-1.6.0-openjdk.1.gz
+lrwxrwxrwx 1 root root 41  6月 16 09:59 javap -&gt; /usr/lib/jvm/java-1.6.0-openjdk/bin/javap
+lrwxrwxrwx 1 root root 49  6月 16 09:59 javap.1.gz -&gt; /usr/share/man/man1/javap-java-1.6.0-openjdk.1.gz
+</pre>
+<p>超問題なし。</p>

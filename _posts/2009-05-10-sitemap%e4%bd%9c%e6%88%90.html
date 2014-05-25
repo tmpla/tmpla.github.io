@@ -1,0 +1,49 @@
+---
+layout: post
+title: SiteMap作成
+categories:
+- WordPress
+tags: []
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>SiteMap（サイトマップ）とは、要するにそのWebサイトの目次みたいなやつで、Webサイトの作成をする場合はこの「サイトマップ」を作成してどこにどんなページがあるのかが確認出来るように作られている事が多いです。</p>
+<p>前述のサイトマップは、人間が視覚的にわかりやすいように作成されるものですが、検索エンジンのクローラー（要するにいろんなWebサイトを自動的に巡回して情報を集めてくるプログラム）にとってもこのサイトマップがあるとより効率よく巡回出来るようになります。もちろん、プログラムが読みやすいような形式である必要があります。</p>
+<p>サイトマップについては「<a href="http://www.sitemaps.org/ja/">サイトマップとは何ですか。</a>」に詳しく書かれています。</p>
+<p>手作業でHTMLから作成しているサイトは、Sitemapも基本的にはそのサイトに合わせてゴリゴリ作成する必要があるのですが、メジャーなブログツールを使用して作られている場合には、このsitemapも動的に生成してくれるプラグインがあります。</p>
+<p>このサイトはWordPress MUというブログツールで作成されていますが、本家WordPressでは<a rel="bookmark" href="http://www.arnebrachhold.de/projects/wordpress-plugins/google-xml-sitemaps-generator/">Google (XML) Sitemaps Generator for WordPress</a>というのがあります。本家WordPressは投稿者一人、管理者一人というのを前提としています。</p>
+<p>ウチで使っているWordPresssMUというのの「MU」ていうのはMulti Userの略で、投稿者複数人、管理者も複数人で扱えるようにWordPressを改造したものなのです。</p>
+<p>だから少なくとも本家と違うのは、そのサイトひとつについてSitemapを作ればよいのではなく、ユーザーごとのSitemapが必要になってきます。<br />
+前述のSitemapGeneratorも、そのドメイン内のルートに「sitemap.xml」というファイルが作成されることに（基本的には）なっています。しかしMUでは、ユーザー毎（サブドメインなり、サブディレクトリにしてもどちらも）にsitemap.xmlを作成して公開する必要があります。</p>
+<p>良くあるHttpServerのApacheには、「mod_rewrite」という拡張モジュールがあります。これは何かというと、要するにあるURIにアクセスしてきたら、サーバー内で読み替えて本来とは別のURIにアクセスするということをしてくれます。WordPressMUではこれを利用してユーザー毎のブログ情報を管理しています。</p>
+<p>例えばここのブログの場合だと、mod_rewriteの記載は以下のようになっています。</p>
+<pre lang="bash">RewriteEngine On
+RewriteBase /
+
+#uploaded files
+RewriteRule ^(.*/)?files/$ index.php [L]
+RewriteRule ^(.*/)?files/(.*) wp-content/blogs.php?file=$2 [L]
+
+# add a trailing slash to /wp-admin
+RewriteCond %{REQUEST_URI} ^.*/wp-admin$
+RewriteRule ^(.+)$ /$1/ [R=301,L]
+
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule . - [L]
+RewriteRule  ^([_0-9a-zA-Z-]+/)?(wp-.*) $2 [L]
+RewriteRule  ^([_0-9a-zA-Z-]+/)?(.*\.php)$ $2 [L]
+RewriteRule . index.php [L]
+
+SecFilterEngine Off
+SecFilterScanPOST Off</pre>
+<p>ずいぶん長くなったので別記事にします。</p>

@@ -1,0 +1,211 @@
+---
+layout: post
+title: Installation of Redmine
+categories:
+- Ruby
+tags: []
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>9月は一度もブログ更新出来ませんでした。</p>
+<p>さて、急遽バグトラッキングシステムを導入する必要が出てきたのですが、<a href="https://bugzilla.mozilla.org/">Bugzilla</a>や<a href="http://www.mantisbt.org/">Mantis</a>、<a href="http://trac.edgewall.org/">Trac</a>などの有名どころを入れるんじゃつまらないので、Ruby on railsで動く<a href="http://www.redmine.org/">Redmine</a>というBTSを入れてみたいと思います。</p>
+<p>（調べていたら、<a href="http://www.thinkit.co.jp/article/138/2/">第2回：課題管理対決！Redmine vs. Trac</a>という記事がありましたが、使い勝手にあまり差はないようです。Redmineのほうが導入が簡単だ、という話です。）</p>
+<p>まずは、Ruby on Railsを動かせるようにしたいと思いますが、いつか手を出してみたいと思ってはいましたけど、結局何なのかはよく理解していませんでした。<br />
+要するにフレームワークね。CakePHPやStrutsのような。</p>
+<p>まずはRubyをインストールします。環境はいつもの</p>
+<pre lang="bash">
+# cat /etc/redhat-release
+CentOS release 5.3 (Final)
+</pre>
+<p>YUMでのRubyのバージョンは1.8.5で、今日現在での最新安定バージョンは1.9.1らしい。<br />
+<a href="http://www.ruby-lang.org/ja/downloads/">http://www.ruby-lang.org/ja/downloads/</a></p>
+<pre lang="bash">
+# yum info ruby
+Available Packages
+Name       : ruby
+Arch       : i386
+Version    : 1.8.5
+Release    : 5.el5_3.7
+Size       : 274 k
+Repo       : updates
+Summary    : An interpreter of object-oriented scripting language
+URL        : http://www.ruby-lang.org/
+License    : Ruby License/GPL - see COPYING
+Description: Ruby is the interpreted scripting language for quick and easy object-oriented programming.  It has many features to process text files
+           : and to do system management tasks (as in Perl).  It is simple, straight-forward, and extensible.
+
+</pre>
+<p>違いも良くわかっていないので、まずYUMで1.8.5をインストールすることにします。</p>
+<pre lang="bash">
+# yum install ruby
+　　　：
+# ruby -v
+ruby 1.8.5 (2006-08-25) [i386-linux]
+</pre>
+<p>これでRubyが使用できるようになりました。<br />
+今回は、<a href="http://gihyo.jp/dev/serial/01/redmine/0002">第2回　環境構築／redMineのインストール・初期設定</a>を参考にして、データベースにはMySQLを使用します。RailsはRedmineに含まれているそうなのでここでは明示的に触れません。<br />
+MySQLはすでに以下のバージョンが入ってます。</p>
+<pre lang="bash">
+# mysql --version
+mysql  Ver 14.12 Distrib 5.0.45, for redhat-linux-gnu (i686) using readline 5.0
+</pre>
+<p>そして、<a href="http://rubyforge.org/frs/?group_id=1850">Redmineプロジェクトのダウンロードページ</a>からダウンロードします。（ああ、wgetが面倒くさい・・・)<br />
+現時点での最新バージョンは0.8.5で、これを使用します。<br />
+とりあえず、/www/redmineというディレクトリを作成してそこを基本ディレクトリとします。</p>
+<pre lang="bash">
+# wget http://rubyforge.org/frs/download.php/63583/redmine-0.8.5.tar.gz
+--08:41:45--  http://rubyforge.org/frs/download.php/63583/redmine-0.8.5.tar.gz
+rubyforge.org をDNSに問いあわせています... 205.234.109.19
+rubyforge.org|205.234.109.19|:80 に接続しています... 接続しました。
+HTTP による接続要求を送信しました、応答を待っています... 302 Found
+場所: http://files.rubyforge.vm.bytemark.co.uk/redmine/redmine-0.8.5.tar.gz [続く]
+--08:41:45--  http://files.rubyforge.vm.bytemark.co.uk/redmine/redmine-0.8.5.tar.gz
+files.rubyforge.vm.bytemark.co.uk をDNSに問いあわせています... 80.68.94.54
+files.rubyforge.vm.bytemark.co.uk|80.68.94.54|:80 に接続しています... 接続しました。
+HTTP による接続要求を送信しました、応答を待っています... 200 OK
+長さ: 3174242 (3.0M) [application/x-tar]
+Saving to: `redmine-0.8.5.tar.gz'
+
+100%[=============================================================================================================&gt;] 3,174,242    870K/s   in 3.6s
+
+08:41:50 (870 KB/s) - `redmine-0.8.5.tar.gz' を保存しました [3174242/3174242]
+</pre>
+<p>RedmineもWebサーバー上で動かすので、Apacheと連携させる設定が必要なのですが、これを行ってくれるApacheモジュールがあるそうです。それが<a href="http://www.modrails.com/">Phusion Passenger</a>というらしいですが、<br />
+ｌこれを入れるには<a href="http://docs.rubygems.org/">RubyGems</a>というRubyのパッケージ管理ツールが必要らしいです。<br />
+RubyGemsについては<a href="http://blog.4sure.jp/yokoshima/2009/10/19/installation-of-rubygems/">こちら</a>にインストール方法をメモしました。</p>
+<p>Passengerのインストールは<a href="http://redmine.jp/tech_note/apache-passenger/">こちら</a>を参考にさせていただきました。</p>
+<p>手順の通り、gem install passengerとやってみたのですが、以下のようなエラーが。</p>
+<pre lang="bash">
+# gem install passenger
+Building native extensions.  This could take a while...
+ERROR:  Error installing passenger:
+        ERROR: Failed to build gem native extension.
+
+/usr/bin/ruby extconf.rb
+can't find header files for ruby.
+
+
+Gem files will remain installed in /usr/lib/ruby/gems/1.8/gems/fastthread-1.0.7 for inspection.
+Results logged to /usr/lib/ruby/gems/1.8/gems/fastthread-1.0.7/ext/fastthread/gem_make.out
+
+</pre>
+<p>Headerファイルが見つからないとのことで、<a href="http://www.justskins.com/forums/cant-find-header-files-for-ruby-37353.html">同じようなことをやっている</a>人がいたのでそれを参考に、ruby-develパッケージを入れてやってみました。</p>
+<pre lang="bash">
+# yum install -y ruby-devel
+# gem install passenger
+Building native extensions.  This could take a while...
+Building native extensions.  This could take a while...
+Successfully installed fastthread-1.0.7
+Successfully installed passenger-2.2.5
+2 gems installed
+Installing ri documentation for fastthread-1.0.7...
+No definition for dummy_dump
+No definition for dummy_dump
+No definition for rb_queue_marshal_load
+No definition for rb_queue_marshal_dump
+No definition for dummy_dump
+No definition for dummy_dump
+No definition for rb_queue_marshal_load
+No definition for rb_queue_marshal_dump
+Installing ri documentation for passenger-2.2.5...
+Installing RDoc documentation for fastthread-1.0.7...
+No definition for dummy_dump
+No definition for dummy_dump
+No definition for rb_queue_marshal_load
+No definition for rb_queue_marshal_dump
+No definition for dummy_dump
+No definition for dummy_dump
+No definition for rb_queue_marshal_load
+No definition for rb_queue_marshal_dump
+Installing RDoc documentation for passenger-2.2.5...
+</pre>
+<p>そしてビルド</p>
+<pre lang="bash">
+# passenger-install-apache2-module
+Welcome to the Phusion Passenger Apache 2 module installer, v2.2.5.
+
+This installer will guide you through the entire installation process. It
+shouldn't take more than 3 minutes in total.
+
+Here's what you can expect from the installation process:
+
+ 1. The Apache 2 module will be installed for you.
+ 2. You'll learn how to configure Apache.
+ 3. You'll learn how to deploy a Ruby on Rails application.
+
+Don't worry if anything goes wrong. This installer will advise you on how to
+solve any problems.
+
+Press Enter to continue, or Ctrl-C to abort.
+</pre>
+<p>あとはEnterを押してしばらく経つとビルドが終わり、httpd.confの編集内容が出るのでコピーしておきます。（普通にやったら以下のようになると思います）</p>
+<pre lang="bash">
+The Apache 2 module was successfully installed.
+
+Please edit your Apache configuration file, and add these lines:
+
+   LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-2.2.5/ext/apache2/mod_passenger.so
+   PassengerRoot /usr/lib/ruby/gems/1.8/gems/passenger-2.2.5
+   PassengerRuby /usr/bin/ruby
+
+After you restart Apache, you are ready to deploy any number of Ruby on Rails
+applications on Apache, without any further Ruby on Rails-specific
+configuration!
+
+Press ENTER to continue.
+</pre>
+<pre lang="bash">
+
+Deploying a Ruby on Rails application: an example
+
+Suppose you have a Ruby on Rails application in /somewhere. Add a virtual host
+to your Apache configuration file, and set its DocumentRoot to
+/somewhere/public, like this:
+
+
+      ServerName www.yourhost.com
+      DocumentRoot /somewhere/public    # &lt;-- be sure to point to &#39;public&#39;!
+
+
+And that's it! You may also want to check the Users Guide for security and
+optimization tips and other useful information:
+
+  /usr/lib/ruby/gems/1.8/gems/passenger-2.2.5/doc/Users guide Apache.html
+
+Enjoy Phusion Passenger, a product of Phusion (www.phusion.nl) :-)
+http://www.modrails.com/
+
+Phusion Passenger is a trademark of Hongli Lai &amp; Ninh Bui.
+
+</pre>
+<p>ただ、上記設定を流用すると、Redmine専用のVirtualHostが必要になってしまうので、Redmineをサブディレクトリで動作させるように設定しました。<br />
+（参照：<a href="http://blog.suz-lab.com/2009/05/passengerredmine.html">PassengerでRedmineをサブディレクトリに公開</a>）</p>
+<p>Apacheのバージョンは以下です。</p>
+<pre lang="bash">
+# httpd -v
+Server version: Apache/2.2.3
+Server built:   Jan 21 2009 22:01:41
+</pre>
+<p>2.2.xはhttpd.confに直接書くのではなく、設定ごとにconfファイルを分けるのがお作法？なので、conf.d/redmine.confというファイルを作成して以下のようにしました。</p>
+<pre lang="conf">
+LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-2.2.5/ext/apache2/mod_passenger.so
+PassengerRoot /usr/lib/ruby/gems/1.8/gems/passenger-2.2.5
+PassengerRuby /usr/bin/ruby
+RailsBaseURI /redmine
+</pre>
+<p>DocumentRootに「redmine」でアクセス出来るシンボリックリンクをredmineの「public」ディレクトリに張って完了です。<br />
+例えば、/opt/redmine-0.8.5に展開した場合は以下のようにします。</p>
+<pre lang="bash">
+ln -s /opt/redmine-0.8.5/public /var/www/redmine
+</pre>
+<p>これでhttp://server/redmineでアクセス出来ればとりあえず動作OKです。<br />
+なんだか長くなったのでMySQLの設定以降は次に。</p>

@@ -1,0 +1,107 @@
+---
+layout: post
+title: Glassfishのインストール
+categories:
+- "サーバー管理"
+tags: []
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p><a href="http://ja.wikipedia.org/wiki/Hudson">Hudson</a>を使いたいので、じゃあTOMCATを使うかー、と思っていたのだが。<a href="http://wiki.hudson-ci.org/display/JA/Meet+Hudson">Hudsonのドキュメント</a>を見ると</p>
+<blockquote><p>もう1つの方法として、Glassfish、Tomcat 5、JBossおよびJettyなどのServlet 2.4/JSP 2.0をサポートするサーブレットコンテナがあるなら、他のWARファイルと同様に hudson.war をデプロイすることもできます。</p></blockquote>
+<p>と、なんだかTomcatよりもGlassfishというのをいかにもお勧めで書いてある。<br />
+そもそもGlassfishとはなんぞや、とググるとどうやら開発コアメンバーっぽい人が<a class="wpGallery" href="http://blogs.sun.com/yosshi/entry/glassfish%E3%81%A8tomcat%E3%81%AE%E9%81%95%E3%81%84_part_1">GlassfishとTomcatの違い</a>なんて記事を書いていた。</p>
+<h3>インストール</h3>
+<p>どうやらSunが気合い入れてるっぽいし、TOMCATじゃないのも触ってみたいなと思ったので導入することにした。</p>
+<p><a href="https://glassfish.dev.java.net/public/downloadsindex.html">Glassfishの導入ページ</a>から、現時点の安定版のv2.1をダウンロードする。（ああ、wgetが面倒臭い・・）</p>
+<pre lang="bash">wget http://java.net/download/javaee5/v2.1_branch/promoted/Linux/glassfish-installer-v2.1-b60e-linux.jar</pre>
+<p>ダウンロードしたらインストールします。</p>
+<pre lang="bash">java -Xmx256m -jar glassfish-installer-v2.1-b60e-linux.jar</pre>
+<p>-Xmx256mの最大ヒープサイズ指定をしないと、OutOfMemmoryErrorで落ちます。</p>
+<pre lang="bash">Accept or Decline? [A,D,a,d]</pre>
+<p>ライセンスについての説明が出るので同意する(Accept）の「A」を押すとファイルの解凍が始まります。<br />
+「installation complete」<br />
+と出たら、次にセットアップを行います。</p>
+<pre lang="bash">cd glassfish
+chmod -R +x lib/ant/bin
+lib/ant/bin/ant -f setup.xml</pre>
+<p>設定はantでやるみたいなので、実行権限を与えてantを実行します。<br />
+「BUILD SUCCESSFUL」<br />
+と出たら設定成功です。</p>
+<p>そしたら起動してみます。</p>
+<pre lang="bash">/usr/local/glassfish/bin/asadmin start-domain domain1
+Starting Domain domain1, please wait.
+Default Log location is /usr/local/glassfish/domains/domain1/logs/server.log.
+Redirecting output to /usr/local/glassfish/domains/domain1/logs/server.log
+Domain domain1 is ready to receive client requests. Additional services are being started in background.
+Domain [domain1] is running [Sun GlassFish Enterprise Server v2.1 (9.1.1) (build b60e-fcs)] with its configuration and logs at: [/usr/local/glassfish/domains].
+Admin Console is available at [http://localhost:4848].
+Use the same port [4848] for "asadmin" commands.
+User web applications are available at these URLs:
+[http://localhost:8080 https://localhost:8181 ].
+Following web-contexts are available:
+[/web1  /__wstx-services ].
+Standard JMX Clients (like JConsole) can connect to JMXServiceURL:
+[service:jmx:rmi:///jndi/rmi://%servername%:8686/jmxrmi] for domain management purposes.
+Domain listens on at least following ports for connections:
+[8080 8181 4848 3700 3820 3920 8686 ].
+Domain does not support application server clusters and other standalone instances.</pre>
+<p>なんかApplicationServerがすでにあったら勝手に紐付してくれるようなメッセージだな・・・。</p>
+<p>使用するポートは以下がデフォルトのようです。<br />
+（antでのbuildメッセージの最後に以下のようにメッセージが出ます）</p>
+<pre lang="bash">create.domain:
+     [exec] Using port 4848 for Admin.
+     [exec] Using port 8080 for HTTP Instance.
+     [exec] Using port 7676 for JMS.
+     [exec] Using port 3700 for IIOP.
+     [exec] Using port 8181 for HTTP_SSL.
+     [exec] Using default port 3820 for IIOP_SSL.
+     [exec] Using default port 3920 for IIOP_MUTUALAUTH.
+     [exec] Using default port 8686 for JMX_ADMIN.</pre>
+<p>とりあえず、メインのポートが8080てのは、TOMCATとどこかで競合しそうなので、これを変更したいです。<br />
+この設定の変更はビルド後、以下ファイルで変更できます。</p>
+<p>/usr/local/glassfish/domains/domain1/config/domain.xml</p>
+<pre lang="xml" escaped="true">  &lt;configs&gt;
+    &lt;config dynamic-reconfiguration-enabled="true" name="server-config"&gt;
+      &lt;http-service&gt;
+        &lt;access-log format="%client.name% %auth-user-name% %datetime% %request% %status% %response.length%" rotation-enabled="true" rotation-interval-in-minutes="15" rotation-policy="time" rotation-suffix="yyyy-MM-dd"/&gt;
+        &lt;http-listener acceptor-threads="1" address="0.0.0.0" blocking-enabled="false" default-virtual-server="server" enabled="true" family="inet" id="http-listener-1" port="8080" security-enabled="false" server-name="" xpowered-by="true"&gt;
+          &lt;property name="proxiedProtocols" value="ws/tcp"/&gt;
+        &lt;/http-listener&gt;</pre>
+<p> </p>
+<p>これの「8080」を「18080」に変更して再起動します。<br />
+「glassfish/bin/asadmin」のコマンドオプションが分からなかったので、ソースコードから追ってみたら、以下ファイルに記載があった。<br />
+glassfish\admin-cli\commands\src\java\com\sun\enterprise\cli\commands\CLIDescriptor.xml</p>
+<p>って調べていたら「asadmin help」でヘルプが出ることに気づいた。<br />
+どちらにせよ、stop-domainしてstart-domainすればよさそうなので起動。</p>
+<pre lang="bash">[root@%servername% bin]# ./asadmin stop-domain domain1
+Domain domain1 stopped.</pre>
+<p>そしてスタートします。</p>
+<pre lang="bash">[root@%servername% bin]# ./asadmin start-domain domain1
+Starting Domain domain1, please wait.
+Default Log location is /usr/local/glassfish/domains/domain1/logs/server.log.
+Redirecting output to /usr/local/glassfish/domains/domain1/logs/server.log
+Domain domain1 is ready to receive client requests. Additional services are being started in background.
+Domain [domain1] is running [Sun GlassFish Enterprise Server v2.1 (9.1.1) (build b60e-fcs)] with its configuration and logs at: [/usr/local/glassfish/domains].
+Admin Console is available at [http://localhost:4848].
+Use the same port [4848] for "asadmin" commands.
+User web applications are available at these URLs:
+[http://localhost:18080 https://localhost:8181 ].
+Following web-contexts are available:
+[/web1  /__wstx-services ].
+Standard JMX Clients (like JConsole) can connect to JMXServiceURL:
+[service:jmx:rmi:///jndi/rmi://%servername%:8686/jmxrmi] for domain management purposes.
+Domain listens on at least following ports for connections:
+[18080 8181 4848 3700 3820 3920 8686 ].
+Domain does not support application server clusters and other standalone instances.</pre>
+<p>これでなんとか起動した。</p>
+<p>あと、iptablesを開ける設定とApacheと連携をしないといけないが、続く</p>
