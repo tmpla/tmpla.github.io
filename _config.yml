@@ -1,8 +1,8 @@
 title:            日本の天ぷら情報
 description:      Webコンテンツに関するメモなど
 name: 日本の天ぷら情報
-# pygments: true
-highlighter: pygments
+pygments: true
+# highlighter: pygments
 
 safe: true
 lsi: false
