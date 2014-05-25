@@ -1,0 +1,23 @@
+---
+layout: post
+title: ddその後
+categories:
+- "サーバー管理"
+tags: []
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>先週金曜日にファイルサーバーの壊れたファイルを修復するために</p>
+<p style="padding-left: 30px">dd if=/dev/sda3 of=/dev/sdb2 bs=512 conv=noerror,sync</p>
+<p>とコマンドを打って帰ったのだが、月曜日夕方に確認したらまだコピーしてた。しかもまだ137Mだけだし。</p>
+<p>しょうがないので、キャンセルし、「bs=512」のところを「bs=102400000」にしてやってみたらコマンドは通った。（ただし、コピーする転送速度は５M弱だが）</p>
+<p>これでまた明日確認してみよう。</p>
