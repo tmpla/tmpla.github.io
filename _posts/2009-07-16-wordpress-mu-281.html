@@ -1,0 +1,64 @@
+---
+layout: post
+title: Wordpress MU 2.8.1
+categories:
+- WordPress
+tags:
+- 2.8.1
+- PHP
+- upgrade
+- WordPress
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>ローカルPCにphpやMySQLを入れるのに苦労している間にWordpressMU2.8.1が出たのでまずはローカルに入れてみてPHP5.3.0編を終了したいと思います。</p>
+<p>環境は<br />
+・Windows Vista Home Premium SP1<br />
+・Apache 2.2.11<br />
+・PHP 5.3.0<br />
+・MySQL 5.1.36</p>
+<p>です。<a href="http://mu.wordpress.org/download/">Download WordPress MU</a>から最新版（現時点では当然2.8.1）をダウンロードします。<br />
+それを解凍して「wordpress-mu-2.8.1」フォルダをそのままApacheのDocumentRoot（今回の環境ではD:\Program Files\Apache Software Foundation\Apache2.2\htdocs\wordpress-mu-2.8.1）に置きます。</p>
+<p>そして<br />
+<a href="http://localhost.localdomain/wordpress-mu-2.8.1/wordpress-mu/index.php">http://localhost.localdomain/wordpress-mu-2.8.1/wordpress-mu/index.php</a><br />
+にブラウザでアクセスします。サーバ名をlocalhostにしてアクセスすると</p>
+<blockquote><p>Warning!</p>
+<p>Installing to http://localhost/ is not supported. Please use http://localhost.localdomain/ instead.</p></blockquote>
+<p>と出るのでそのとおりにしたまでですが、理由はそのうち調べます。<br />
+ここでメッセージがすべて英語なので日本語化したいと気づいたので、<a href="http://code.google.com/p/wpmu-ja/">wpmu-ja</a>から、現時点では2.7.1用のリソースをダウンロードします。</p>
+<p>まずはMySQLにWordpress用のユーザを作成します。<br />
+今回は、database名はwpmudb, wpmudbへのアクセスユーザはwpmuadmin, パスワードはpassにします。</p>
+<pre lang="mysql" escaped="true">
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 5
+Server version: 5.1.36-community MySQL Community Server (GPL)
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql&gt; create database wpmudb;
+Query OK, 1 row affected (0.00 sec)
+
+mysql&gt; grant all on wpmudb.* to wpmuadmin@localhost identified by 'pass';
+Query OK, 0 rows affected (0.07 sec)
+</pre>
+<p>そして、Wordpressmuのディレクトリ今回は（D:\Program Files\Apache Software Foundation\Apache2.2\htdocs\wordpress-mu-2.8.1\wordpress-mu\wp-content\languages）を作成し、解凍したファイルの中からja.moファイルを置きます。</p>
+<p>でも初期設定画面は日本語化されないので、以下のように設定します。</p>
+<p>・Blog Addresses<br />
+　→ Sub-directories (like example.com/blog1)にチェック（サブドメインは面倒くさそうな予感がしたので）<br />
+・Database<br />
+ →Database:Name wpmudb<br />
+ →User Name:wpmuadmin<br />
+ →Password:pass<br />
+ →Database Host:localhost</p>
+<p>それで設定して「submit」押下したらエラーが。</p>
+<blockquote><p>Strict Standards: Redefining already defined constructor for class wpdb in D:\Program Files\Apache Software Foundation\Apache2.2\htdocs\wordpress-mu-2.8.1\wordpress-mu\wp-includes\wp-db.php on line 339</p></blockquote>
+<p>しょうがない、wp-config.phpを手で作成するか明日以降に。</p>

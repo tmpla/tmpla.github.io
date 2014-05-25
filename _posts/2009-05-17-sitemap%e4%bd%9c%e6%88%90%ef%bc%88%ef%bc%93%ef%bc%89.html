@@ -1,0 +1,36 @@
+---
+layout: post
+title: Sitemap作成（３）
+categories:
+- WordPress
+tags: []
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p><a href="http://blog.4sure.jp/yokoshima/2009/05/15/sitemap%e4%bd%9c%e6%88%90%ef%bc%88%ef%bc%92%ef%bc%89/">Sitemap作成（２）</a>の続きです。</p>
+<p>んで、あるファイルでアクセスしたら、どの別のファイルにアクセスするかは、mod_rewriteで制御することがわかったのですが、結局は</p>
+<pre lang="html">http://blog.4sure.jp/yokoshima/sitemap.xml</pre>
+<p>にアクセスした際に「yokoshima」というユーザー専用の「sitemap.xml」にアクセスしたいということです。現状では、「http://blog.4sure.jp/sitemap.xml」にアクセスされてしまうはずです。<br />
+WordPressMUでは、投稿者毎のファイルを置いておくためのディレクトリが用意されていますそれは</p>
+<pre lang="bash">/wp-conten/blogs.dir/</pre>
+<p>にあり、ユーザー（というか、ブログ）に一意の番号のフォルダを作成したそこに投稿ブログ毎のたとえばアップロードしたファイル等を置いておくわけです。こんな感じに</p>
+<pre lang="bash">/wp-conten/blogs.dir/1/files/2009/05/16/test.jpg</pre>
+<p>だから、ここのブログ毎のフォルダにsitemap.xmlを置き、先ほどのmod_rewriteで読み替えればよろしいと。</p>
+<pre lang="bash">/wp-conten/blogs.dir/1/files/sitemap.xml</pre>
+<p>作成場所と読み替え方がわかったので、まずはsitemap.xmlを作成するプラグインをインストールします。</p>
+<p><a href="http://www.arnebrachhold.de/projects/wordpress-plugins/google-xml-sitemaps-generator/">Google(XML) Sitemap generator</a>をインストールします。<br />
+そして、「Location of your sitemap file」の枠の「Custom location」を選び、<br />
+「（WordPressのルート）/wp-content/blogs.dir/（ブログの番号）/files/sitemap.xml/sitemap.xml」<br />
+と入れて保存します。<br />
+これでsitemapが無事に保存されましたのであとはmod_rewriteのルールを入れるために、WordPressのルートの.htaccessファイルに以下一文を付け加えます。</p>
+<pre lang="bash">RewriteRule ^(.*/)sitemap.xml wp-content/blogs.php?file=sitemap.xml [L]</pre>
+<p>これでめでたくSitemapが完成されました。</p>

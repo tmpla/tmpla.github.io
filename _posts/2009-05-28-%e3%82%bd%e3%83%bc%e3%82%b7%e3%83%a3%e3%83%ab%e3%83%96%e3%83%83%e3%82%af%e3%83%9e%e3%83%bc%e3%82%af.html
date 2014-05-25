@@ -1,0 +1,55 @@
+---
+layout: post
+title: "ソーシャルブックマーク"
+categories:
+- PHP
+tags:
+- PHP
+- WordPress
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>ソーシャルブックマークという言葉をご存じだろうか。</p>
+<p><a href="http://ja.wikipedia.org/wiki/ソーシャルブックマーク">ここ</a>に書いてあるので参照ください（笑）</p>
+<p>これを助長する？WordPressのプラグインがあります。wp-hatenaプラグインです。<br />
+<a href="http://wppluginsj.sourceforge.jp/wp-hatena/"> http://wppluginsj.sourceforge.jp/wp-hatena/</a></p>
+<p>これをさらに拡張した、<a href="http://wp.graphact.com/2007/06/22/91">拡張プラグイン</a>があったので導入させていただきました。</p>
+<p>現在のテーマの場合は、index.php, page.php, single.phpにそれぞれ以下のコードを入れます。</p>
+<pre lang="php" escaped="true">     
+&lt;?php if(isset($wph))
+    $wph-&gt;addHatena();
+    $wph-&gt;adddelicious();
+    $wph-&gt;addLivedoor();
+    $wph-&gt;addYahoo();
+    $wph-&gt;addFC2();
+    $wph-&gt;addNifty();
+    $wph-&gt;addPOOKMARK();
+    $wph-&gt;addBuzzurl();
+    $wph-&gt;addChoix();
+    $wph-&gt;addnewsing();
+} ?&gt; </pre>
+<p>これで、このエントリの下に付いているようなボタンが生成されます。<br />
+かなり便利です。</p>
+<p>しかし、コードを追記する時にどうしてもうまく行かなかったのですが、コピー元のコードが以下のようになっていました。</p>
+<pre lang="php" escaped="true">
+addHatena();
+$wph-&gt;adddelicious();
+$wph-&gt;addLivedoor();
+$wph-&gt;addYahoo();
+$wph-&gt;addFC2();
+$wph-&gt;addNifty();
+$wph-&gt;addPOOKMARK();
+$wph-&gt;addBuzzurl();
+$wph-&gt;addChoix();
+$wph-&gt;addnewsing();
+}?&gt;</pre>
+<p>多分これはコードを表示させるプラグインを使用している時に、投稿をHTMLモードからビジュアルモードに変えると最初のif文のところが消えてしまうようです。（wp-Syntaxプラグインでも同様でした）</p>

@@ -1,0 +1,119 @@
+---
+layout: post
+title: Springのまったくのメモ
+categories:
+- "未分類"
+tags: []
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>リアルタイムなメモ書きです。</p>
+<p>■Springの動き<br />
+org.springframework.web.servlet.DispatcherServlet<br />
+を使用した場合</p>
+<p>1.コンテナ起動時には、HttpServlet#initを呼び出す<br />
+2.org.springframework.web.servlet.HttpServletBean#initが呼び出される</p>
+<pre lang="java">
+	public final void init() throws ServletException {
+		if (logger.isDebugEnabled()) {
+			logger.debug("Initializing servlet '" + getServletName() + "'");
+		}
+
+		// Set bean properties from init parameters.
+		try {
+			PropertyValues pvs = new ServletConfigPropertyValues(getServletConfig(), this.requiredProperties);
+			BeanWrapper bw = new BeanWrapperImpl(this);
+			ResourceLoader resourceLoader = new ServletContextResourceLoader(getServletContext());
+			bw.registerCustomEditor(Resource.class, new ResourceEditor(resourceLoader));
+			initBeanWrapper(bw);
+			bw.setPropertyValues(pvs, true);
+		}
+		catch (BeansException ex) {
+			logger.error("Failed to set bean properties on servlet '" + getServletName() + "'", ex);
+			throw ex;
+		}
+
+		// Let subclasses do whatever initialization they like.
+		initServletBean();
+
+		if (logger.isDebugEnabled()) {
+			logger.debug("Servlet '" + getServletName() + "' configured successfully");
+		}
+	}
+</pre>
+<p>3.initServletBeanで呼ばれた先<br />
+4.createWebApplicationContext<br />
+5.org.springframework.context.support.AbstractApplicationContext#refresh</p>
+<pre lang="java">
+	public void refresh() throws BeansException, IllegalStateException {
+		synchronized (this.startupShutdownMonitor) {
+			// Prepare this context for refreshing.
+			prepareRefresh();
+
+			// Tell the subclass to refresh the internal bean factory.
+			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
+
+			// Prepare the bean factory for use in this context.
+			prepareBeanFactory(beanFactory);
+
+			try {
+				// Allows post-processing of the bean factory in context subclasses.
+				postProcessBeanFactory(beanFactory);
+
+				// Invoke factory processors registered as beans in the context.
+				invokeBeanFactoryPostProcessors(beanFactory);
+
+				// Register bean processors that intercept bean creation.
+				registerBeanPostProcessors(beanFactory);
+
+				// Initialize message source for this context.
+				initMessageSource();
+
+				// Initialize event multicaster for this context.
+				initApplicationEventMulticaster();
+
+				// Initialize other special beans in specific context subclasses.
+				onRefresh();
+
+				// Check for listener beans and register them.
+				registerListeners();
+
+				// Instantiate all remaining (non-lazy-init) singletons.
+				beanFactory.preInstantiateSingletons();
+
+				// Last step: publish corresponding event.
+				finishRefresh();
+			}
+
+			catch (BeansException ex) {
+				// Destroy already created singletons to avoid dangling resources.
+				beanFactory.destroySingletons();
+
+				// Reset 'active' flag.
+				cancelRefresh(ex);
+
+				// Propagate exception to caller.
+				throw ex;
+			}
+		}
+	}
+</pre>
+<p>6.org.springframework.web.context.support.XmlWebApplicationContextのコンストラクタ</p>
+<p>7.org.springframework.web.servlet.FrameworkServlet#getNameSpace()<br />
+Servlet名 + -servlet</p>
+<p>8.org.springframework.context.support.AbstractApplicationContext#refresh</p>
+<p>9.org.springframework.web.context.supportXmlWebApplicationContext#getDefaultConfigLocations()<br />
+8のnamespace + ".xml"</p>
+<p>10.設定(applicationContext.xml)をロードしているところ<br />
+org.springframework.beans.factory.xml.XmlBeanDefinitionReader#registerBeanDefinitions<br />
+org.springframework.beans.factory.xml.DefaultBeanDefinitionDocumentReader#registerBeanDefinitions<br />
+org.springframework.beans.factory.xml.DefaultBeanDefinitionDocumentReader#parseBeanDefinitions</p>

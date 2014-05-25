@@ -1,0 +1,48 @@
+---
+layout: post
+title: WP-Syntaxプラグインでを書く場合
+categories:
+- WordPress
+tags:
+- WP-Hatena
+- WP-Syntax
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>先日の投稿で、phpのコードを書こうと思って以下のコードを書いたら</p>
+<pre lang="php">
+&lt;?php if(isset($wph))
+    $wph-&gt;addHatena();
+</pre>
+<p>コードはWP-Syntaxプラグインを使用して表示しています。<br />
+&gt;が&amp;gt;等にエスケープされて表示されてしまっていましたが、<br />
+WP-Syntaxプラグインで以下のように指定すればも表示できることが分かりました。</p>
+<pre lang="html" escaped="true">
+&lt;pre lang="php" escaped="true"&gt;
+&lt;?php if(isset($wph))
+    $wph-&gt;addHatena();
+    $wph-&gt;adddelicious();
+    $wph-&gt;addLivedoor();
+    $wph-&gt;addYahoo();
+    $wph-&gt;addFC2();
+    $wph-&gt;addNifty();
+    $wph-&gt;addPOOKMARK();
+    $wph-&gt;addBuzzurl();
+    $wph-&gt;addChoix();
+    $wph-&gt;addnewsing();
+} ?&gt;
+&lt;/pre&gt;
+</pre>
+<p>初歩の初歩ってところですな。<br />
+あと、上記ではWP-Hatenaの設定をしているのですが、これがdel.icio.usにうまくブックマークされない現象がありました。<br />
+（del.icio.usの設定画面から遷移すると404画面になってしまう）<br />
+これはどうやらChromeの問題のようで、FireFoxからならば問題なく登録出来ました。</p>

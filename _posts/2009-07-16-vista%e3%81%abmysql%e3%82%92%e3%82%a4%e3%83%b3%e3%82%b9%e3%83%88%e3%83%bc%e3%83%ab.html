@@ -1,0 +1,53 @@
+---
+layout: post
+title: VistaにMySQLをインストール
+categories:
+- "開発"
+tags:
+- MySQL
+- Vista
+- Windows
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>MySQLのインストールの話。<br />
+壁が高すぎる。</p>
+<p>まずは、<a href="http://blog.4sure.jp/yokoshima/2009/07/15/php-530が出たその４/">PHP 5.3.0が出たその４</a>でMySQLをインストールして、<a href="http://blog.4sure.jp/yokoshima/2009/07/15/vistaでサービス削除/">Vistaでサービス削除</a>で設定の準備が出来たのでMySQL Server Instance Configuration Wizardで設定しました。<br />
+すると、以前×になっていたStart serviceのセクションは無事通過したものの、サービスの起動に失敗した、みたいなエラーが出た。<br />
+「サービス」を見てみるとすでにMySQLサービスは起動しているようなので、再度Wizardを起動してみるとStart serviceは通過したものの、以下のエラーメッセージが出た。（長い。コピー出来てよかった）</p>
+<blockquote><p>The security settings could not be applied to the database because the connection has failed with the following error.</p>
+<p>Error Nr. 1045<br />
+Access denied for user 'root'@'localhost' (using password: YES)</p>
+<p>If a personal firewall is running on your machine, please make sure you have opened the TCP port 3306 for connections. Otherwise no client application can connect to the server. After you have opened the port please press [Retry] to apply the security settings.</p>
+<p>If you are re-installing after you just uninstalled the MySQL server please note that the data directory was not removed automatically. Therefore the old password from your last installation is still needed to connect to the server. In this case please select skip now and re-run the Configuration Wizard from the start menu.</p></blockquote>
+<p>一応Firewallを確認してみたら、開いていないっぽいし、XAMPPの設定が残っていたので一応削除して、プログラムを追加したり、TCP3306番を空けてみたり、Firewallをoffにしてretryしてみたのですが同じエラーが出ます。<br />
+しょうがないのでSkipして設定終了させます。</p>
+<p>以前LinuxにMySQLを入れたときに、root@localhostの設定で色々苦労した覚えがあったのでそれかもと思ってやってみた。<br />
+確か、root@localhostと、root@xxxxでパスワードをlocalhostに設定しないといけなかったとかそんな問題だったと思ったけど・・・。</p>
+<p>一応<a href="http://nekhet.ddo.jp/item/793">MySQLのrootパスワード設定</a>でやっていることをやってみまたらどうも当たりくさい。</p>
+<p>MySQL Command Line Clientを起動するとパスワードを聞かれるので、まだ設定されてない今はパスワードなしでログイン出来る（はず）。<br />
+その後、以下コマンドを発行します。（パスワードはpassにとりあえずしています）</p>
+<pre lang="mysql" escaped="true">
+Enter password:
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 22
+Server version: 5.1.36-community MySQL Community Server (GPL)
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql&gt; set password for root@localhost=password('pass');
+Query OK, 0 rows affected (0.00 sec)
+
+mysql&gt;
+</pre>
+<p>そしてもう一度MySQL Command Line Clientを起動して先ほど設定したpassを入力するとログイン出来るはず。ログイン出来た。<br />
+とりあえず今日はここまで。</p>

@@ -1,0 +1,33 @@
+---
+layout: post
+title: Subversionリポジトリこれだけやっとけ
+categories:
+- Subversion
+tags:
+- Eclipse
+- Java
+- Subversion
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>Subversionのリポジトリ作成にはほぼ鉄則があります。<br />
+/svn/svnreposにtestというリポジトリを作成する場合。<br />
+さらに、「test」プロジェクトがすでに存在していて、Eclipseを使用してSubvertiveを使っている場合。</p>
+<pre lang="bash">
+svnadmin create /svn/svnrepos/test/
+mkdir trunk
+mkdir branches
+mkdir tags
+chown -R apache. test/
+</pre>
+<p>これであとはローカルに作成済みである「test」プロジェクトを共用すればOK。<br />
+これを見るとなんでもないが、ディレクトリ構成が無名有実というか、ほぼこの構成をもとにSubversionクライアントは動いているようなので、ほぼ確実にこの構成にしないとダメ。</p>

@@ -1,0 +1,83 @@
+---
+layout: post
+title: swfmillのまったくのメモ
+categories:
+- "開発"
+tags:
+- Flash
+- swfmill
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+  _oembed_ae5ba900cb91eabe58c998618e2358d9: "{{unknown}}"
+  _oembed_08dcf80a0a6fd89a354129d7bea501c6: "{{unknown}}"
+  _oembed_7782e6d92efcfefe3cadfec2af3d61ac: "{{unknown}}"
+  _oembed_d512566384d20e19375397eac856aed1: "{{unknown}}"
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>swfmillというFlashをXMLに変換できるツールがあるが、それのまったくのメモです。</p>
+<p>2009/08/07</p>
+<p>■環境<br />
+Windows XP Professional SP3</p>
+<p>■ダウンロード<br />
+http://swfmill.org/<br />
+から以下ファイルをダウンロード</p>
+<p>http://swfmill.org/releases/swfmill-0.2.12-win32.zip</p>
+<p>ファイル展開してPATH環境変数に追加。今回は以下フォルダに展開。<br />
+C:\Work\Tools\SWFmill\swfmill-0.2.12-win32</p>
+<p>■実行<br />
+・基本<br />
+http://swfmill.org/doc/using-swfmill.html#movie<br />
+参照<br />
+以下XMLファイルをfoo.xmlとして作成し、コマンド実行</p>
+<p>swfmill simple foo.xml bar.swf</p>
+<p>・既存SWFファイルをXMLに変換する<br />
+test.swf(162kb)をtest.xmlに変換する。<br />
+swfmill swf2xml test.swf test.xml</p>
+<p>test.xmlのサイズは3,056kbになった。(95240行)<br />
+実行時間は1秒程度</p>
+<p>・XMLからSWFに変換する。<br />
+前述で生成したtest.xmlをtest.swfに変換する。</p>
+<p>swfmill xml2swf test.xml testnew.swf</p>
+<p>実行時間は1秒程度。<br />
+作成元のtest.swfのファイルサイズは164,975バイトだが、<br />
+新たに作成したtestnew.swfファイルサイズは164,993バイトになっており<br />
+若干サイズが増えている。</p>
+<p>■Flash Liteのバージョン<br />
+携帯でのFlash表示にはFlash Liteというモバイル向けFlash Playerを使用するが、<br />
+Flash Lite 1.x系だと、日本語を含んだSWFファイルの変換の際に問題がある。<br />
+(swfmillのパッチで対応は可能。以下記事参照<br />
+http://dsas.blog.klab.org/archives/51174693.html<br />
+)<br />
+Flash Lite 2.x以降から対応文字エンコードがUTF-8になったためswfmillでも扱えるファイルとなる。</p>
+<p>■テキストフィールド<br />
+以下3種類を扱える<br />
+・静止フィールド<br />
+・ダイナミックフィールド<br />
+・テキスト入力</p>
+<p>静止フィールドの初期値には値の最後に「&#13;」が入るがこれは改行コードとのこと。<br />
+ダイナミックフィールドの場合はこれが入らないので余計な処理をしなくてよい分文字列の置き換えは容易。</p>
+<p>■文字列の置き換え<br />
+テキストフィールドのようなものはあるが、名前で識別するような方法は難しい。<br />
+テキストの初期値にデフォルト値を設定しておき、それを置き換える方法が良い。</p>
+<p>■Flash作成（基本）<br />
+(1)ダイナミックテキストを作成。<br />
+(2)シンボル（ムービークリップ）に変換<br />
+(3)変換したシンボルをシーン？に挿入</p>
+<p>■ActionScriptでのテキストデータ読み込み<br />
+よく見たら、ダイナミックフィールドには変数名が使用できるようだった。<br />
+どこで呼び出されるか不明だが、シンボルのアクションに以下ActionScriptを設定すると<br />
+データが読み出せる。</p>
+<p>loadVariables("テキストデータファイル名", "シンボルのインスタンス名");</p>
+<p>■ActionScript付きSWFファイルのXML変換<br />
+swfmillを使用してActionScript付きのSWFファイルを変換すると以下のように展開されているよう。</p>
+<p>がメソッドのIDなのだろう。<br />
+が引数だと思う。</p>
+<p>■データサイズと通信サイズの問題</p>

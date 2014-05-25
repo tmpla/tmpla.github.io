@@ -1,0 +1,34 @@
+---
+layout: post
+title: Canonical URL
+categories:
+- Plugin
+tags:
+- Plugin
+- WordPress
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>Canonical URLとは何でしょう？</p>
+<p>普通にWebサイトをブラウズしている場合は、最終的にHTMLをブラウザが解析して人間が中身を見るので問題ないのですが、Webサイトのシステム構造上、まったく同じ内容を別のURLで表示させることがあります。</p>
+<p><a href="http://www.sem-r.com/09/20090213153711.html">検索エンジン3社、正しいサイトURLを認識させるcanonical属性を導入（URLの正規化）</a></p>
+<p>を引用すると</p>
+<blockquote><p>SONYのデジカメ「cyber-shot T700」の商品詳細ページが、(1) ブランド「デジカメ」カテゴリ、(2) ブランド「cyber-shot」カテゴリ、それぞれの直下に、コンテンツが全く同一（重複）ながら異なるURLで作成されたとしよう（こういうECサイトは結構ある）。この場合、商品詳細ページ「T700」が2ページ作成されることになるが、検索エンジンはどちらのページをインデックスすればいいのか判断ができない。</p></blockquote>
+<p>前述のように、内容だけを見る場合はURLなんてどうでも良いが、検索エンジンのクローラが同じようなページに遭遇して「結局どれが本当なのよ？」とはなかなか結論が出ませんので、結局すべてのサイトを別サイトとして認識します。<br />
+結果、検索エンジンの表示順位に影響を与えてしまい、たとえば同じキーワードでの検索で同内容で別URLとして表示されてしまったりします。もっと悪いことにそのページ自体の順位が落ちてしまうことも考えられます。</p>
+<p>そこでGoogle, Yahoo, Mictosoftでそんな場合の標準を決めたそうです。<br />
+ページの&lt;head&gt;～&lt;/head&gt;内に以下引用の記述で最適なURLを記載します。</p>
+<blockquote><p>&lt;link rel=&quot;canonical&quot; href=&quot;http://mysite.com&quot;/&gt;
+</p></blockquote>
+<p>ここで指定したhref要素の記述を参考に、検索エンジンが「結局どれなのよ？」というのを決めます。<br />
+この場合の別URLの内容は、完全に同じでなくてもよいようで、動的に出力するようなWebサイトの場合（というかこんなのを使うところは動的なサイトでしょう）には便利でしょう。</p>
+<p>Word Pressのプラグインにも<a href="http://yoast.com/wordpress/canonical/">Canonical URL's for WordPress</a>というのがあったので早速入れてみました。</p>

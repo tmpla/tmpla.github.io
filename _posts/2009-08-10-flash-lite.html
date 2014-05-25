@@ -1,0 +1,38 @@
+---
+layout: post
+title: Flash Lite
+categories:
+- "開発"
+tags:
+- Flash
+- Flash Lite
+- SWF
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+  _oembed_f4823bd033fffbb689ffaa9c28417599: "{{unknown}}"
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>先々週から頭痛が酷くてまともな記事を書けませんでした。<br />
+とりあえずロキソニンで痛みを抑えつつ、適度な運動で徐々に治りつつあります。<br />
+運動が重要ですね。</p>
+<p>現在、携帯でFlashを使用して表示させたいという要求があって、それについて調査しているところです。今までは近くにありそうで手を付けていなかったFlashについてわかってきたことがあったのでそれをメモしておこうと思います。</p>
+<p>PCではあまりユーザーが意識する部分は少ないと思いますが、携帯ではFlashが動作する環境に大きく差があるように思います。<br />
+日本の携帯キャリアでは、Flash Liteというコンテナを使用してFlashを表示させているのですが、これが少なくとも1.1から2.x以降で大きく違いが出てきます。</p>
+<p>各端末毎のFlash対応状況は以下で確認できます。</p>
+<p>docomo<br />
+<a href="http://www.nttdocomo.co.jp/service/imode/make/content/spec/flash/">http://www.nttdocomo.co.jp/service/imode/make/content/spec/flash/</a></p>
+<p>au<br />
+<a href="http://www.au.kddi.com/ezfactory/tec/spec/new_win/ezkishu.html">http://www.au.kddi.com/ezfactory/tec/spec/new_win/ezkishu.html</a></p>
+<p>softbank<br />
+<a href="http://creation.mb.softbank.jp/terminal/?lup=y&amp;cat=service">http://creation.mb.softbank.jp/terminal/?lup=y&amp;cat=service</a></p>
+<p>現状でより多くの機種に対応させるためには、Flash Lite 1.1で作成するのが広範囲をカバー出来そうですが、Flash Liteのバージョンごとの制約は以下にあります。</p>
+<p>http://www.adobe.com/jp/devnet/devices/articles/develop_in_japan.html</p>
+<p>実際に、やりたかったことといえば、Flashに動的な情報を渡して、それを表示させる、というのが出来れば良いはずだったのですが、Flash1.1系ではFlashの一つ一つの部品を実行時に扱うのが難しい（部品のインスタンス化が出来ない）という問題があって、今Flash1.1系からあげることを検討中です。</p>

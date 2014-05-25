@@ -1,0 +1,73 @@
+---
+layout: post
+title: yumを間違って削除しちゃった場合の手順
+categories:
+- "サーバー管理"
+tags:
+- CentOS
+- linux
+- yum
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>yumという超便利なRHL系のパッケージがあるが、標準じゃないリポジトリに接続したかったので、色々やっているうちに「yum-fastestmirrot」というのをいったん消してみようじゃないかという話に（自分の中で）なったので</p>
+<pre lang="bash">
+yum remove yum-fastestmirror
+</pre>
+<p>とやったら、yum自体がアンインストールされてしまった。その際の復旧手順です。<br />
+まず最新版のyumを取ってきて、rpmコマンドでインストールしますと。</p>
+<pre lang="bash" escaped="true">
+# wget http://ftp.iij.ad.jp/pub/linux/centos/5/os/i386/CentOS/yum-3.2.19-18.el5.centos.noarch.rpm
+--00:31:57--  http://ftp.iij.ad.jp/pub/linux/centos/5/os/i386/CentOS/yum-3.2.19-18.el5.centos.noarch.rpm
+ftp.iij.ad.jp をDNSに問いあわせています... 202.232.140.135, 202.232.140.138, 202.232.140.136, ...
+ftp.iij.ad.jp|202.232.140.135|:80 に接続しています... 接続しました。
+HTTP による接続要求を送信しました、応答を待っています... 200 OK
+長さ: 939467 (917K) [application/x-rpm]
+Saving to: `yum-3.2.19-18.el5.centos.noarch.rpm'
+
+100%[=============================================================================================================&gt;] 939,467     5.39M/s   in 0.2s
+
+00:31:57 (5.39 MB/s) - `yum-3.2.19-18.el5.centos.noarch.rpm' を保存しました [939467/939467]
+
+# rpm -ivh yum-3.2.19-18.el5.centos.noarch.rpm
+エラー: 依存性の欠如:
+        yum-fastestmirror は yum-3.2.19-18.el5.centos.noarch に必要とされています
+
+</pre>
+<p>したら、yum-fastestmirrorが必要だと言っているので、じゃfastestmirrorを先に入れますと。</p>
+<pre lang="bash" escaped="true">
+# wget http://ftp.iij.ad.jp/pub/linux/centos/5/os/i386/CentOS/yum-fastestmirror-1.1.16-13.el5.centos.noarch.rpm
+--00:32:33--  http://ftp.iij.ad.jp/pub/linux/centos/5/os/i386/CentOS/yum-fastestmirror-1.1.16-13.el5.centos.noarch.rpm
+ftp.iij.ad.jp をDNSに問いあわせています... 202.232.140.139, 202.232.140.135, 202.232.140.138, ...
+ftp.iij.ad.jp|202.232.140.139|:80 に接続しています... 接続しました。
+HTTP による接続要求を送信しました、応答を待っています... 200 OK
+長さ: 18886 (18K) [application/x-rpm]
+Saving to: `yum-fastestmirror-1.1.16-13.el5.centos.noarch.rpm'
+
+100%[=============================================================================================================&gt;] 18,886      --.-K/s   in 0.02s
+
+00:32:33 (1.03 MB/s) - `yum-fastestmirror-1.1.16-13.el5.centos.noarch.rpm' を保存しました [18886/18886]
+
+# rpm -ivh yum-3.2.19-18.el5.centos.noarch.rpm
+エラー: 依存性の欠如:
+        yum-fastestmirror は yum-3.2.19-18.el5.centos.noarch に必要とされています
+</pre>
+<p>yum-fastestmirrotはyumが必要だそうです。見事にデッドロックしています。<br />
+どうしたもんかと調べていたら、同じ悩みを抱える方が居たようで</p>
+<p><a href="http://kajuhome.com/cgi-bin/patio/patio.cgi?mode=view&amp;no=1765">http://kajuhome.com/cgi-bin/patio/patio.cgi?mode=view&amp;no=1765</a></p>
+<p>これをみて、以下のようにしたら復旧しました。</p>
+<pre lang="bash">
+[root@blackhole ~]# rpm -ivh yum-3.2.19-18.el5.centos.noarch.rpm yum-fastestmirror-1.1.16-13.el5.centos.noarch.rpm
+準備中...                ########################################### [100%]
+   1:yum-fastestmirror      ########################################### [ 50%]
+   2:yum                    ########################################### [100%]
+</pre>
