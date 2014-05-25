@@ -1,0 +1,35 @@
+---
+layout: post
+title: Zend Debuggerインストール
+categories:
+- PHP
+tags: []
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+  _oembed_c6510932e2d01c011aad2c8ce7f36f06: "{{unknown}}"
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<h3>環境</h3>
+<p>・Windows XP SP2<br />
+・Apache 2.2.9<br />
+・PHP 5.2.6</p>
+<p>http://downloads.zend.com/pdt/server-debugger/</p>
+<p>から、ZendDebugger-5.2.14-cygwin_nt-i386.zipをダウンロード、解凍してPHPインストールフォルダの直下に「5_2_x_comp」をコピー。</p>
+<p>C:\Program Files\PHP\5_2_x_comp</p>
+<p>で、php.iniの最後に以下のような記載してApacheを再起動。</p>
+<p>zend_extension_ts="C:\Program Files\PHP\5_2_x_comp\ZendDebugger.dll"<br />
+zend_debugger.allow_hosts=127.0.0.1/32<br />
+zend_debugger.expose_remotely=always</p>
+<p><a href="http://www.zend.co.jp/tech/index.php?cmd=read&amp;page=%B4%C4%B6%AD%B9%BD%C3%DB%2F%A5%C7%A5%D0%A5%C3%A5%B0%B4%C4%B6%AD%A4%CE%BA%EE%C0%AE">参考サイト</a></p>
+<p>このあと、Eclipseでデバッグするぞーと思ってやってみたのだが、起動するときに「Incompatible Debug Server version」と出てしまい、起動出来ない。<br />
+OKWaveかなんかで、「PDT1.0.2にはDebugger5.2.12だ」みたいな情報を見つけたのだが、肝心のZend Debugger5.2.12はどこにもない。</p>
+<p>途方にくれていろいろやっていると、PDTのアップデータ（1.0.3）があり、更新してみたら無事ブレイクポイントで止まった。<br />
+Zend Debugger 5.2.14には、PDT1.0.3だということを知った。</p>
