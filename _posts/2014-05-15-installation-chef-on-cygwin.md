@@ -9,12 +9,12 @@ Windows7にcygwinをインストールし、chefをインストールするの�
 ## 環境
 環境はWindows7(32bit)で、cygwinは
 
-{% highlight bash %}
+~~~ bash
 $ cygcheck.exe -c cygwin
 Cygwin Package Information
 Package              Version        Status
 cygwin               1.7.29-2       OK
-{% endhighlight %}
+~~~
 
 である。ちなみにminttyを使っていて、rubyはrbenvで。2.1.2を入れた状態。
 
