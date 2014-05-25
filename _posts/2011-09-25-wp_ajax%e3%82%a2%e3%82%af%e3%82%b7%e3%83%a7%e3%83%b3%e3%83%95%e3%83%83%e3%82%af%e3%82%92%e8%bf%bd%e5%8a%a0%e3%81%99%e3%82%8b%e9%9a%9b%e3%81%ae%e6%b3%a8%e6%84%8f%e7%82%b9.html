@@ -1,0 +1,35 @@
+---
+layout: post
+title: wp_ajaxアクションフックを追加する際の注意点
+categories:
+- Plugin
+tags:
+- '0'
+- die
+- wp_ajax
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>wp-ajaxの自前アクションフックを追加する方法はさらりと<a href="http://tmpla.info/?p=1364">前の記事</a>に書きましたが、<br />
+多少注意点がありました。</p>
+<p>plugin development - Admin-ajax.php appending a status code to ajax response - WordPress - Stack Exchange<br />
+<a href="http://wordpress.stackexchange.com/questions/2524/admin-ajax-php-appending-a-status-code-to-ajax-response">http://wordpress.stackexchange.com/questions/2524/admin-ajax-php-appending-a-status-code-to-ajax-response</a></p>
+<p>でやりとりされてるんですが、Ajaxでは素のテキスト（JSONなども含めて）を返却したい場合が多いと思うのですが、<br />
+wp_ajax_xxxxのカスタムアクションを実行するときに下記のように「die(0);」と書いてあって、最後に「0」と出力されてしまうのです。</p>
+<pre lang="php" escaped="false">
+default :
+    do_action( 'wp_ajax_' . $_POST['action'] );
+    die('0');
+    break;
+</pre>
+<p>なので、上記記事のやり取りでは殺られる前に殺れば良いということで、カスタムアクションで呼び出す関数の最後に「die();」と呼び出して解決してます。<br />
+これ注意。</p>
