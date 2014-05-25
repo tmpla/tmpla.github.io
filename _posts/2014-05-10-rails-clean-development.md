@@ -50,9 +50,9 @@ RVMはちょっと忘れた。
 新しいrubyを使うならばこれも入れていこう。
 下記公式サイトのコマンドからrbrnvのプラグインとして動かす事を考えている事がわかる
 
-{% highlight bash %}
+~~~ bash
 $ git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
-{% endhighlight %}
+~~~
 
 正直、どういう動作原理なのかはよく見てないのだが、これで新Rubyをソースコードからコンパイルが出来る。
 今何も入っていない状態なので、入れてみよう。
