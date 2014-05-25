@@ -1,0 +1,58 @@
+---
+layout: post
+title: CentOSでphp5.3をyumでインストールする最新事情
+categories:
+- Cent OS
+- PHP
+tags:
+- CentOD
+- PHP
+- webtatic
+- yum
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>CentOSのyumのbaseリポジトリのphpのバージョンは古い（しばらくの間ずっと5.1.6）という問題があって、<br />
+yumを使って新しいphpを入れる場合は、remiとかutterramblingsのyumリポジトリを使う方法が流行ってます。<br />
+（今さっき確認してみたらbaseはやっぱり5.1.6のまんまだった）<br />
+ちなみにutterramblingsとremiは下記参照。</p>
+<p>Yum Repository Setup Instructions | Utter Ramblings<br />
+<a href="http://www.jasonlitka.com/yum-repository/">http://www.jasonlitka.com/yum-repository/</a></p>
+<p>English : Repository Configuration - Les RPM de Remi - Blog<br />
+<a href="http://blog.famillecollet.com/pages/Config-en">http://blog.famillecollet.com/pages/Config-en</a></p>
+<p>utterramblingsのphpは現在5.2系で、5.3を入れるには「yum install php53」とパッケージ名自体が変わってきます。<br />
+これで困るのが、例えば普通のphpMyAdminとかを入れる場合にはphp-commonというパッケージに依存しているので、<br />
+php-commonを入れるのですが、php53の場合はphp53-commonというのがphp-commonということになるので<br />
+実質yumからphp-commonに依存したパッケージを入れることが難しくなっちゃうことです。（あー、わかりにくい文章）。<br />
+つまり、<br />
+1. yum install phpmyadminする<br />
+2. 一緒にphp-commonを入れる<br />
+3. php-commonはphp53のphp53-commonとかぶってるからダメだよ</p>
+<p>という話です。なので、php53というパッケージはあまり入れたくない。<br />
+一方、remiの方はphpが5.3系になってます。そこでremiを使いたいのですが・・・。<br />
+動かしたいApacheがworkerで動いているようで、一緒にphp-ztsモジュールも入れたかったのですが、<br />
+remiにはphp-ztsがないようでした。（色々調べてみたら、他の人はremiからphp-ztsを入れているようだったので、なくなったのか？）<br />
+なのでなんかないかな、と調べていたら、ナイスなリポジトリを公開しているところがあったので紹介します。<br />
+その名はwebtaticです。</p>
+<p>Webtatic Yum Repository | Webtatic.com<br />
+<a href="http://www.webtatic.com/projects/yum-repository/">http://www.webtatic.com/projects/yum-repository/</a></p>
+<p>ここのphpは最新だし他の色んなモジュールも入っているので文句なし。<br />
+下記のようにして入れます。</p>
+<pre lang="bash">
+rpm -Uvh http://repo.webtatic.com/yum/centos/5/latest.rpm
+</pre>
+<p>これで普通にインストールすればOK!</p>
+<pre lang="bash">
+yum install --enablerepo=webtatic php
+</pre>
+<p>よく使うならwebtatic.repoのenable=1にしておけば--enablrerepoの指定もしなくて良いと思うので便利かも。<br />
+これからしばらくはwebtaticですなぁ。</p>

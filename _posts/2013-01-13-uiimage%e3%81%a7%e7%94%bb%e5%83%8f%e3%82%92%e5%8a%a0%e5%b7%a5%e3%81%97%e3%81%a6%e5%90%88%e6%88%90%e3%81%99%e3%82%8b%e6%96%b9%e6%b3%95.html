@@ -1,0 +1,215 @@
+---
+layout: post
+title: UIImageで画像を加工して合成する方法
+categories:
+- iOS
+tags:
+- AffinTransform
+- UIImage
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>iOSで画像を使う場合はUIImageを使うことになると思います。<br />
+これを反転したりして合成する方法を試したので書きます。</p>
+<p>まずこんな画像を拾ってきたのでこれを元にやってみます。</p>
+<p><a href="http://tmpla.info/wp-content/uploads/2013/01/image.png"><img src="http://tmpla.info/wp-content/uploads/2013/01/image.png" alt="" title="image" width="50" height="50" class="alignnone size-full wp-image-1627" /></a></p>
+<p>プロジェクトはSingle View ApplicationでviewDidLoadのとこだけでやってます。<br />
+まずはひとつだけ配置してみます。</p>
+<h3>普通に並べてみる</h3>
+<pre lang="objc">
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    // Do any additional setup after loading the view, typically from a nib.
+    //オリジナル画像
+    UIImage *src = [UIImage imageNamed:@"image.png"];
+
+    UIImageView *iv = [[UIImageView alloc]initWithImage:src];
+    [iv setCenter:self.view.center];
+    [self.view addSubview:iv];
+}
+</pre>
+<p>するとこんな感じ。<br />
+<a href="http://tmpla.info/wp-content/uploads/2013/01/f36d208c0208870549cee406c7a29f85.png"><img src="http://tmpla.info/wp-content/uploads/2013/01/f36d208c0208870549cee406c7a29f85-159x300.png" alt="" title="スクリーンショット 2013-01-13 2.44.04" width="159" height="300" class="alignnone size-medium wp-image-1629" /></a></p>
+<p>これを上下2枚ずつ4枚を一つの画像にしてみます。</p>
+<pre lang="objc">
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+	// Do any additional setup after loading the view, typically from a nib.
+    //オリジナル画像
+    UIImage *src = [UIImage imageNamed:@"image.png"];
+    
+    CGFloat srcWidth = CGImageGetWidth(src.CGImage);
+    CGFloat srcHeight = CGImageGetHeight(src.CGImage);
+    
+    //画像合成
+    UIGraphicsBeginImageContext(CGSizeMake(srcWidth * 2, srcHeight * 2));
+    [src drawInRect:CGRectMake(0, 0, srcWidth, srcHeight)];
+    [src drawInRect:CGRectMake(srcWidth, 0, srcWidth, srcHeight)];
+    [src drawInRect:CGRectMake(0, srcHeight, srcWidth, srcHeight)];
+    [src drawInRect:CGRectMake(srcWidth, srcHeight, srcWidth, srcHeight)];
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+
+    UIImageView *iv = [[UIImageView alloc]initWithImage:image];
+    [iv setCenter:self.view.center];
+    [self.view addSubview:iv];
+}
+</pre>
+<p>UIGraphicsBeginImageContext()で最終的に出力するサイズを指定し、UIGraphicsEndImageContext()で書き出し処理を終えます。<br />
+その中で、UIImage#drawInRectで四角形の位置とサイズを指定すると、その場所に出力されます。<br />
+出力が終わった時点で、UIGraphicsGetImageFromCurrentImageContext()でその時点のイメージが取得できるので、<br />
+それをUIImageViewに設定して表示してます。<br />
+するとこんな感じ。</p>
+<p><a href="http://tmpla.info/wp-content/uploads/2013/01/3634581863be868b3d496b2e8dd7e383.png"><img src="http://tmpla.info/wp-content/uploads/2013/01/3634581863be868b3d496b2e8dd7e383-159x300.png" alt="" title="スクリーンショット 2013-01-13 3.00.07" width="159" height="300" class="alignnone size-medium wp-image-1630" /></a></p>
+<p>このUIImageBegin〜EndContextの座標がちょっと普通と違うみたいなのをどこかのブログで見たので、<br />
+ちょっと座標を文字列として追記してみた。</p>
+<pre lang="objc">
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+	// Do any additional setup after loading the view, typically from a nib.
+    //オリジナル画像
+    UIImage *src = [UIImage imageNamed:@"image.png"];
+    
+    CGFloat srcWidth = CGImageGetWidth(src.CGImage);
+    CGFloat srcHeight = CGImageGetHeight(src.CGImage);
+    
+    //画像合成
+    UIGraphicsBeginImageContext(CGSizeMake(srcWidth * 2, srcHeight * 2));
+    CGContextRef ctx = UIGraphicsGetCurrentContext();
+    
+    [src drawInRect:CGRectMake(0, 0, srcWidth, srcHeight)];
+    [src drawInRect:CGRectMake(srcWidth, 0, srcWidth, srcHeight)];
+    [src drawInRect:CGRectMake(0, srcHeight, srcWidth, srcHeight)];
+    [src drawInRect:CGRectMake(srcWidth, srcHeight, srcWidth, srcHeight)];
+    
+    CGContextSetFillColorWithColor(ctx, [UIColor blackColor].CGColor);
+    CGContextSelectFont(ctx, "Helvetica", 15.0, kCGEncodingMacRoman);
+    CGContextSetTextDrawingMode(ctx, kCGTextFill);
+    CGContextShowTextAtPoint(ctx, 0, 0, "0,0", 3);
+    CGContextShowTextAtPoint(ctx, 50, 0, "50,0", 4);
+    CGContextShowTextAtPoint(ctx, 0, 50, "0,50", 4);
+    CGContextShowTextAtPoint(ctx, 50, 50, "50,50", 5);
+    
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+
+    UIImageView *iv = [[UIImageView alloc]initWithImage:image];
+    [iv setCenter:self.view.center];
+    [self.view addSubview:iv];
+}
+</pre>
+<p>するとなんか文字列が反転してるけど、左上が0,0でxは右に、yは下に伸びる普通の座標の使い方で良いようでした。</p>
+<p><a href="http://tmpla.info/wp-content/uploads/2013/01/46ae4169581d84a1c3a1b10ac4ad4321.png"><img src="http://tmpla.info/wp-content/uploads/2013/01/46ae4169581d84a1c3a1b10ac4ad4321-159x300.png" alt="" title="スクリーンショット 2013-01-13 3.16.57" width="159" height="300" class="alignnone size-medium wp-image-1631" /></a></p>
+<h3>反転とかしてみる</h3>
+<p>元画像を反転したりしたかったので、アフィン変換を使います。<br />
+理屈はまあ色々あると思うのですが、CGContextScaleCTM()で縮小、マイナス値ならば反転と言うところがわかりにくいとこでした。<br />
+これにはx, yに、1.0〜-1.0の値を指定するのですが、例えばxに0.5を指定したら横方向に0.5倍(1/2)に、-0.5ならば反転した0.5倍の画像になります。yは縦方向です。<br />
+反転した場合は、元々配置されていた位置が逆方向に動いてしまうので、CGContextTranslateCTM()で動かしてから反転すると、画像の位置は変わらず反転したように見えます。<br />
+例えばこの場合は50*50の画像なので、CGContextScaleCTM(ctx, -1.0, 1.0)としたら、画像のx座標が-50の位置（つまり左にずれる）ことになるので、その分右に動かしておきます。<br />
+今回はやってませんが、z軸に回転するCGContextRotateCTMというのもありますが、これも位置は動いてしまうんで同じように位置を調整してあげれば良いかと思います。</p>
+<p>Quartz 2D Programming Guide: Transforms<br />
+<a href="https://developer.apple.com/library/mac/#documentation/graphicsimaging/conceptual/drawingwithquartz2d/dq_affine/dq_affine.html">https://developer.apple.com/library/mac/#documentation/graphicsimaging/conceptual/drawingwithquartz2d/dq_affine/dq_affine.html</a></p>
+<p>これでやってみたのが下記。ついでに最終画像でわかりやすいように四角を書いて色をブレンドしてます。</p>
+<pre lang="objc">
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+	// Do any additional setup after loading the view, typically from a nib.
+    //オリジナル画像
+    UIImage *src = [UIImage imageNamed:@"image.png"];
+    
+    CGFloat srcWidth = CGImageGetWidth(src.CGImage);
+    CGFloat srcHeight = CGImageGetHeight(src.CGImage);
+    
+    //オリジナルサイズ
+    CGSize srcSize = CGSizeMake(srcWidth, srcHeight);
+    CGContextRef ctx;
+    //上右
+    UIGraphicsBeginImageContext(srcSize);
+    ctx = UIGraphicsGetCurrentContext();
+    
+    CGContextTranslateCTM(ctx, srcWidth, 0);
+    CGContextScaleCTM(ctx, -1.0, 1.0);
+    
+    [src drawInRect:CGRectMake(0, 0, srcWidth, srcHeight)];
+    
+    CGContextSetFillColorWithColor(ctx, [UIColor redColor].CGColor);
+    CGContextSetBlendMode(ctx, kCGBlendModeColor);
+    CGContextFillRect(ctx, CGRectMake(0,0,srcWidth,srcHeight));
+    
+    UIImage *src2 = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    //下左
+    UIGraphicsBeginImageContext(srcSize);
+    ctx = UIGraphicsGetCurrentContext();
+    CGContextTranslateCTM(ctx, 0, srcHeight);
+    CGContextScaleCTM(ctx, 1.0, -1.0);
+    
+    [src drawInRect:CGRectMake(0, 0, srcWidth, srcHeight)];
+    
+    CGContextSetFillColorWithColor(ctx, [UIColor yellowColor].CGColor);
+    CGContextSetBlendMode(ctx, kCGBlendModeColor);
+    CGContextFillRect(ctx, CGRectMake(0,0,srcWidth,srcHeight));
+    
+    UIImage *src3 = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    //下右
+    UIGraphicsBeginImageContext(srcSize);
+    ctx = UIGraphicsGetCurrentContext();
+    CGContextTranslateCTM(ctx, srcWidth, srcHeight);
+    CGContextScaleCTM(ctx, -1.0, -1.0);
+    
+    [src drawInRect:CGRectMake(0, 0, srcWidth, srcHeight)];
+    
+    CGContextSetFillColorWithColor(ctx, [UIColor cyanColor].CGColor);
+    CGContextSetBlendMode(ctx, kCGBlendModeColor);
+    CGContextFillRect(ctx, CGRectMake(0,0,srcWidth,srcHeight));
+    
+    UIImage *src4 = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    //画像合成
+    UIGraphicsBeginImageContext(CGSizeMake(srcWidth * 2, srcHeight * 2));
+    ctx = UIGraphicsGetCurrentContext();
+    
+    [src drawInRect:CGRectMake(0, 0, srcWidth, srcHeight)];
+    [src2 drawInRect:CGRectMake(srcWidth, 0, srcWidth, srcHeight)];
+    [src3 drawInRect:CGRectMake(0, srcHeight, srcWidth, srcHeight)];
+    [src4 drawInRect:CGRectMake(srcWidth, srcHeight, srcWidth, srcHeight)];
+    
+    CGContextTranslateCTM(ctx, 0, srcHeight * 1.2); //文字の高さ分ずらした
+    CGContextScaleCTM(ctx, 1.0, -1.0);
+    CGContextSetFillColorWithColor(ctx, [UIColor blackColor].CGColor);
+    CGContextSelectFont(ctx, "Helvetica", 15.0, kCGEncodingMacRoman);
+    CGContextSetTextDrawingMode(ctx, kCGTextFill);
+    CGContextShowTextAtPoint(ctx, 0, 0, "0,0", 3);
+    CGContextShowTextAtPoint(ctx, 50, 0, "50,0", 4);
+    CGContextShowTextAtPoint(ctx, 0, 50, "0,50", 4);
+    CGContextShowTextAtPoint(ctx, 50, 50, "50,50", 5);
+    
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+
+    UIImageView *iv = [[UIImageView alloc]initWithImage:image];
+    [iv setCenter:self.view.center];
+    [self.view addSubview:iv];
+}
+</pre>
+<p>それぞれの画像毎にUIGraphicsBegin〜EndContextで処理して、最後にまとめる感じです。<br />
+これでこんな感じになりました。</p>
+<p><a href="http://tmpla.info/wp-content/uploads/2013/01/80c7938c4d2b258c064f08b21faf911a.png"><img src="http://tmpla.info/wp-content/uploads/2013/01/80c7938c4d2b258c064f08b21faf911a-159x300.png" alt="" title="スクリーンショット 2013-01-13 3.38.08" width="159" height="300" class="alignnone size-medium wp-image-1632" /></a></p>
+<p>ブレンドモードとかはまたいつか。</p>

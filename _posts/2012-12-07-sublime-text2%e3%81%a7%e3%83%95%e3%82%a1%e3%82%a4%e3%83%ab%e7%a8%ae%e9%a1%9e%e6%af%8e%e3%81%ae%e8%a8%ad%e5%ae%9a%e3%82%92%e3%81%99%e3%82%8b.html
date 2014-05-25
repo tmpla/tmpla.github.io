@@ -1,0 +1,38 @@
+---
+layout: post
+title: Sublime Text2でファイル種類毎の設定をする
+categories:
+- "開発"
+tags:
+- sublime text
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>Sublime Text 2でタブサイズとかの設定をするにはPreferences - Settings - UserからPreferences.sublime-settingsを設定すれば良い。</p>
+<p><a href="http://tmpla.info/wp-content/uploads/2012/12/551028f6d5ea602da4000fadd995d409.png"><img src="http://tmpla.info/wp-content/uploads/2012/12/551028f6d5ea602da4000fadd995d409-300x185.png" alt="" title="スクリーンショット 2012-12-07 23.09.42" width="300" height="185" class="alignnone size-medium wp-image-1619" /></a></p>
+<p>ただ、ファイルの種類毎にこの設定を変えたい時がよくあるが、どうやんのかわからなかったのでちょっと調べてみた。<br />
+例えば、coffeesciptやhamlならばインデントはタブにしたいが、yamlならばスペースにしたい、と言うことがあったので。<br />
+この場合は、yamlだけタブをスペース2つのレイアウトでタブをスペースに変換する設定にしておけば良いはず。</p>
+<p>そのやり方は下記に書いてあった。</p>
+<p>Settings - Sublime Text 2 Documentation<br />
+<a href="http://www.sublimetext.com/docs/2/settings.html">http://www.sublimetext.com/docs/2/settings.html</a></p>
+<p>この場合ならばyamlの設定を作れば良さそうだ。</p>
+<pre>
+{
+    "tab_size": 2,
+    "translate_tabs_to_spaces": true
+}
+</pre>
+<p>と言うファイルを<br />
+（どっか）/Sublime Text 2/Packages/User/YAML.sublime-settings<br />
+と言う名前で保存する。Preferences - Browse PackagesでそのあたりのディレクトリがFinderで開くので参考にしよう。</p>
+<p>それだけでもう適用されているようでした。</p>

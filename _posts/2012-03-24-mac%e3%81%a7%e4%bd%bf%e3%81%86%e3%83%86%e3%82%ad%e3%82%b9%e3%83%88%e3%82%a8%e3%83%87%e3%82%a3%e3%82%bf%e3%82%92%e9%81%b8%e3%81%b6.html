@@ -1,0 +1,76 @@
+---
+layout: post
+title: Macで使うテキストエディタを選ぶ
+categories:
+- Mac
+- "開発"
+tags:
+- conf
+- Mac
+- TextEditor
+- Tincta
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>MacにXAMPPを入れてapacheのhttpd.confを編集しようとして開いたらエディタがショボい事に気がついた。<br />
+なので、色々テキストエディタを試してみる巻です。</p>
+<p>環境は下記です。</p>
+<pre lang="bash">
+$ sw_vers
+ProductName:	Mac OS X
+ProductVersion:	10.7.3
+BuildVersion:	11D50d
+</pre>
+<p>OSに付いてるテキストエディタは「TextEdit.app」で、これはWindowsのメモ帳と同じようなものらしい。<br />
+httpd.confを開いてみると下記のような感じ。</p>
+<p><a href="http://tmpla.info/wp-content/uploads/2012/03/004747c22e5cd04caeca101ddb4f1707.png"><img src="http://tmpla.info/wp-content/uploads/2012/03/004747c22e5cd04caeca101ddb4f1707-300x230.png" alt="" title="スクリーンショット 2012-03-24 17.17.37" width="300" height="230" class="alignnone size-medium wp-image-1444" /></a></p>
+<p>なんかフォントの線が細いからなのかどうも編集する気になれない。フォントを変えればいいのかもしれないが。<br />
+ちなみに、このデフォルトのフォントは「Monaco」だそうです。</p>
+<p>で、Macのテキストエディタを調べてみると、「mi」や「CotEditor」が人気のような気がするけど、<br />
+Windowsで言う「秀丸」とか「サクラエディタ」みたいなデファクトスタンダードのようなのがないような感じに思える。<br />
+あと出来ればなんだけど、AppStoreからインストール・更新が出来るのがいいなぁ。もちろんフリーウェア前提です。<br />
+とりあえずは上記のテキストエディットで開いてみたhttpd.confを色んなエディタで開いてみました。<br />
+比較してみたのは</p>
+<ul>
+<li><a href="http://www.mimikaki.net/">mi</a></li>
+<li><a href="http://sourceforge.jp/projects/coteditor/">CotEditor</a></li>
+<li><a href="http://homepage.mac.com/lightway/iText.html">iText Express</a></li>
+<li><a href="http://www.barebones.com/products/textwrangler/">Text Wrangler</a></li>
+<li><a href="http://itunes.apple.com/jp/app/the-a-editor-lite/id474213778?mt=12">The A Editor Lite</a></li>
+<li><a href="http://mr-fridge.de/software/tincta/index.php">Tincta</a></li>
+<li>emacs</li>
+<li>vi</li>
+</ul>
+<h4>mi</h4>
+<p><a href="http://tmpla.info/wp-content/uploads/2012/03/54344d6331fe5f1afb64e1f318fb27ca.png"><img src="http://tmpla.info/wp-content/uploads/2012/03/54344d6331fe5f1afb64e1f318fb27ca-300x248.png" alt="" title="スクリーンショット 2012-03-24 17.45.50" width="300" height="248" class="alignnone size-medium wp-image-1445" /></a></p>
+<h4>CotEditor</h4>
+<p><a href="http://tmpla.info/wp-content/uploads/2012/03/ea47bef41618cbd39252ebba9138c55c.png"><img src="http://tmpla.info/wp-content/uploads/2012/03/ea47bef41618cbd39252ebba9138c55c-300x276.png" alt="" title="スクリーンショット 2012-03-24 17.49.30" width="300" height="276" class="alignnone size-medium wp-image-1446" /></a></p>
+<h4>iText Express</h4>
+<p><a href="http://tmpla.info/wp-content/uploads/2012/03/b7ed15569d1b3898f08d666146650ed5.png"><img src="http://tmpla.info/wp-content/uploads/2012/03/b7ed15569d1b3898f08d666146650ed5-300x298.png" alt="" title="スクリーンショット 2012-03-24 17.51.35" width="300" height="298" class="alignnone size-medium wp-image-1453" /></a></p>
+<h4>Text Wrangler</h4>
+<p><a href="http://tmpla.info/wp-content/uploads/2012/03/e1fcd5d6b838bd02d0b2da7cdc0f2d94.png"><img src="http://tmpla.info/wp-content/uploads/2012/03/e1fcd5d6b838bd02d0b2da7cdc0f2d94-300x286.png" alt="" title="スクリーンショット 2012-03-24 17.55.47" width="300" height="286" class="alignnone size-medium wp-image-1448" /></a></p>
+<h4>The A Editor Lite</h4>
+<p>開けず</p>
+<h4>Tincta</h4>
+<p><a href="http://tmpla.info/wp-content/uploads/2012/03/617f17bc7d889b3033646589aa5bfdc3.png"><img src="http://tmpla.info/wp-content/uploads/2012/03/617f17bc7d889b3033646589aa5bfdc3-300x214.png" alt="" title="スクリーンショット 2012-03-24 18.07.28" width="300" height="214" class="alignnone size-medium wp-image-1449" /></a></p>
+<h4>emacs</h4>
+<p><a href="http://tmpla.info/wp-content/uploads/2012/03/b2343a213fc55285c2f0f13681704e34.png"><img src="http://tmpla.info/wp-content/uploads/2012/03/b2343a213fc55285c2f0f13681704e34-300x209.png" alt="" title="スクリーンショット 2012-03-24 18.09.26" width="300" height="209" class="alignnone size-medium wp-image-1450" /></a></p>
+<h4>vi</h4>
+<p><a href="http://tmpla.info/wp-content/uploads/2012/03/4e42721ff550913b080160402b27d454.png"><img src="http://tmpla.info/wp-content/uploads/2012/03/4e42721ff550913b080160402b27d454-300x209.png" alt="" title="スクリーンショット 2012-03-24 18.10.52" width="300" height="209" class="alignnone size-medium wp-image-1451" /></a></p>
+<h3>どれが良かったか</h3>
+<p>まあvi, emacsは別格としてiText Expressは見た目がテキストエディットとおんなじなのでこれも除外。<br />
+The A Editor Liteというのは開く事すら出来なかったので駄目。<br />
+残りはmi、CotEditor、TextWrangler、Tinctaという事になるのですが、<br />
+これらは正直使い込んでみれば差がわかりそうなのですが、この時点では判断付きませんでした。もちろん、見た目もそれなりにCoolです。<br />
+ただ、Tinctaというのがシンタックスハイライトのテンプレートがデフォルトで豊富にあるのが決め手でしばらくTinctaを使ってみる事にしました。<br />
+miとCotEditorはAppStoreにない、というのもあります。TextWranglerはAppStoreにあるし特に悪いところはなさそう。</p>
+<p>そういう訳でTinctaおすすめです。</p>

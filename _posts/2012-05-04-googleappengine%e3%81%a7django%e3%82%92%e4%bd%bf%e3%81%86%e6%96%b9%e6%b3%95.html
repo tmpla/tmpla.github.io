@@ -1,0 +1,67 @@
+---
+layout: post
+title: GoogleAppEngineでDjangoを使う方法
+categories:
+- Python
+tags:
+- Django
+- Google App Engine
+- PyDev
+- Python
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>GoogleAppEngineのPython版には<a href="https://developers.google.com/appengine/docs/python/tools/webapp/running?hl=ja">webapp</a>というフレームワークが付属しており、これはこれで使えば良いのですが、<br />
+GoogleAppEngine以外では多分使いようがないのと、<a href="http://googledevjp.blogspot.jp/2011/07/app-engine-faq.html">GAEの去年の料金体系変更</a>の際の影響に見られるように、Googleに依存しすぎていると後々大変なので、<br />
+自分でサーバーを立ててもアプリ的には影響がないように汎用的なフレームワークを使ってやっておいた方が良さそうだ、<br />
+という思いがあるので、PythonのWebアプリケーションの一般的なフレームワークであるDjangoを使ってGAE上で作っておいてみる話です。</p>
+<p>GAEとか使うメリットはスケーラブル（ぶっちゃけ、Webサイトアクセス数によってサーバー等の使用コストが決められる）ところがメリットなのですが、<br />
+スケーラビリティだけで言えばAmazonとかあるわけなのでミドルウェアまでGAEに依存してしまうとGoogleの囲い込みから逃げにくくなってしまいます。<br />
+アプリ的にはポータビリティ（平たく言えばどこへ持ってっても結構動く）を確保しておきたいとこだと思います。</p>
+<p>GoogleAppEngineのPython版の情報を結構調べているのですが、なんだか色々入り混じってて現状どのようなことになっているのかがよく理解できていません。<br />
+例えば、Pythonのマルチスレッド対応は去年１２月に行う予定なところはググれたのですが結局今どうなのか？<br />
+GAEに同梱のDjangoのバージョンは0.96とか1.2とかの情報はあるのですが、実際ダウンロードしてみたら1.3も入っているようなので結局どうなのか？</p>
+<p>よくわからなかったので現在最も最新で動かせるPython2.7を使用し、GAEのバージョンは下記のものを使用しました。</p>
+<pre lang="bash">
+# cat /usr/local/google_appengine/VERSION 
+release: "1.6.5"
+timestamp: 1332880663
+api_versions: ['1']
+</pre>
+<p>さらに、開発環境はEclipseのPyDevでやります。OSはMac Lionです。</p>
+<p>最新版のGAEか、アップデートを行うと/usr/local/google_appengineにGAEへのシンボリックリンクが貼られると思いますが、<br />
+その前提で書いてます。</p>
+<h3>Eclipseプロジェクトｎ作成</h3>
+<p>まずプロジェクトをEclipse上で作成します。PyDev Google App Engine Projectで作成し、途中GAEへのパスを聞かれるので/usr/local/google_appengineを指定します。<br />
+<a href="http://tmpla.info/wp-content/uploads/2012/05/84ca05e556daf052340f4e327255f975.png"><img src="http://tmpla.info/wp-content/uploads/2012/05/84ca05e556daf052340f4e327255f975-300x227.png" alt="" title="スクリーンショット 2012-05-04 20.48.44" width="300" height="227" class="alignnone size-medium wp-image-1503" /></a></p>
+<p>すると　PYTHONPATHへのライブラリを追加する画面が出るので、django_1_3へのライブラリを指定して（多分デフォルトで指定されている）プロジェクトの作成を完了します。<br />
+<a href="http://tmpla.info/wp-content/uploads/2012/05/ba373ebd512d3a14a7b926c296891069.png"><img src="http://tmpla.info/wp-content/uploads/2012/05/ba373ebd512d3a14a7b926c296891069-300x227.png" alt="" title="スクリーンショット 2012-05-04 20.51.08" width="300" height="227" class="alignnone size-medium wp-image-1504" /></a></p>
+<p>ここでは「testsite」という名前でプロジェクトを作成しています。</p>
+<h3>GAEのdjangoヘルパーの配置</h3>
+<p>GAE上でdjagnoを使う際に一番影響があるのがModelの使用です。GAEはDatabaseを使用しないのでそのままdjangoのModelを使用出来ません。<br />
+そこら辺をうまく処理してくれるのがこのヘルパーです。</p>
+<p>Django 用 Google App Engine ヘルパーの使用 - Google App Engine — Google Developers<br />
+<a href="https://developers.google.com/appengine/articles/appengine_helper_for_django?hl=ja">https://developers.google.com/appengine/articles/appengine_helper_for_django?hl=ja</a></p>
+<p>これを見つけるまで、djangoのプロジェクトを作成して一つ一つGAE用にエラーを潰して行って・・・とやってたんですが変更内容自体やバージョン間の差異などで修正が難しかったのです。ですがこれで結構簡単に行きました。<br />
+配置方法は上記サイトに記載されているのですが、簡単にいえばダウンロードしたappengine_helper_for_django_rxxx.zipファイルを解凍して出来たappengine_helper_for_djangoディレクトリの直下のすべてのファイルを「testsite」直下にコピーします。</p>
+<p>すると、プロジェクトのファイル構成は下記のようになります。<br />
+ついでに、Run > PyDev: Google App Runで起動してみたところです。<br />
+Helperのサイトでは、Google App Engineへのパスを通す作業が必要でしたが、Eclipseのプロジェクトにパスが既に通っているので起動てきています。</p>
+<p><a href="http://tmpla.info/wp-content/uploads/2012/05/fcbe3940ab417fb2671772731d626bc4.png"><img src="http://tmpla.info/wp-content/uploads/2012/05/fcbe3940ab417fb2671772731d626bc4-300x232.png" alt="" title="スクリーンショット 2012-05-04 21.31.50" width="300" height="232" class="alignnone size-medium wp-image-1505" /></a></p>
+<p>あとはここから個々のアプリケーションを作成しますが、<br />
+前述のヘルパーのサイトにPollsアプリケーションの作成方法が書いてあるので変更点だけ簡単にいえば</p>
+<p>・app.yamlを編集する<br />
+・「django.db.models」を「appengine_django.models.BaseModel」と「google.appengine.ext.db」を使うように変更する。</p>
+<p>さらにちょっと触った感じで気になったのは<br />
+・[Model].object.all()は[Model].all()に変更。さらにorder_byはorderに変更<br />
+・generic viewは諦めた方が良さそう</p>
+<p>というところでした。</p>

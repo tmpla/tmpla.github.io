@@ -1,0 +1,229 @@
+---
+layout: post
+title: CSSだけでちょっとリアルな光沢ボタンを作ってみる
+categories:
+- "開発"
+tags:
+- "-webkit-gradient"
+- "-webkit-radial-gradient"
+- bliliane
+- button
+- css
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>css3のborder-radiusやgradientを使えば今時は立体的なボタンも作る事が出来る。<br />
+以前は角丸にするために角のとこで使う画像を用意したりしてやったもんですが、これはいいですね。</p>
+<p>cssだけで光沢のあるボタンは下記サイトで結構前にサンプルを公開されている方がいらっしゃいました。</p>
+<p>CSS3 Gradients: No Image Aqua Button &laquo;  GirlieMac! Blog<br />
+<a href="http://girliemac.com/blog/2009/04/30/css3-gradients-no-image-aqua-button/">http://girliemac.com/blog/2009/04/30/css3-gradients-no-image-aqua-button/</a></p>
+<p>このAQUA風のボタンは、よくよく見ると大きな楕円形の中に小さな楕円形が含まれている感じに見えます。<br />
+これをCSSで重ねて、個々の楕円はグラデーションをかけてあげるときれいに見えるようです。</p>
+<p><a href="http://tmpla.info/wp-content/uploads/2012/06/ChalkBoard_20120612-230307.png"><img src="http://tmpla.info/wp-content/uploads/2012/06/ChalkBoard_20120612-230307-300x225.png" alt="" title="ChalkBoard_20120612-230307" width="300" height="225" class="alignnone size-medium wp-image-1520" /></a></p>
+<p>これをそのままマネしても面白くないので、もうちょっとリアルに光沢を出せないもんかとやってみたのがこれです。<br />
+(ChromeとSafariじゃないと見えないかも…）</p>
+<style type="text/css">
+.buttonred {<br />
+width: 48px;<br />
+height: 48px;<br />
+background: -webkit-gradient(radial, center -24, 0, center center, 128<br />
+, from(rgba(255,255,255, 1)), color-stop(25%, rgba(255, 162, 162, 1))<br />
+, color-stop(26%, rgba(255, 0, 0, 1)), color-stop(40%, rgba(255, 162, 162, 1))<br />
+, to(rgba(255, 0, 0, 1)));<br />
+border-radius: 10px;<br />
+overflow: hidden;<br />
+vertical-align: middle;<br />
+}<br />
+.buttonred:hover {<br />
+background: -webkit-gradient(radial, center -24, 0, center center, 128<br />
+, from(rgba(255,255,255, 1)), color-stop(25%, rgba(255, 120, 120, 1))<br />
+, color-stop(26%, rgba(255, 0, 0, 1)), color-stop(40%, rgba(255, 120, 120, 1))<br />
+, to(rgba(255, 0, 0, 1)));<br />
+}<br />
+.buttonred:active {<br />
+background: -webkit-gradient(radial, center -24, 0, center center, 128<br />
+, from(rgba(255,255,255, 1)), color-stop(25%, rgba(255, 96, 96, 1))<br />
+, color-stop(26%, rgba(255, 0, 0, 1)), color-stop(40%, rgba(255, 96, 96, 1))<br />
+, to(rgba(255, 0, 0, 1)));<br />
+}<br />
+.buttonblue {<br />
+width: 48px;<br />
+height: 48px;<br />
+background: -webkit-gradient(radial, center -24, 0, center center, 128<br />
+, from(rgba(255,255,255, 1)), color-stop(25%, rgba(157, 157, 255, 1))<br />
+, color-stop(26%, rgba(0, 0, 255, 1)), color-stop(40%, rgba(157, 157, 255, 1))<br />
+, to(rgba(0, 0, 255, 1)));<br />
+border-radius: 10px;<br />
+overflow: hidden;<br />
+}<br />
+.buttonblue:hover {<br />
+background: -webkit-gradient(radial, center -24, 0, center center, 128<br />
+, from(rgba(255,255,255, 1)), color-stop(25%, rgba(120, 120, 255, 1))<br />
+, color-stop(26%, rgba(0, 0, 255, 1)), color-stop(40%, rgba(120, 120, 255, 1))<br />
+, to(rgba(0, 0, 255, 1)));<br />
+}<br />
+.buttonblue:active{<br />
+background: -webkit-gradient(radial, center -24, 0, center center, 128<br />
+, from(rgba(255,255,255, 1)), color-stop(25%, rgba(96, 96, 255, 1))<br />
+, color-stop(26%, rgba(0, 0, 255, 1)), color-stop(40%, rgba(96, 96, 255, 1))<br />
+, to(rgba(0, 0, 255, 1)));<br />
+}<br />
+.buttongreen {<br />
+width: 48px;<br />
+height: 48px;<br />
+background: -webkit-gradient(radial, center -24, 0, center center, 128<br />
+, from(rgba(255,255,255, 1)), color-stop(25%, rgba(200, 255, 200, 1))<br />
+, color-stop(26%, rgba(0, 255, 0, 1)), color-stop(40%, rgba(200, 255, 200, 1))<br />
+, to(rgba(0, 255, 0, 1)));<br />
+border-radius: 10px;<br />
+overflow: hidden;<br />
+}<br />
+.buttongreen:hover {<br />
+background: -webkit-gradient(radial, center -24, 0, center center, 128<br />
+, from(rgba(255,255,255, 1)), color-stop(25%, rgba(180, 255, 180, 1))<br />
+, color-stop(26%, rgba(0, 255, 0, 1)), color-stop(40%, rgba(180, 255, 180, 1))<br />
+, to(rgba(0, 255, 0, 1)));<br />
+}<br />
+.buttongreen:active {<br />
+background: -webkit-gradient(radial, center -24, 0, center center, 128<br />
+, from(rgba(255,255,255, 1)), color-stop(25%, rgba(140, 255, 140, 1))<br />
+, color-stop(26%, rgba(0, 255, 0, 1)), color-stop(40%, rgba(140, 255, 140, 1))<br />
+, to(rgba(0, 255, 0, 1)));<br />
+}<br />
+</style>
+<div class="buttonred" style="float:left;"></div>
+<div class="buttonblue" style="float:left;"></div>
+<div class="buttongreen" style="float:left;"></div>
+<p><br clear="both"/><br />
+CSSソース</p>
+<pre lang="css">
+.buttonred {
+width: 48px;
+height: 48px;
+background: -webkit-gradient(radial, center -24, 0, center center, 128 
+, from(rgba(255,255,255, 1)), color-stop(25%, rgba(255, 162, 162, 1))
+, color-stop(26%, rgba(255, 0, 0, 1)), color-stop(40%, rgba(255, 162, 162, 1))
+, to(rgba(255, 0, 0, 1)));
+border-radius: 10px;
+overflow: hidden;
+vertical-align: middle;
+}
+.buttonred:hover {
+background: -webkit-gradient(radial, center -24, 0, center center, 128
+, from(rgba(255,255,255, 1)), color-stop(25%, rgba(255, 120, 120, 1))
+, color-stop(26%, rgba(255, 0, 0, 1)), color-stop(40%, rgba(255, 120, 120, 1))
+, to(rgba(255, 0, 0, 1)));
+}
+.buttonred:active {
+background: -webkit-gradient(radial, center -24, 0, center center, 128
+, from(rgba(255,255,255, 1)), color-stop(25%, rgba(255, 96, 96, 1))
+, color-stop(26%, rgba(255, 0, 0, 1)), color-stop(40%, rgba(255, 96, 96, 1))
+, to(rgba(255, 0, 0, 1)));
+}
+.buttonblue {
+width: 48px;
+height: 48px;
+background: -webkit-gradient(radial, center -24, 0, center center, 128
+, from(rgba(255,255,255, 1)), color-stop(25%, rgba(157, 157, 255, 1))
+, color-stop(26%, rgba(0, 0, 255, 1)), color-stop(40%, rgba(157, 157, 255, 1))
+, to(rgba(0, 0, 255, 1)));
+border-radius: 10px;
+overflow: hidden;
+}
+.buttonblue:hover {
+background: -webkit-gradient(radial, center -24, 0, center center, 128
+, from(rgba(255,255,255, 1)), color-stop(25%, rgba(120, 120, 255, 1))
+, color-stop(26%, rgba(0, 0, 255, 1)), color-stop(40%, rgba(120, 120, 255, 1))
+, to(rgba(0, 0, 255, 1)));
+}
+.buttonblue:active{
+background: -webkit-gradient(radial, center -24, 0, center center, 128
+, from(rgba(255,255,255, 1)), color-stop(25%, rgba(96, 96, 255, 1))
+, color-stop(26%, rgba(0, 0, 255, 1)), color-stop(40%, rgba(96, 96, 255, 1))
+, to(rgba(0, 0, 255, 1)));
+}
+.buttongreen {
+width: 48px;
+height: 48px;
+background: -webkit-gradient(radial, center -24, 0, center center, 128
+, from(rgba(255,255,255, 1)), color-stop(25%, rgba(200, 255, 200, 1))
+, color-stop(26%, rgba(0, 255, 0, 1)), color-stop(40%, rgba(200, 255, 200, 1))
+, to(rgba(0, 255, 0, 1)));
+border-radius: 10px;
+overflow: hidden;
+}
+.buttongreen:hover {
+background: -webkit-gradient(radial, center -24, 0, center center, 128
+, from(rgba(255,255,255, 1)), color-stop(25%, rgba(180, 255, 180, 1))
+, color-stop(26%, rgba(0, 255, 0, 1)), color-stop(40%, rgba(180, 255, 180, 1))
+, to(rgba(0, 255, 0, 1)));
+}
+.buttongreen:active {
+background: -webkit-gradient(radial, center -24, 0, center center, 128
+, from(rgba(255,255,255, 1)), color-stop(25%, rgba(140, 255, 140, 1))
+, color-stop(26%, rgba(0, 255, 0, 1)), color-stop(40%, rgba(140, 255, 140, 1))
+, to(rgba(0, 255, 0, 1)));
+}
+</pre>
+<p>これは正直、あまり実用的ではないのですが、何かの足しになれば…。<br />
+まずどう言う状態が光沢なのか？と思ったのですが、iPhoneのアイコンを参考にしてみると、<br />
+角丸の四角の上部に大きな円が薄めの色で乗っていて、それをクリップしたような（意味が分かりにくくてすいません）<br />
+つまり下記の絵のような感じに見えました。</p>
+<p><a href="http://tmpla.info/wp-content/uploads/2012/06/ChalkBoard_20120612-232028.png"><img src="http://tmpla.info/wp-content/uploads/2012/06/ChalkBoard_20120612-232028-300x225.png" alt="" title="ChalkBoard_20120612-232028" width="300" height="225" class="alignnone size-medium wp-image-1524" /></a></p>
+<p>（参考サイト）<br />
+iPhone icons by ~judge on deviantART<br />
+<a href="http://judge.deviantart.com/art/iPhone-icons-47461337">http://judge.deviantart.com/art/iPhone-icons-47461337</a></p>
+<p>さらにいえば、ボタン下部に従って色は薄くなっていくのと、重なっている円との境界線ははっきりしており、円中央に向かうにつれ色が薄くなっている、そういうグラデーションに見えました。これは一つのグラデーションでやるのは難しいと思い、<br />
+最初は、divを作って、その子要素のdivをborder-radiusでまん丸にして、親要素でマスク出来ればいいなと思ったのですが、そういうマスクが<br />
+出来ないようなのでした。<br />
+cssにclipというプロパティがあって、それをrectという関数を指定して使うと、そこだけクリップ（切り抜いて）してくれるのですが、<br />
+角丸のクリップは出来ず、四角くクリップされてしまい角丸のボタンにならないのです。</p>
+<p>そこでどうしたもんかと思ったのですが、ところでcssで指定出来るグラデーションには今のところ２種類あり、線形グラデーションという奴と、円形グラデーションというのがあります。<br />
+線形グラデーションというのはよく使う直線方向に段々色を調節していくものなのですが、円形グラデーションというのは、開始点から円の外側（または外側から中心へ）に色を調節していくやつで、途中に色を挟んでいく事が出来るのです。<br />
+なので、</p>
+<p>・中心から薄い色で初めて、<br />
+・途中に一度目的の色で境界をはっきりさせ<br />
+・またちょっと薄めの色から目的の色までグラデーション</p>
+<p>という形にしてみたら結構きれいに見えたような気がします。それが前述のボタンです。</p>
+<p>下記の黄色がボタンで、赤で塗ってるところが濃いとこ、白で塗ってるのが薄いとこです。</p>
+<p><a href="http://tmpla.info/wp-content/uploads/2012/06/ChalkBoard_20120612-233945.png"><img src="http://tmpla.info/wp-content/uploads/2012/06/ChalkBoard_20120612-233945-300x225.png" alt="" title="ChalkBoard_20120612-233945" width="300" height="225" class="alignnone size-medium wp-image-1525" /></a></p>
+<p>円形グラデーションの指定は下記のように行います。</p>
+<blockquote><p>-webkit-gradient(type, inner_center, inner_radius, outer_center, outer_radius, / stop...)</p></blockquote>
+<p>Safari CSS Reference: CSS Property Functions<br />
+<a href="http://developer.apple.com/library/safari/#documentation/appleapplications/reference/safaricssref/articles/Functions.html">http://developer.apple.com/library/safari/#documentation/appleapplications/reference/safaricssref/articles/Functions.html</a></p>
+<p>なので、例えば赤のボタンの場合は、基本色をrgb(255,255,255)にして、薄い色をrgb(255,162,162)、あと白を使ってます。<br />
+この場合、48px * 48pxの固定の大きさのボタンに対して、開始位置（の半径かな？）を0で白指定、<br />
+半径128pxの位置で終了ですが、この円は全部を覆っている形になっています。<br />
+そしてその途中25%の位置で薄色、26%で基本色（赤）、ここで一度境界がハッキリします。<br />
+そっから40%までは薄色指定で最後は赤になるようにしています。<br />
+しかし最後が赤かどうかは多分あまり問題ではないです。</p>
+<p>円の配置位置は第２〜第５引数までで指定しています。<br />
+この場合は横方向が中心で、上方向に-24pxの位置から始まって、終了位置は横と縦が中心位置で終わっています。<br />
+しかしこのあたりは引数の意味がどうというか、色々調整してみた結果なのでどうも腑には落ちていませんが…。</p>
+<pre lang="css">
+width: 48px;
+height: 48px;
+background: -webkit-gradient(radial, center -24, 0, center center, 128 
+, from(rgba(255,255,255, 1)), color-stop(25%, rgba(255, 162, 162, 1))
+, color-stop(26%, rgba(255, 0, 0, 1)), color-stop(40%, rgba(255, 162, 162, 1))
+, to(rgba(255, 0, 0, 1)));
+
+</pre>
+<p>これはまあよしなのですが、-webkit-gradient(今は-webkit-radial-gradientが推奨なのかな）での円の位置指定が<br />
+固定値しか使えないので、ボタンのサイズも固定でしかできません。<br />
+JavaScriptを使えばもしかしたら動的に行けるかもしれないのですが、JavaScriptをここで使ったら負けのような気がするのでやりませんでした。<br />
+FireFoxの場合も-moz-radial-gradientとかにすれば見えると思います。<br />
+IEとかも。</p>
+<p>また別の方法として、上記の見せない円をrgbaで透明度0.5にして使えば、画像ボタンも光沢があるように見えるような気がします。（やってないのでなんとも言えないのですが…）<br />
+まあしかし、それなら最初っから光沢ある画像ボタンにするよ、という話になっちゃうかもしれないですね。</p>
+<p>ご参考までに。</p>
+<p>あと、Macで適当なドローツールがなかったのでリアル黒板FREEというので絵を描いてみたのですが、なかなか良いですね。マウスで書きにくいですがちょっと気に入った。</p>

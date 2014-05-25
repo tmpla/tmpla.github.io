@@ -1,0 +1,73 @@
+---
+layout: post
+title: ChefのレシピとBerkshelfの上手な付き合い方
+categories:
+- Chef
+tags:
+- Berkshelf
+- Chef
+- depends
+- rbenv
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>Chefのレシピを書く時、自分でモリモリ書くのもいいですが、Opscode Communityにある定番化したようなレシピ（とりあえずコミュニティCookbookとでも呼びます）も使いたい時は<br />
+すごく多いと思います。特に環境にあまり拘る必要がない開発時とか。</p>
+<p>なので、自分のレシピのmetadata.rbに依存するレシピを書いて、レシピの中でinclude_recipeを呼び出すようにしています。</p>
+<p>ところで、コミュニティCookbookを使いたい場合は、Berkshelfと言うgemがあって、これの設定ファイルである「Berksfile」と言うのに使いたいコミュニティCookbookをずらずら書いておくとそのコミュニティCookbookを自分のレシピから呼び出すことが出来るのですが、このファイルを置くのは自分のレシピの上位（Chefのリポジトリのトップ）に置くのが普通なようで、<br />
+つまり自分の書くレシピからは見えるけど、Berkshelfからは見えないと言う関係になっています。</p>
+<pre>
+repo
+└Berksfile
+└cookbooks ← コミュニティCookbookを入れるとこ
+└…
+└site-cookbooks ← 自分の書いたレシピを入れるトコ
+└…
+</pre>
+<pre lang="ruby">
+# Berksfile
+source "https://api.berkshelf.com"
+
+cookbook "ntp"
+</pre>
+<pre lang="ruby">
+# site-cookbooks/hoge/metadata.rb
+depends "ntp"
+</pre>
+<pre lang="ruby">
+# recipe/default.rb
+include_recipe "ntp"
+</pre>
+<p>つまり何が言いたいかというと、自分のレシピからコミュニティCookbookを使いたい場合は、先ほどのmetadata.rbのdependsと、include_recipeをするのと、あとBerksfileにも書かなくてはいけないのでこんなに面倒くさいことしないとダメなのか？と思った矢先に下記記事を見つけました。</p>
+<p>最近の(2013/8/28時点の)vagrantとberkshelfの書き方 - Qiita<br />
+<a href="http://qiita.com/joker1007/items/1b62e3a36b4f435c53a2">http://qiita.com/joker1007/items/1b62e3a36b4f435c53a2</a></p>
+<p>Berksfileに自分のレシピを書いておいて、Berkshelfにdependsを読み込ませると言う方法かと思います。<br />
+これだと、Berkshelfに一々依存するコミュニティCookbookを書かずに済むのが楽です。<br />
+（さっきからhogeと言うレシピを作る前提で書いていますが…）</p>
+<pre lang="ruby">
+# Berksfile
+source "https://api.berkshelf.com"
+
+cookbook "hoge", path: "site-cookbooks/hoge"
+</pre>
+<p>これでhogeのmetadata.rbにあるdependsをBerkshelfでよしなにしてくれます。</p>
+<p>しかし、例えばrbenvのCookbookみたいに、コミュニティCookbook（Chef Cookbook: rbenv - Opscode Community<br />
+<a href="http://community.opscode.com/cookbooks/rbenv">http://community.opscode.com/cookbooks/rbenv</a>）じゃなくて、githubにあるrbenv（fnichol/chef-rbenv · GitHub<br />
+<a href="https://github.com/fnichol/chef-rbenv">https://github.com/fnichol/chef-rbenv</a>）を使いたいなって時には、metadata.rbのdependsにはそのような指定ができなさそうなので、その場合はBerksfileに書く必要があります。まあ、筋は通ってる。</p>
+<pre lang="ruby">
+# Berksfile
+source "https://api.berkshelf.com"
+
+cookbook "hoge", path: "site-cookbooks/hoge"
+cookbook "rbenv", github: "fnichol/chef-rbenv"
+</pre>
+<p>一度、dependsでrbenvを定義してcookしちゃったりすると、コミュニティCookbookのrbenvが入ったままになってしまうので、berks installしなおすなどして狙った方を入れましょう。特にこのrbenvの場合は、コミュニティCookbookの方が1.7.3でfnicholさんのが0.7.3と言うバージョンになっているので、バージョンだけ見て既に入っている方が新しいと判定されてしまったようでした。</p>

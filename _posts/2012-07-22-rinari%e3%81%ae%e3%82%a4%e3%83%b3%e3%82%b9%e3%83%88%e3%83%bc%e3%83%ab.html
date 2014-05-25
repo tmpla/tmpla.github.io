@@ -1,0 +1,83 @@
+---
+layout: post
+title: rinariのインストール
+categories:
+- Ruby
+- "開発"
+tags:
+- ELPA
+- Emacs
+- rails
+- Ruby
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>Railsは編集するファイル感の移動が多いと思う。<br />
+開発初期にはrakeコマンドやrailsコマンドも結構使うので、そのたびにviを立ち上げたり落としたりするのは結構な手間である。<br />
+そのあたりを若干補助してくれるemacsのlispパッケージがある。それがrinari。</p>
+<p>なお開発環境はMacのLionで、XCodeは4.3.3で、Command Line Toolsが入ってる環境です。<br />
+emacsのバージョンは（現在デフォルトだと思いますが）</p>
+<pre lang="bash">
+$ emacs --version
+GNU Emacs 22.1.1
+Copyright (C) 2007 Free Software Foundation, Inc.
+GNU Emacs comes with ABSOLUTELY NO WARRANTY.
+You may redistribute copies of Emacs
+under the terms of the GNU General Public License.
+For more information about these matters, see the file named COPYING.
+</pre>
+<p>です。</p>
+<p>emacsとは何かというと歴史のあるエディタのことで、詳しくはググってみればわかると思います。</p>
+<p>今回はざっくり</p>
+<pre lang="bash">
+$ emacs
+</pre>
+<p>とやって、テキストエディタっぽいのが立ち上がればOKです。<br />
+その後、ホームディレクトリに移動して「.emacs.d」というフォルダがあるかどうかを確認してみる。<br />
+なければ作る。（多分あるんじゃないかな？）</p>
+<p>emacsはCキーはControlキーなのですが、Mキーが何故か使えないです。WindowsだとAltキーになると思うのでOptionとかESCとかやってみたのですがダメでした。<br />
+なので、Terminalの環境設定から[設定] - [キーボード]の「メタキーとしてoptionキーを使用」のチェックを付けるとoptionキーをMキーとして使うことができます。最初からチェックつけといてくれてもいいと思うのに・・・。</p>
+<p>このrinariをインストールする方法は、現在はgithubから直接cloneして行う方法が日本語のサイトでは殆どのようですが、<br />
+もっと簡単にインストールする方法があったのでそれを紹介します。<br />
+といってもrinariのドキュメントの一番最初に書いてある方法なのですが、ELPAというやつです。</p>
+<p>ELPA: Install<br />
+<a href="http://tromey.com/elpa/install.html">http://tromey.com/elpa/install.html</a><br />
+にあるように、emacsを開いて、</p>
+<p>C-x C-bで*scratch*というバッファを開いて、</p>
+<pre lang="emacs">
+ (let ((buffer (url-retrieve-synchronously
+	       "http://tromey.com/elpa/package-install.el")))
+  (save-excursion
+    (set-buffer buffer)
+    (goto-char (point-min))
+    (re-search-forward "^$" nil 'move)
+    (eval-region (point) (point-max))
+    (kill-buffer (current-buffer))))
+</pre>
+<p>をコピーし、C-jで（実行）評価するとまずELPAがインストールされます。<br />
+インストールされたあとに、M-x package-list-packageとうつと、インストール可能なパッケージがずらずら表示されるので、<br />
+rinariの行で「i」をタイプし、「x」と打つとインストールされます。<br />
+依存関係も一緒にインストールされてくれるので便利！</p>
+<p>ちなみに、rinariのインストール方法のまた別の方法としては、emacs-starter-kitというのを入れるというのがありますが、<br />
+これの現在のgitのURLは</p>
+<p>git://github.com/technomancy/emacs-starter-kit.git</p>
+<p>ですが、デフォルトで向いているブランチが「v2」になっているようでした。<br />
+このv2は、emacs24以上が必須のやつなので、それ以外の場合はbranchをmasterに向ける必要があると思います。<br />
+（自分のはemacs22なのでそれで非常にハマった）</p>
+<pre lang="bash">
+git clone git://github.com/technomancy/emacs-starter-kit.git
+cd emacs-starter-kit
+git checkout master
+</pre>
+<p>とかすれば良いかと思います。</p>
+<p>パッケージ管理はこれでHomebrew（こないだrubyを入れた）、gem、bundler、ELPAを階層毎に使ってることになるなぁ。<br />
+まるでポイントカード状態。yum一個で全部できるようになったらいいなぁ。</p>

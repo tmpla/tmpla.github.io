@@ -1,0 +1,120 @@
+---
+layout: post
+title: JSONPについて説明してみる
+categories:
+- "開発"
+tags:
+- ajax
+- json
+- jsonp
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>JSONPというのがある。<br />
+これはJSONとかAjaxとかいう言葉を使わない人にとっては非常にどうでもよい単語なのではあるが、<br />
+知っている人にとっても正直単語を知っているだけで良いが、知っていると便利なこともあるので説明してみる。<br />
+というのは、なぜこれが必要なことがあるのかとか、どういう仕組みなのかを知った当時に自分が理解しにくかったからです。</p>
+<p>ググってみたところ、下記ページに詳しく書かれているのでそのまんまなのですが、自分なりに付け加えてみたいと思います。</p>
+<p>throw Life - 超シンプルなJSONP入門<br />
+<a href="http://www.adamrocker.com/blog/102/javascript_simplest_jsonp.html">http://www.adamrocker.com/blog/102/javascript_simplest_jsonp.html</a></p>
+<h3>Ajax</h3>
+<p>前段として、Ajaxというのを理解しておく必要があります。<br />
+今やいつでもどこでも使っているものなのですが、自分が知って驚いたのはGoogleMapでした。<br />
+普通、Webアプリケーションでアクションを起こすには画面遷移を伴うのです。<br />
+ログインフォームに入力して「ログイン」ボタンを押下してみたり、検索エンジンの検索結果をクリックしたら該当ページにジャンプするのも、<br />
+パラメータを伴ってサーバーに送信し、その結果をブラウザで受け取って表示させるのが普通のやり方なのですが、<br />
+これを裏でJavaScriptを使ってやっちゃおうというのがAjaxの基本でした。<br />
+Ajaxの仕組みを考えたのは元々マイクロソフトのActivexObjectだったそうなのですが、たまにはいい仕事します。</p>
+<p>Ajaxは「Asynchronous JavaScript + XML」だそうです。<br />
+多分元々はXML形式のデータをやりとりするのを基本として考えてたのかもしれません。<br />
+自分の経験では、今でもよく見かけますがHTMLの一部分とか、直接テキストデータとかをやりとりするのが多かったように思います。</p>
+<h3>JSON</h3>
+<p>その後、どのタイミングだかわからないのですが、「JSON」という形式のデータでやりとりする方法が多くなって来ました。<br />
+（最初は「ジェイ…ソン？あの１３日の金曜日の？とか思いましたが…）</p>
+<p>JSONは「JavaScript Object Notation」の略で、書いた内容を簡単にJavaScriptのオブジェクトとして使えるものなのです。<br />
+XMLだと内容を読んで、解析して、JavaScriptのオブジェクトに転記する、などの手間が必要なのでした。<br />
+下記は同じデータをXMLで記載した場合とJSONで記載した場合です。</p>
+<p>XML</p>
+<pre lang="xml">
+<class>
+ <teacher>
+  <name>坂本金八</name>
+ </teacher>
+<students>
+ <student>
+  <name>山田一郎</name>
+  <age>15</age>
+  <sex>male</sex>
+ <student>
+  <name>山田花子</name>
+  <age>15</age>
+  <sex>famale</sex>
+ </student>
+</students>
+</class>
+</pre>
+<p>JSON</p>
+<pre lang="json">
+{"class":{"teacher":{"name":"坂本金八"}},
+     "students":[
+               {"student":{"name":"山田一郎", "age":15, sex:"male"}},           
+               {"student":{"name":"山田花子", "age":15, sex:"famale"}},           
+                ]
+}
+</pre>
+<p>その他、上記例のように、XMLに比べて人間が見やすい、XMLであれば必ず要素をタグで囲う必要があるのでJSONのほうがデータ量が少なくなり、<br />
+結果転送量も減らせるメリットがあるので今AjaxをやるならJSONを使うことが多いです。<br />
+Ajaxじゃなくて普通にHTTP通信を行う際にでもJSONを使うことが多いです。</p>
+<h3>JSONP</h3>
+<p>このAjaxのお陰でWebページを見ている最中ににゅるんとナビゲーションが出たり、フォームを入力しながらメールアドレスの形式チェックができたりして便利なのですが弱点がありました。<br />
+それは、Ajaxは現在表示しているページと同じドメイン（ブラウザによりけりかもしれませんが、同じディレクトリじゃないとダメだったかもしれません）に対してしかAjaxリクエストを送ることが出来ないのです。</p>
+<p>例えばabc.comのページで、郵便番号と住所のエクスチェンジをAjaxでやろうとした場合、Ajaxリクエストはabc.comには送れますが、def.com等の別のドメインある郵便番号エクスチェンジサービスをAjaxで問い合わせることは出来ないのです。<br />
+これは同一生成元ポリシーというやつで、当たり前といえば当たり前なのですが、悪意のあるページを見た時に、裏で全然気づかずにどこのページを見てるとか、どんな情報を入力しているとかを勝手に送られちゃうと困っちゃうからだと思います。<br />
+(Ajax、というかXMLHTTPRequestを使わなければ多分出来るかもしれません）</p>
+<p>でも、あるWebサービスを作って、それをいろんなところで共有して使いたいみたいな要望は大いに有り得ると思います。<br />
+そこでこのJSONPを使うのです。</p>
+<p>JavaScriptはHTMLに記述せずとも外部ファイルに記載し、それを読み込みことが出来ます。<br />
+その外部ファイルは別にHTMLがある場所と同じでじゃなくても良くて、全く関係ない外部サイトにおいてあるJavaScriptでも読みこむことが出来るのです。<br />
+で、読み込んだJavaScriptが関数呼び出し形式で、かつその関数が定義済みのものであればそれは実行されます。<br />
+外部Scriptの読み込みを動的に行えば、クロスドメインでもAjaxと同じような事ができるのです。</p>
+<p>例えば、abc.comからdef.comにある前述の金八先生の教室のデータを読み込見たい場合は下記のようにabc.comに呼び出される関数を定義しておきます。</p>
+<p>abc.com</p>
+<pre lang="javascript">
+loadStudents = function(data){
+    // 教室データ読み込み処理…
+}
+</pre>
+<p>そんで、def.comでは最終的に下記のように出力出来ればOKです。<br />
+def.com</p>
+<pre lang="javascript">
+loadStudents({"class":{"teacher":{"name":"坂本金八"}},
+     "students":[
+               {"student":{"name":"山田一郎", "age":15, sex:"male"}},           
+               {"student":{"name":"山田花子", "age":15, sex:"famale"}},           
+                ]
+});
+</pre>
+<p>呼び出し元（データの）と呼び出され側（関数実行する方）で、function名をあわせておく必要があります。<br />
+普通はデータを動的に取得してJavaScriptを生成させると思うので、呼び出し側は</p>
+<pre>
+def.com/?param=坂本&callback=loadStudent
+</pre>
+<p>とかにしておいて、def.com側は上記で言えばパラメータのcallbackの値を読んでこんな生成をする感じでしょうか。</p>
+<pre lang="php">
+<?php
+// データ取得処理とか色々入る…
+$callback = $_GET['callback'];
+echo $callback . '(' . $jsondata . ');';
+</pre>
+<p>これでクロスドメインのデータもガンガン取得することが出来ます。<br />
+理屈的にはデータ内容はJSONじゃなくてもいいとは思いますがJSONにしない理由が見つからないのでJSONで良いと思います。</p>
+<p>ちなみに　jQueryの$.ajaxメソッドでは、このあたりも透過的に記述できるのでお勧めです。</p>

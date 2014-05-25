@@ -1,0 +1,54 @@
+---
+layout: post
+title: HTMLのコーディングをzen-codingで行う
+categories:
+- "開発"
+tags:
+- html
+- textmate2
+- zen-coding
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>Zen-Codingというのがあります。<br />
+これはすごく強力なコードアシスト機能？で、ある決まった書式をHTMLやCSSに展開してくれるものです。<br />
+スクラッチでHTMLコーディングとかすると、divとか階層深くなりすぎるとちょっとうんざり…というのもあまりなくなるかも。</p>
+<p>書式はHTMLやCSSをちょっと知っていればすぐ覚えられるようなものなのでこれは使ったほうがお得だし、ちょっと長いのが綺麗に決まると結構嬉しいので使いましょう！</p>
+<p>テキストで書くより動画で見てみたほうが手っ取り早いので動画作成しました。<br />
+これは、Twitter-Bootstrapのformを書いてみたところです。</p>
+<p>httpv://www.youtube.com/watch?v=ONOYowdfvy0</p>
+<p>簡単にやってみると、まず、下記のように書きます。</p>
+<pre lang="html">
+div.menu>ul>li*3
+</pre>
+<p>これを、zen-codingの書式を解釈して変換するツールを通すと下記のようになります。</p>
+<pre lang="html">
+<div class="menu">
+   <ul>
+     <li></li>
+     <li></li>
+     <li></li>
+   </ul>
+</div>
+</pre>
+<p>しかも親子関係の構造もずれにくくなるので安心。</p>
+<p>今回はTextmate2でやったのでその機能拡張方法も書いておきます。<br />
+Textmate2は既に導入済みとして、zen-codingのBundleは下記にあります。</p>
+<p> zen-coding -<br />
+ Set of plugins for HTML and CSS hi-speed coding - Google Project Hosting<br />
+<a href="http://code.google.com/p/zen-coding/">http://code.google.com/p/zen-coding/</a></p>
+<p>上記URLに書式の例や詳細リファレンスへのリンクもあります。</p>
+<p>今回は、Zen Coding for Textmate v0.7を使いました。これをダウンロードします。<br />
+Zen.Coding-TextMate.v0.7.zip - zen-coding -　Zen Coding for TextMate v0.7 - Set of plugins for HTML and CSS hi-speed coding - Google Project Hosting<br />
+<a href="http://code.google.com/p/zen-coding/downloads/detail?name=Zen.Coding-TextMate.v0.7.zip">http://code.google.com/p/zen-coding/downloads/detail?name=Zen.Coding-TextMate.v0.7.zip</a></p>
+<p>ダウンロードしたzipファイルの中に「Zen Coding.tmbundle」というファイルがあるので、それをTextmateのアイコン(Dockに入っているやつでも良いです）にドラッグドロップするとすぐ使えるようになります。（あと、本当はTextmate2のBundle Supportを有効にしないとダメかも）</p>
+<p>お勧めです。</p>

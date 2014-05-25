@@ -1,0 +1,43 @@
+---
+layout: post
+title: jQueryでoption要素を生成するスマートな方法
+categories:
+- jQuery
+tags:
+- jQuery
+- option
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>jQueryでselectタグの内容を生成する場合というのはよくあるのではないかと思います。<br />
+その生成のやり方は色々あるのではないかと思いますが、<br />
+なんとなくスマートじゃね？という小技を発見したのでメモします。</p>
+<p>使用したjQueryのバージョンは1.7.1ですが、そんなにバージョンに依存しないかも。<br />
+下記は、都道府県のリストを生成する場合とか。</p>
+<pre lang="javascript">
+var prefs = [
+		{value:'01', text:'--選択して下さい--'},
+		{value:'01', text:'北海道'},
+		{value:'02', text:'青森県'},
+		{value:'03', text:'岩手県'},
+		{value:'04', text:'宮城県'},
+		           :
+];
+		$('select').empty();
+		$.each(prefs, function(){
+			var option = $('<option>', this);
+			$('select').append(option);
+		});
+</pre>
+<p>連想配列のキーを「value」と「text」にして値を与えてoptionを生成すると勝手にプロパティを展開してくれます。<br />
+同じ要領でidとかselectedとかもいけるはず。classはIEで予約語エラーが出るので素直にaddClassしたほうがよさそうですが。<br />
+ajaxやjsonpでロードする場合でもこの形式で返しておくと楽ですね。</p>

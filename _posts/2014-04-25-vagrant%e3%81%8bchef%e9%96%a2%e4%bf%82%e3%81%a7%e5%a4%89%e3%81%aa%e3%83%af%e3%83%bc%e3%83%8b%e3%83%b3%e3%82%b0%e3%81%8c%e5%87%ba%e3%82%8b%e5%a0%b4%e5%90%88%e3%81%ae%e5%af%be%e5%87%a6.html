@@ -1,0 +1,63 @@
+---
+layout: post
+title: vagrantかchef関係で変なワーニングが出る場合の対処
+categories:
+- "未分類"
+tags: []
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>vagrant使ってて下記のようなワーニングが出ることありませんか？</p>
+<pre lang="ruby">
+$ vagrant status
+WARNING: Could not load IOV methods. Check your GSSAPI C library for an update
+WARNING: Could not load AEAD methods. Check your GSSAPI C library for an update
+WARNING: Nokogiri was built against LibXML version 2.8.0, but has dynamically loaded 2.9.1
+</pre>
+<p>これらメッセージでググるとstackoverflowでなんとなく対処は出来そうです。</p>
+<p>Chef knife gives GSSAPI C library warning - Stack Overflow<br />
+<a href="http://stackoverflow.com/questions/13884588/chef-knife-gives-gssapi-c-library-warning">http://stackoverflow.com/questions/13884588/chef-knife-gives-gssapi-c-library-warning</a></p>
+<p>ruby - WARNING: Nokogiri was built against LibXML version 2.7.8, but has dynamically loaded 2.7.3 - Stack Overflow<br />
+<a href="http://stackoverflow.com/questions/6802410/warning-nokogiri-was-built-against-libxml-version-2-7-8-but-has-dynamically-lo/14658949#14658949">http://stackoverflow.com/questions/6802410/warning-nokogiri-was-built-against-libxml-version-2-7-8-but-has-dynamically-lo/14658949#14658949</a></p>
+<p>なので、上記の通りにやってみようかと思ってやってみたのですが一向に直らないのでした。rbenv使ってるんで全部のバージョンをupdateしたりuninstallしたりしてもダメ。</p>
+<p>ふと、which vagrant → /usr/bin/vagrantのスクリプトを見てみたら</p>
+<pre lang="bash">
+# Useful variables
+EMBEDDED_DIR="${DIR}/../embedded"
+
+# Export gem paths so that we use the isolated gems.
+export GEM_PATH="${EMBEDDED_DIR}/gems"
+export GEM_HOME="${GEM_PATH}"
+export GEMRC="${EMBEDDED_DIR}/etc/gemrc"
+</pre>
+<p>と、なんだか同梱されているやつを使っていそうではあります。なので、これが指す場所（/Applications/Vagrant/embedded）の中のgemsを色々見てみたのですが、nokogiriとかgssapiみたいなのはなさそう。</p>
+<p>最終手段で、「Could not load IOV methods. Check your GSSAPI C library for an update」で全grepしてみたらありました。<br />
+grepコマンドもあんまり良く知らないのでググりましたが、下記の感じで</p>
+<pre lang="bash">
+$ sudo find /Users/kenichi -type f -print0 | xargs -0 grep "Could not load IOV methods. Check your GSSAPI C library for an update" /dev/null
+   :
+/Users/kenichi/.vagrant.d/gems/gems/gssapi-1.0.3/lib/gssapi/lib_gssapi.rb:      warn "WARNING: Could not load IOV methods. Check your GSSAPI C library for an update"
+   :
+</pre>
+<p>なるほど、~/.vagrant.d/の中だとわかったので、これどう言うタイミングでできるのか調べようと思ったけど、大したboxもまだないし、再インストールしようと思って、uninstall.toolを実行してみたら、~/.vagrant.dはまだ残っているようでした。</p>
+<p>なので手動で~/.vagrant.dを消して、インストールして、~/.vagrant.dがあるかどうか確認したらまだ無い。<br />
+一度vagrant statusとかやると出来るみたいでした。</p>
+<p>そして主目的の「警告出さない」というのは無事達成出来ました。<br />
+何故出るようになったのかというと、多分Windowsのboxをつくろうとした時に色々入れたのが臭いと思う。</p>
+<pre lang="bash">
+$ vagrant status
+Current machine states:
+
+default                   poweroff (virtualbox)
+
+The VM is powered off. To restart the VM, simply run `vagrant up`
+</pre>
