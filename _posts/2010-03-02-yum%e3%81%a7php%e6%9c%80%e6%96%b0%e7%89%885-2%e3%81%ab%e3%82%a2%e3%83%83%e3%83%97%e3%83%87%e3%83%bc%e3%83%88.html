@@ -1,0 +1,44 @@
+---
+layout: post
+title: yumでPHP最新版(5.2)にアップデート
+categories:
+- PHP
+tags:
+- CentOS
+- linux
+- PHP
+- yum
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>CensOS標準のyumリポジトリでは、いまだにPHP5.1.6が最新になっている。<br />
+まあ、他のソフトウェアとの整合性もあるのでしょうがないかもしれないのですが、<br />
+そろそろ・・・。</p>
+<p>特に最近は、php5.2移行を要求するソフトウェアもどんどん出てきているので、そろそろ・・・。</p>
+<p>ツール等のインストールはyum経由で、というのは出来れば崩したくないので、どこかのリポジトリを追加すればいいんだろうなと思っていたが、そのものズバリの事をやっておられる方が！</p>
+<p><a href="http://blog.livedoor.jp/kuroranger/archives/65182380.html">CentOS5.2にPHP5.2をYumでインストール</a></p>
+<p>こちらの手順を参考にさせていただきました。</p>
+<p>・リポジトリ追加</p>
+<pre lang="bash">
+vi /etc/yum.repos.d/utterramblings.repo
+</pre>
+<p>・以下コピペ</p>
+<pre lang="ini">
+[utterramblings]
+name=Jason's Utter Ramblings Repo
+baseurl=http://www.jasonlitka.com/media/EL$releasever/$basearch/
+enabled=1
+gpgcheck=1
+gpgkey=http://www.jasonlitka.com/media/RPM-GPG-KEY-jlitka
+</pre>
+<p>これでアップデートしてみると、無事に5.2.11-jason.1となっている。<br />
+（jasonというのが気になるが後で調べよう）</p>

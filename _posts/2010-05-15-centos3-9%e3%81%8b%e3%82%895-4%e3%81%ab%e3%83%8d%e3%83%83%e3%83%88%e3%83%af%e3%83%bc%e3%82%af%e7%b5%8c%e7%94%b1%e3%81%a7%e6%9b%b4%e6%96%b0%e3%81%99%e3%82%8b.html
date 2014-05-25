@@ -1,0 +1,62 @@
+---
+layout: post
+title: CentOS3.9から5.4にネットワーク経由で更新する
+categories:
+- Cent OS
+- Lavie M
+- "自宅サーバー"
+tags:
+- CentOS
+- Lavie M
+- linux
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p><a href="http://blog.4sure.jp/yokoshima/2010/05/13/hdd、cd-romが破損しているノートpcの復活メモ２/">HDD、CD-ROMが破損しているノートPCの復活メモ２</a>の続きです。</p>
+<p>前回でCentOS3.9が無事インストールされたので、これを最新版（5.4）にします。<br />
+バージョンが違えど、やってるのは<a href="http://ryos.cocolog-nifty.com/hima/2006/09/fdcdrompclinux_2b32.html">前回からお世話になっているこちらのサイト</a>の手順です。</p>
+<p>最新版のinitrd.imgとvmlinuzを入手します。<br />
+（これを書いている時点で5.5のディレレクトリが出来てた・・・）<br />
+今回は、/boot/centOS5.4というとこを作ってそこに保存しました。</p>
+<pre lang="bash">
+#mkdir /boot/centOS5.4
+#cd /boot/centOS5.4
+#wget ftp://ftp.kddilabs.jp/Linux/packages/CentOS/5.4/os/i386/isolinux/initrd.img
+#wget ftp://ftp.kddilabs.jp/Linux/packages/CentOS/5.4/os/i386/isolinux/vmlinuz
+</pre>
+<p>そして、grub.confに追記して、起動時のメニューの選択肢を増やします。</p>
+<pre lang="bash">
+#vi /boot/grub/grub.conf
+title CentOS 5.4 Install
+root (hd0,1)
+kernel (hd0,0)/centos5.4/vmlinz ramdisk_8192
+initrd (hd0,0)/centos/initrd.img
+</pre>
+<p>よくよく考えたら、root (hd0,1)っていらないかも。<br />
+あとは、menu.lstにこれを書いた方がスマートなのかも。<br />
+とにかく、hd0,0のvmlinzとinitrd.imgを指定します。grubの詳細は全然把握しないでやりました（最悪起動できなくなってもいい環境ですので）</p>
+<p>あとかこれでrebootして、「CentOS5.4 Install」を起動メニューから選べばいいです。<br />
+ここからは日本語で、日本語キーボードを使いたいので、以下オプションにしました。</p>
+<p>Choose a Language:Japanese<br />
+Keyboard Type:jp106<br />
+Installation Method:HTTP（前回FTPだったが気まぐれで変更）<br />
+Enable IPv6 support:チェック外す<br />
+Web site name:srv2.ftp.ne.jp<br />
+Red Hat directory:Linux/packages/CentOS/5.4/os/i386/</p>
+<p>IPv6は使うと名前解決に時間掛かるのは経験上なのですが、奉仕の心があるなら有効にすべきですな。<br />
+インストール自体はこれで問題ありませんでした。</p>
+<p>ただ、起動時にSELinuxが有効になっていると、kernel panicが出て起動出来ないので、<br />
+grubでOSを選択する際に、eを押して編集、一番最後に「selinux=0」、bを押して起動させ、rootでログインしてSELinuxを無効にしたら<br />
+普通に起動出来るようになりました。<br />
+（コマンドからsetenforce=0でもいいのかもしれない）</p>
+<p>これでなんとか使用できるようになりました。<br />
+あと、このLavie Mは無線LANが使えるようなので、CentOS5.4でこれを使えるようにしたいなぁ。</p>
