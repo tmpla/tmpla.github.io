@@ -1,0 +1,57 @@
+---
+layout: post
+title: "携帯勝手アプリの作成比較"
+categories:
+- Internet
+- "開発"
+tags:
+- au
+- docomo
+- EZアプリ
+- iPhone
+- iアプリ
+- S!アプリ
+- Softbank
+- "オープンアプリプレイヤー"
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>「勝手アプリ」とは、docomo、au、Softbank等の携帯電話で動作するアプリの事を言います。<br />
+今なら、普通にhtmlページは見れるのですが、もっと操作性・利便性の高い機能を使いたい場合は、各端末にインストールするアプリを使いたいところでしょう。htmlは携帯のリソースにアクセス出来ないので、色々出来ないことがありますので。</p>
+<p>自分の使っているauのケータイでは勝手じゃないアプリを作るには、100本販売分のライセンスで$400必要だという事は<a href="http://blog.4sure.jp/yokoshima/2009/06/16/%E6%90%BA%E5%B8%AF%E7%94%A8%E3%81%AE%E9%96%8B%E7%99%BA%E3%81%AF%E4%B8%8D%E4%BE%BF/">前に書きました</a>。</p>
+<p>そんで、auでは勝手アプリを自在に作れないのかなと思っていたら、「オープンアプリプレイヤー」という、javaアプリを動作させられる環境があるのに気付いていましたが、せっかくなので、3キャリアで勝手アプリを作成するにはどんな具合か比較してみました。</p>
+<p>まずdocomoから。<br />
+docomoは「iアプリ」というのがあります。<br />
+<a href="http://www.nttdocomo.co.jp/service/imode/make/content/iappli/">iアプリ | サービス・機能 | NTTドコモ</a><br />
+iアプリはJavaで作成出来、携帯のリソースにアクセスするAPI群（DojaやStarという）も無料で手に入れられるので、<br />
+docomoは完全に勝手アプリは無料で、しかも企画とか設計とか色々考える前にとりあえず作る、ということも出来そう。<br />
+この環境は素晴らしいです。</p>
+<p>続いてau。<br />
+まず「オープンアプリプレイヤー」の話。<br />
+先日、オープンアプリプレイヤー上で動作する「jigブラウザー」というのを試してみたのですが、接続の度に毎回確認画面が出て、それを承認しないと処理が出来ないので、1分で面倒になってやめました。（jigブラウザー自体は結構有名なソフトで、かなり使い勝手もいいはずなのですが・・・）<br />
+これは、オープンアプリプレイヤー上で動作するアプリの制限らしいので、しょうがないですね。<br />
+<a href="http://plusd.itmedia.co.jp/mobile/articles/0702/02/news073.html">ITmedia +D モバイル：「オープンアプリプレイヤー」版jigブラウザが登場――au新端末で利用可能に</a></p>
+<p>まあ、一度ダウンロードしてしまって、そのあとそんなに外部に接続しないようなものであれば操作感を落とすこともないのかな・・・。<br />
+勝手アプリはこれが限界です。<br />
+前述していますが、brewで作成する場合は、auの公式コンテンツプロバイダになって企画書を通し、それが承認されて作成出来ます。<br />
+<a href="http://www.au.kddi.com/ezfactory/service/brew.html">KDDI au: 公式コンテンツで提供するサービス &gt; EZアプリ (BREW&reg;)</a><br />
+んで、そのあとに例の開発ライセンス（配布ライセンスか？）が$400かかるので、これでは思いつきでアプリを作るのは無理ですね。</p>
+<p>次にソフトバンク。<br />
+S!アプリという名前でJavaで作成出来ます。基盤用ライブラリもあり、docomoと同じように、どんどん作って動作確認までは出来そうです。<br />
+ただ、S!アプリを公開する場合には、コンテンツアグリゲーターという人（組織？）の承認が要りますが、無料のようです。<br />
+これもどんどん作っていけるので言い環境ではありますが、SBは今やiPhoneがあるかなぁ・・・。</p>
+<p>そしてiPhoneです。<br />
+iPhoneの開発環境をそろえるには、おそらくMacが必要。SDKに関しては無料でダウンロード出来そうです。<br />
+ただ、iPhoneアプリの発信先に置くには、iPhone Developer Programに参加（年10800円）が必要っぽい。（<a href="http://developer.apple.com/jp/programs/iphone/">iPhone Developer Program - Apple Developer</a>）<br />
+こないだのFlash排除の発言で、言語はCかC++かObjective-Cだけという話ですが、これは全然問題なし。<br />
+iPhone自体が面白いから、その上に乗せるアプリを考えるのも面白いし、それがAppStoreで評価がダイレクトに見れるのもうれしいもんですよね。</p>
+<p>できればiPhoneのアプリ開発に手を出してみたいが・・・しかしauのアプリ戦略のダメっぷりには何か意味があるのか？</p>

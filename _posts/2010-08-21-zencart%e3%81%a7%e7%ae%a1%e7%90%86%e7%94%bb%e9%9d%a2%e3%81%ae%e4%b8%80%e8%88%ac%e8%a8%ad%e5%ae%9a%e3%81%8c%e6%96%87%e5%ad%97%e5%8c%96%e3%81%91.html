@@ -1,0 +1,31 @@
+---
+layout: post
+title: ZenCartで管理画面の一般設定が文字化け
+categories:
+- ZenCart
+tags:
+- MySQL.照合順序
+- "一般設定"
+- "文字化け"
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+  _thumbnail_id: '1156'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>ZenCartで色々試し中ではあるが、言語設定を日本語にすると、管理画面の「一般設定」と言う設定項目がすべて化けて（????????とかに）いる。</p>
+<p><a href="http://zen-cart.jp/bbs/viewtopic.php?f=2&amp;t=4417">http://zen-cart.jp/bbs/viewtopic.php?f=2&amp;t=4417</a></p>
+<p>のページの対応で直った。<br />
+まあ、日本語設定しなければ良いのかもしれないが・・・。</p>
+<p>とりあえずは、MySQLの照合順序をujis_japanese_ciにして、基本データのインストールをやれば問題なさそう。<br />
+対応としては、商品データもまだ何も入れていなかったので、データベースをdropして作り直した際に照合順序を上記にして<br />
+再インストールした。</p>
+<p>「照合順序」というくらいだから、参照時には関係あるかもしれないけど、データ作成時にも関係してくるもんかなぁ。<br />
+いやいや、たぶん何か関係してくるだろうというのはわかったので良しとする。</p>

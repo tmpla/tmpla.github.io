@@ -1,0 +1,265 @@
+---
+layout: post
+title: "ガラケーFlash作成ポイントメモ"
+categories:
+- Flash
+tags:
+- ActionScript
+- Flash Lite 1.1
+- "ガラケー"
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+  _wp_old_slug: ''
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>ここ数日、Flash作成の仕事があって日中は別の案件開発、夜と週末はFlashを弄る日々で死ぬかと思った。</p>
+<p>特にFlashの案件は営業で関わったり多少修正したり調査したりというのはあったのだが、スクラッチ開発というのは初めての事だったので、<br />
+まずはツールの使い方からActionScriptの作法、さらには携帯電話が対象のコンテンツだったので勘所をつかむのに苦労した。<br />
+しかしやっとなんとか検収もらったので、同じ境遇（笑）の方の役に立てれば幸いとメモしておきます。</p>
+<p>今回は動作対象環境はFlash Lite 1.1で、携帯デバイスをターゲットとしている環境でした。<br />
+開発自体はFlash CS3を使用しました。<br />
+Flash Liteというくらいなので、普通のPC等で見るFlashのサブセットだと思えばよいが、現在はそのFlash Liteも最新バージョンは4.0になっていますが、Flash 10.1からは携帯電話でもFlashのフル機能をサポートしたFlash Playerが出ているそうなのでFlashとLiteは統合されていきそうである。</p>
+<p>環境自体はこのように新しくはなっているのですが、実際に現在使われている多くの携帯電話でも再生出来るようにしたいと考えると、<br />
+現状ではFlash Lite 1.1では最低でも動くのですから、これで開発せざるを得ない場合が多いと思います。<br />
+今回もそのような要望でした。しかしやはり、端末自体が古い時代の仕様のため？なのか、コンテンツ自体にいろいろな制限があります。</p>
+<h3>Flash Lite 1.1の制約</h3>
+<p>その制約は以下サイトにうまくまとめられてましたので参照します。</p>
+<p>Flash Lite 開発入門<br />
+<a href="http://doruby.kbmj.com/hal_on_rails/20090531/Flash_Lite__">http://doruby.kbmj.com/hal_on_rails/20090531/Flash_Lite__</a></p>
+<p>見出しだけ引用しますが、以下のとおりです。</p>
+<blockquote><p>1. ファイルサイズ制限<br />
+2. メモリ使用量制限<br />
+3. 外部通信・外部データの読み込み<br />
+4. 配列が使用できない<br />
+5. functionが使用できない<br />
+6. enterFrameが使用できない</p></blockquote>
+<p>まずファイルサイズは100kbに抑えないといけません。<br />
+画像なんかはFlashコンテンツなんかの場合は確実に使用するでしょうけど、例えばpngやjpegファイル等を使っていたらgifにしてみる、とかでガッツり減らせます。<br />
+一応、png/jpegの場合はデフォルトでは自動で圧縮されているっぽいですが、今回の場合は特に画質にこだわるものではなかったので<br />
+gif化するのが一番効きましたねぇ。<br />
+jpegなんかは圧縮率を指定して圧縮も出来るようなのですが、なんどやっても「不正なイメージデータです」みたいなエラーになってしまったので使いませんでした。<br />
+個人的にはスクリプトの変数名とかは可読性重視で長めにしましたが、容量逼迫してるならそれも効果あるのかなぁ。<br />
+容量自体の確認はDevice Centralで簡単に確認できますのでサイズ調整ではあまり苦労しませんでしたが100kbオーバーには簡単になりますので要注意です。</p>
+<p>上記制約と同じサイトに参考記事がありました。</p>
+<p>Flash Lite 1.1 のファイルサイズ(容量)を節約する９の方法<br />
+<a href="http://doruby.kbmj.com/hal_on_rails/20090911/Flash_lite_1.1__">http://doruby.kbmj.com/hal_on_rails/20090911/Flash_lite_1.1__</a></p>
+<p>続いて、「2.メモリ使用量」ですが、これは全然気にしないで作業出来ましたね。まあ上限はあるんじゃないかと思ってたけど1024kbと覚えておけば良いでしょう。<br />
+しかしメモリ使用量を削るとするとどう言う手段があるのか・・・。画像系のオブジェクトのインスタンス使い回しとか？<br />
+変数のスコープはあってないようなもんだしそもそもどこで変数のメモリを解放するのかわからんしな・・・。</p>
+<p>「3. 外部通信・外部データの読み込み」は今回やりませんでしたが、外部URLに接続する場合にも、かならずユーザーのアクション一度につき一度の外部接続が許可されますので、ボタンアクションでやる必要がありますね。</p>
+<p>「4. 配列が使用できない」ですが、まずこの仕様に気づくのに苦労し、配列っぽく処理する方法を実装するのに苦労しました。<br />
+普通、たくさんの要素のプロパティを変更したりするには、配列等とにかく文法上は一気にその要素にアクセスしたい場合が多いです。<br />
+当たり前すぎの例ですが、例えば以下のように、３つの要素に10を設定したい場合、</p>
+<pre lang="javascript">
+var elem1, elem2, elem3;
+elem1 = 10;
+elem2 = 10;
+elem3 = 10;
+</pre>
+<p>ってやるよりも絶対</p>
+<pre lang="javascript">
+var elem1. elem2, elem3;
+var elements = new Array(elem1, elem2, elem3);
+for(i=0;i<3;i++){
+    elements[i] = 10;
+}
+</pre>
+<p>（JavaScriptの例ですがあってるかどうか未検証）<br />
+ってやりたいじゃないですか。<br />
+これが出来ない。じゃどうするかというと、evalという関数を使用します。<br />
+evalって昔からJavaScriptでなんか見たことがあったのですが、その動きは「文字列を式として評価する」みたいな説明でいまいちピンとこないし使うこともありませんでした。<br />
+しかしこれを使って配列みたいな事が(Flash Lite 1.1では）出来ます。</p>
+<pre lang="actionscript">
+elem1 = 0;
+elem2 = 0;
+elem3 = 0;
+for(i=0;i<3;i++){
+    //値を設定する場合。
+    eval("elem" add _root.i) = 10;
+    //値を参照する場合
+    trace(eval("elem" add _root.i));
+}
+</pre>
+<p>みたいな感じで。自分は結構Javaには慣れているのですが、Javaで言えばリフレクションでメンバアクセスするみたいなもんかなぁと理解しました。<br />
+変数のプレフィックス等に数字を設定しておいて、for文などでカウンタを回してevalでアクセスすれば配列っぽくなります。応用で多次元配列も可能です。というかこれがないとかなり厳しい。</p>
+<p>「5. functionが使用できない」ですが、どういう問題かというと、共通処理をまとめて記述しておきたい場合がよくあって、<br />
+例えば以下のように、color変数の数値からcolorName変数に文字列を設定したい場合、都度判定しなきゃいけないとすると、</p>
+<pre lang="javascript">
+if(true){
+   switch(color){
+        case 0:
+            colorName = "red";
+            break;
+        case 1:
+            colorName = "green";
+            break;
+        case 2:
+            colorName = "blue";
+            break;
+        default:
+            colorName = "white";
+            break;
+   }
+}else{
+   switch(color){
+        case 0:
+            colorName = "red";
+            break;
+        case 1:
+            colorName = "green";
+            break;
+        case 2:
+            colorName = "blue";
+            break;
+        default:
+            colorName = "white";
+            break;
+   }
+}
+</pre>
+<p>こりゃアホらしい上にcolorとcolorNameのマッピングが変わったら全部まとめて見直ししなきゃいけないとか見にくいとか色々問題があるので、数値からcolorNameの文字列を返すfunctionをつくると</p>
+<pre lang="javascript">
+if(true){
+  colorName = getColorName(color);
+}else{
+ colorName = getColorName(color);
+}
+function getColorName(color){
+  switch(color){
+        case 0:
+            colorName = "red";
+            break;
+        case 1:
+            colorName = "green";
+            break;
+        case 2:
+            colorName = "blue";
+            break;
+        default:
+            colorName = "white";
+            break;
+   }
+   return colorName;
+}
+</pre>
+<p>とか、かなりすっきりするプログラミングの基本中の基本ですが、これが出来ない。<br />
+どうするかというと、スクリプトを実行するだけのレイヤーのムービーの再生には全然関係ない辺りにキーフレームを作り、<br />
+そのフレームに名前を付けて以下のように呼び出します。（例えばフレーム名にinitと名づけて共通処理を記述する場合）</p>
+<pre lang="actionscript">
+//------------------
+//グローバルな領域に定義
+color = 0;
+colorName = "white";
+//------------------
+//呼び出す
+call("init");
+//------------------
+//initフレームの処理
+  switch(color){
+        case 0:
+            colorName = "red";
+            break;
+        case 1:
+            colorName = "green";
+            break;
+        case 2:
+            colorName = "blue";
+            break;
+        default:
+            colorName = "white";
+            break;
+   }
+</pre>
+<p>共通処理はそこに記載すればいろんなところから使い回すことが出来ます。<br />
+ただし、上記の例のように値を渡して値を得る、ということは出来ないので、グローバル変数に設定する方法を使えば同じような事ができます。<br />
+グローバル変数なので、状態変化に気をつけてあげればうまいこと出来るでしょう。</p>
+<p>「6. enterFrameが使用できない」というのはどういう事かというと、Flashは再生するコマが順次すすむ形で処理されますが、そのコマとか意識せず、とにかく再生中に処理したい場合に以下のように書くようです。</p>
+<pre lang="actionscript">
+onClipEvent(enterFrame){
+     trace("コマ再生");
+}
+</pre>
+<p>なので、例えば時間をカウントして文字列書き換え、とからしいですね。<br />
+「らしいです」とは、結局これまだ使ったことがないもんで。<br />
+これはムービークリップ毎にキーフレームを最低２個用意して、そのフレームをループさせてあげれば良いです。（引用サイトの通り）</p>
+<pre lang="actionscript">
+//１フレーム目
+counter++;
+trace(counter);
+play();
+//2フレーム目
+prevFrame();
+</pre>
+<p>ただしこの場合は、２フレームで一度の処理となります。<br />
+上記の場合は変数をただインクリメントするだけなので２フレーム目にも同じことを書けばよいだけですが、それなりの処理ならば、<br />
+「5.functionが使用できない」の代替手段のように、処理だけを行うフレームを作り、ループさせればよろしいと思います。</p>
+<pre lang="actionscript">
+//１フレーム目
+call("commonProcess");
+play();
+//2フレーム目
+call("commonProcess");
+prevFrame();
+//commonProcessフレーム
+conter++;
+trace(conter);
+</pre>
+<p>ただ、代替手段の方から入ったのでenterFrameのありがたみが良くわかってないです。</p>
+<p>あとその他、実際に困ったのが以下の問題です。<br />
+・attachMovieが使えない<br />
+・決定キーを押されたイベントで処理したい</p>
+<p>今回作成したのはぶっちゃけスロットゲームなのですが、リールが回っているように見せるために縦に回っているように見せる必要がありました。<br />
+しかも、そろったか揃ってないかを絵柄毎に判定する必要があるので、絵柄毎のオブジェクトが必要だと思い、</p>
+<p>FLASHのお勉強_アクションスクリプトaction script_FLASHでスロットゲーム<br />
+<a href="http://www.geocities.jp/flashiroha/script/as64.html">http://www.geocities.jp/flashiroha/script/as64.html</a></p>
+<p>のソースコードから、attachMovieというので動的にロード出来そうだな、と思ったのですが、今回のバージョンではattachMovieがサポートされていないようでした。<br />
+なので代替手段はないかと探したら、以下サイトの方法を行うことにしました。</p>
+<p>開発する為のメモ集　 Flash Lite 1.1<br />
+<a href="http://devmemo.blog116.fc2.com/blog-entry-46.html">http://devmemo.blog116.fc2.com/blog-entry-46.html</a></p>
+<blockquote><p>● AttachMovie<br />
+使えません。なので、使うMovieClipは画面外に配置する必要があります。<br />
+そうすると、evalで使う場合_root指定しそうですが<br />
+それも代替します。</p>
+<p>eval("/num_1_0")._x += 2;</p>
+<p>/の後ろにインスタンス名を入れるので<br />
+フォルダ階層みたいです
+</p></blockquote>
+<p>なるほど、携帯だし画面外なら見えないので、すべての絵柄（ムービークリップ）を画面外に配置し、全部にインスタンス名（r_1_1等）を付けて配列アクセス出来るようにしときました。<br />
+今回は１リール４絵柄なので出来たのかもしれませんが、絵柄が多い場合は容量に影響があるのかも？<br />
+というか、あとで気づいたのですが、duplicateMovieClipというメソッドがあるのでそれを使えばよかったのかも？<br />
+これを縦に回っているように見せるため、ちょっとずつy座標の値を増やし、下限まで来たらy座標を上の位置に戻し・・・とかやったのですが、結構調整が必要でした。<br />
+また、ムービークリップにアクセスする際にもインスタンス名.（ドット）プロパティ名とかではダメで、<br />
+以下のような感じでアクセスしました。</p>
+<pre lang="actionscript">
+tellTarget("r_1_1"){
+    _y += speed;
+}
+</pre>
+<p>とか言う感じ。tellTargetの引数は当然evalで作成したインスタンス名です。</p>
+<p>「決定キーを押されたイベントで処理したい」というのは、携帯電話の一番基本的なキーを押された場合にどうやるか、ということですが、<br />
+まず画面外にどんなの形でも色でもよいのでボタンインスタンスを置きます。<br />
+そんで、そのアクションに以下のように記述します。</p>
+<pre lang="actionscript">
+on(press, keyPress"<Enter>"){
+     gotoAndPlay(1);
+}
+</pre>
+<p>ホントは、選択キーの場合はkeyPress"<Enter>"だけで良いんじゃないかと思ったのですが、Device Centralでドコモの機種を選んだ際になんか警告が出てたので上記のようにしたら直ったようです。<br />
+ボタンがひとつだけなので出来る技なのかもしれません。<br />
+タイムライン毎にボタン押下で違う処理をさせたい場合は、ボタン用のレイヤーを作って、そのフレームにボタンを同じように置き、そのボタンのアクションを書き換えればよろしいです。<br />
+あと、ボタン押下毎に押されたようなモーションは、ボタンのフレームの「ダウン」の所にボタンを押されたモーションを書けば良いはずなのですが、どうも一度しか反応しないようでした。（あ、この場合はボタンを画面内においた場合ですが）<br />
+しょうがないので、ボタン押下時にフラグを立て、メインのタイムラインのスクリプトでボタンのサイズ調整をするような感じにしました。</p>
+<p>あとは、背景とムービークリップとマスクの問題や、変数のスコープ（_rootとか指定しないといけない場合わけ）等ありますが、<br />
+結構楽しい開発でした。<br />
+今度は多分これより快適なAS3.0環境のもやってみたいですね。</p>
+<p>あと忘れちゃうのでAdobeのリファレンスへのリンク<br />
+<a href="http://help.adobe.com/ja_JP/FlashLite/1.0_FlashLiteAPIReference1/index.html">http://help.adobe.com/ja_JP/FlashLite/1.0_FlashLiteAPIReference1/index.html<br />
+</a></p>

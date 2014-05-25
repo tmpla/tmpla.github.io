@@ -1,0 +1,63 @@
+---
+layout: post
+title: "古いVBのアプリケーションの改修"
+categories:
+- "開発"
+tags:
+- Inputman
+- ocx
+- SPREAD
+- VisualBasic
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+  _oembed_6351352adcc00fb28c6b90c4f29e65f8: "{{unknown}}"
+  _oembed_fd299640d5ab2720c1883514866dfe11: "{{unknown}}"
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>Visual Basic 6.0（か5.0かな？）で作成されたアプリケーションの改修をすることになったので、起動してみようとしたら<br />
+「ﾌｧｲﾙが見つかりません:'DAO350.DLL'」<br />
+とか、懐かしの半角カナのエラーメッセージが出た。<br />
+それを解消するメモ</p>
+<p>環境<br />
+Windows XP Pro SP2<br />
+Visual Studio 6.0</p>
+<p>調べると、以下MSのサイトに記載があった</p>
+<p><a href="http://support.microsoft.com/kb/240377/ja">[HOWTO] Jet 3.5 が正常にインストールされていることを確認する (パートI)</a></p>
+<p>しかし、いつものように何の解決にもならなかったので華麗にスルーしてdao350.dllをダウンロードできる場所を探してみた。<br />
+探している最中に、dao350.dllは、VB5時代ののランタイムライブラリとして使用されていたっぽい。<br />
+以下サイトでランタイムライブラリの配布をされているようだったので、これをインストールして何とか起動するようになった。</p>
+<p>http://www.skobayashi.com/kobavb5.htm</p>
+<p>起動はするようになったが、起動時に色々エラーが出ていた。</p>
+<p>「・・・を読み込めません。--プロジェクトのロードを続けますか？」</p>
+<p>読めないのは以下ocxファイル<br />
+・Text70.ocx<br />
+・Combo70.ocx<br />
+・Date70.ocx<br />
+・Number70.ocx<br />
+・ssa3d30.ocx<br />
+・SPR32X60.ocx<br />
+・Sstabs2.ocx</p>
+<p>調査したところ、以下の製品のものらしい。<br />
+Inputman Pro 7.0J：71,400円<br />
+・Text70.ocx<br />
+・Combo70.ocx<br />
+・Date70.ocx<br />
+・Number70.ocx</p>
+<p>ActiveThreeD Plus 3.0J：41,790円<br />
+・ssa3d30.ocx</p>
+<p>SPREAD 6.0J:92,400円<br />
+・SPR32X60.ocx</p>
+<p>ActiveToolBars Plus 2.0J:50,400円<br />
+・Sstabs2.ocx</p>
+<p>とりあえず、これらは買ってもらうとして、トライアルバージョンで動作させようと思って調べたが、<br />
+Inputmanは以下からダウンロード出来そうだ。</p>
+<p>http://www.grapecity.com/japan/support/database/activex_trialversions.htm</p>
+<p>それ以外はどうも情報が散っててダメだ。怪しいのとか色々あったりするので、開発ライセンスが来るのを待つしかなさそう。</p>

@@ -1,0 +1,72 @@
+---
+layout: post
+title: HDD、CD-ROMが破損しているノートPCの復活メモ２
+categories:
+- Cent OS
+tags:
+- CentOS
+- DVD-RAM
+- FDD
+- Lavie M
+- linux
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p><a href="http://blog.4sure.jp/yokoshima/2010/05/11/hdd、cd-romが破損しているノートpcの復活メモ/">HDD、CD-ROMが破損しているノートPCの復活メモ</a>の続きです。</p>
+<p>無事HDDを認識してくれたのので、Linuxでも入れようと思っていて、Redhat系は結構慣れたので、Debian系のやつにしてみようかなとか考えていたのですが、<br />
+とりあえずLinuxの本の付録のCentOSのDVD-ROMを入れてみたのですが、読んでくれていなさそう。<br />
+その後、DVDじゃなくて（ドライブはMatsushita DVD-RAMと出てるんですが・・・）CD-ROMにKNOPPIXを焼いてやってみたのですが、<br />
+どうもダメ。</p>
+<p>光学ドライブの換装も考えたのですが、カカクコムの口コミとかを見ていたら、光学ドライブの方は加工したりする必要がある場合もあるらしい。<br />
+インストール以外にはほぼ光学ドライブなんて使わなさそうなので、あきらめました。</p>
+<p>そして、BIOSの画面を見て居ると、起動ドライブにUSBのFloppyDiskが使えるような表示がありました。<br />
+USBのFDDは持っていなかったので、USBメモリとかじゃダメかな？と思ってやってみたのですがうまいことブートしてくれない。<br />
+じゃあしょうがないので、USBのFDDを買ってやってみることにしました。</p>
+<p>ヨドバシでUSBのFloppyDisｋDriveを見たら、結構いい値段（バルクで2500円位）します。<br />
+今後どう考えてもFDDを使う機会は少ないと思うので、中古でないかなと思って中古PCパーツ店も見てみたのですが、そもそも置いてないようでした。<br />
+で結局ヨドバシで買うのが一番安かったので購入し、インストールしようと調べると、<br />
+FDDのみでインストール出来るのは限られているらしい。<br />
+昔SlackwareはFDD一枚でやったような記憶が・・・。</p>
+<p>で結局、FDDしかないけどNIC使えるので、FDDで最低限のシステムを入れて、ネットワークでアップデートすることにしました。<br />
+以下サイトを参考にさせていただきました。</p>
+<p><a href="http://ryos.cocolog-nifty.com/hima/2006/09/fdcdrompclinux_2b32.html">FDはあるけどCD-ROMドライブの無いノートPCに最新版Linuxをインストール: 暇人日記blog版</a></p>
+<p>上記記事では、CentOS（結局CentOSになってしまった）の3.8から、4.4に上げていますが、今回は3.9から5.4(現時点最新）にしてみました。<br />
+なぜ3.9かと言うと、3.9がFDD一枚に収まるようにイメージが作られた最後のリビジョンだからです。<br />
+3.8以前はrikenとkddilabsにはもうなさそうでしたので・・・。</p>
+<p>まずは、以下3つをダウンロードしてFDDにそれぞれ焼きます。いや、焼くというかコピーします。<br />
+<a href="ftp://ftp.kddilabs.jp/Linux/packages/CentOS/3.9/os/i386/images/">ftp://ftp.kddilabs.jp/Linux/packages/CentOS/3.9/os/i386/images/</a><br />
+から<br />
+<a href="ftp://ftp.kddilabs.jp/Linux/packages/CentOS/3.9/os/i386/images/bootdisk.img">bootdisk.img</a><br />
+<a href="ftp://ftp.kddilabs.jp/Linux/packages/CentOS/3.9/os/i386/images/drvnet.img">drvnet.img</a><br />
+<a href="ftp://ftp.kddilabs.jp/Linux/packages/CentOS/3.9/os/i386/images/pcmciadd.img">pcmciadd.img</a></p>
+<p>コピーとか色々の処理は別のWindowsマシンを使用しているのですが、コピーというかディスクイメージを焼くために、<br />
+Rawwriteというユーティリティを使用して書き込みします。<br />
+<a href="http://www.chrysocome.net/rawwrite">chrysocome.net - RawWrite for Windows</a></p>
+<p>これでFDD3枚書き込みしたらLavie Mの方にセットしたFDDに、bootdisk.imgを入れ、起動順序の先頭をUSB Floppyにして起動します。<br />
+これで起動出来たら、あとはうまいことインストールするだけです。<br />
+起動して</p>
+<pre lang="bash">
+boot:
+</pre>
+<p>が出たら、Enterを押すと、vmlinuz、initrd.imgがロードされて処理が進みます。<br />
+Choose a Languageは「English」Keyboard Typeは「us」。つまりデフォルトのまま進めます。<br />
+次に「Installation Method」では、FTPを選び<br />
+「Use a driver disk」を選び、「Driver Disk Source」では、「sda」（floppy）を選び先ほどFDを作成したpcmciadd.imgをセットして「OK」を押すとロードされます。<br />
+この語、「Error」画面で、No Devices of ～とメッセージが出るので、「Load another disk」で、drvnet.imgをセットして同様にロードすると、「Configure TCP/IP」という画面が出ます。<br />
+ウチの場合は、DHCPDがあるので、「Use dynamic IP Configuration (BOOTP/DHCP)を選択してOKを押すと</p>
+<p>「FTP Setup」という画面が出ます。<br />
+FTP Site nameには<br />
+ftp.kddilabs.jp/<br />
+Red Hat directoryには<br />
+Linux/packages/CentOS/3.9/os/i386/<br />
+と入力してOKを押すとダウンロードが開始され、CentOS-3のインストールがはじまります。</p>
+<p>（つづく）</p>

@@ -1,0 +1,54 @@
+---
+layout: post
+title: FTPでミラーリング
+categories:
+- Cent OS
+- Internet
+tags:
+- lftp
+- mirror
+- "ミラーリング"
+- "文字化け"
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>数百GBのデータを管理したいのですが、管理したいデータはFTPで公開されている配布元のデータ。<br />
+これが更新されたり追加されたりしたら、これを検知してその情報を管理アプリケーション側のデータベースに登録したい感じのことをやりたいのです。</p>
+<pre>
+配布元(FTP) &gt; - &lt;  ( Internet ) &gt; - &lt; 管理アプリケーション &lt;- 管理者
+</pre>
+<p>数が少なければ、配布元にFTPアクセスして管理アプリケーションで持っている情報と突合せして、<br />
+新しかったり、管理アプリケーションに持っていないデータであれば、それを追加すれば良いかもしれないのですが、<br />
+多くなると配布元へのFTPアクセス負荷が増えそうだし、その配布データ自体は上記で言う管理アプリケーション側で<br />
+また別のところに配信するために保持しておかないといけない。<br />
+それを、増えた減ったのタイミングでダウンロードさせるのも面倒な処理になるなぁと思っていました。</p>
+<p>なので、FTPでミラーリングみたいなことが出来れば、後はローカル（管理アプリケーション側）だけで処理出来るので<br />
+何かいいのないかな。と思って探していたら、「lftp」と言うLinux用のFTPクライアントを見つけました。</p>
+<p><a href="http://lftp.yar.ru/">LFTP - sophisticated file transfer program</a><br />
+<a href="http://sonic64.com/2004-05-08.html">lftp を使った ftp ミラーリングと便利機能</a></p>
+<p>このlftpは、標準的なツールのようで、すでにCentOS5.3でも使えるようになっているようでした。<br />
+すごそうなのは、</p>
+<pre lang="bash">
+# mirror
+</pre>
+<p>の一発で簡単にミラーリング（配布元のファイルをローカルにダウンロード）出来るとこです。<br />
+これをcron登録しておきて定期的にミラーリングしておけば、わざわざFTP元まで見に行く必要がない。</p>
+<p>基本的な使い方は以下です。<br />
+（と言うか、これしかまだやってない。）</p>
+<pre lang="bash">
+# lftp -u （FTPユーザー名）,（パスワード) 接続先
+lftp :~&gt;set ftp:charset cp932
+lftp :~&gt;mirror
+</pre>
+<p>上記でset ftp:charset cp932とやっているのは、おそらく配布元がWindowsサーバーかなんかで、ファイルがSJISになっていて普通にlsしたら化けていたので文字セットを変えてみたものです。<br />
+それはそれで、ログインして単に「mirror」すれば良いだけというのは簡単だ！<br />
+しかし一度目は時間かかるのはしょうがないとしても、二度目以降はどうなんだろうか？</p>
