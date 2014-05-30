@@ -8,9 +8,9 @@ image:
   credit: 
   creditlink: 
 comments: 
-share: 
-status: draft
-published: false
+share: true
+status: publish
+published: true
 ---
 [jekyll](http://jekyllrb.com/)は、Markdownのように、テキスト＋いくつかのシンタックスルールを使って書いたものを、
 Webブラウザで見れるようにHTMLへ変換してくれるものである。
@@ -41,171 +41,75 @@ $ rbenv versions
 ~~~
 
 で、とりえあずはjekyllのテスト用ディレクトリを作って、そこで作業することにする。
-グローバルなgemでもいいのだが、とりあえずbundlerでjekyllをインストールすることにする。
-~~~ bash
-$ mkdir jekyll_test
-$ cd jekyll_test/
-$ bundle init
-Writing new Gemfile to /cygdrive/c/Users/k-yokoshima/Work/jekyll_test/Gemfile
-~~~
-
-この時点でのGemfileはこう
-~~~ ruby
-# A sample Gemfile
-source "https://rubygems.org"
-
-gem "jekyll"
-~~~
-
-ここからbundle installするとみんな大好きashを使ってrebaseallすれば解決のunable to remap...のエラーが出る。
+bundlerでインストールしておきたいのだが、色々やってみたところグローバルgemとプロジェクトgem(vendor/bundleの)の両方のrebaseで
+うまくいかないので、グローバルgemでインストールすることにした。
+（グローバルgemでもインストール中にrebaseが必要なところはあるが、それはなんとかrebaseで解決した、というところからにする）
 
 ~~~ bash
-$ bundle install --path vendor/bundle
-DL is deprecated, please use Fiddle
-Fetching gem metadata from https://rubygems.org/........
-Fetching additional metadata from https://rubygems.org/..
-Resolving dependencies...
-Installing blankslate 2.1.2.4
-Installing timers 1.1.0
-Installing celluloid 0.15.2
-      0 [main] ruby 2520 child_info_fork::abort: unable to create interim mapping for C:\Users\k-yokoshima\.rbenv\versions\2.1.1\lib\ruby\2.1.0\i386-cygwin\openssl.so, Win32 error 8
-      0 [main] ruby 9104 child_info_fork::abort: unable to create interim mapping for C:\Users\k-yokoshima\.rbenv\versions\2.1.1\lib\ruby\2.1.0\i386-cygwin\openssl.so, Win32 error 8
-      1 [main] ruby 9620 child_info_fork::abort: unable to create interim mapping for C:\Users\k-yokoshima\.rbenv\versions\2.1.1\lib\ruby\2.1.0\i386-cygwin\openssl.so, Win32 error 8
-      0 [main] ruby 5076 child_info_fork::abort: unable to create interim mapping for C:\Users\k-yokoshima\.rbenv\versions\2.1.1\lib\ruby\2.1.0\i386-cygwin\openssl.so, Win32 error 8
-      0 [main] ruby 9792 child_info_fork::abort: address space needed by 'fcntl.so' (0x540000) is already occupied
-      0 [main] ruby 8208 child_info_fork::abort: address space needed by 'fcntl.so' (0x540000) is already occupied
-      :
-      :
+$ gem i jekyll
 ~~~
 
-これは以前解決したように、rebaseallをashからやれば解決できた。
-が、rebaseallはashかdashから行わないといけないようである。なぜならbashから起動するとそういうメッセージが出るからである。
-
-~~~ bash
-$ rebaseall
-rebaseall: only ash or dash processes are allowed during rebasing
-    Exit all Cygwin processes and stop all Cygwin services.
-    Execute ash (or dash) from Start/Run... or a cmd or command window.
-    Execute '/bin/rebaseall' from ash (or dash).
-~~~
-
-しかし、rebaseという方は特にそんな警告も出ないのでそれでこれはbashのまま行けるのではと思ってやってみたら行けた。
-helpを見ると、ファイル名と「-s」オプションと、詳細を出力したいので「v」でやってみた。
-
-~~~ bash
-$ rebase --help
-Usage: rebase [OPTIONS] [FILE]...
-Rebase PE files, usually DLLs, to a specified address or address range.
-
-  -4, --32                Only rebase 32 bit DLLs.  This is the default.
-  -8, --64                Only rebase 64 bit DLLs.
-  -b, --base=BASEADDRESS  Specifies the base address at which to start rebasing.
-  -s, --database          Utilize the rebase database to find unused memory
-                          slots to rebase the files on the command line to.
-                          (Implies -d).
-                          If -b is given, too, the database gets recreated.
-  -O, --oblivious         Do not change any files already in the database
-                          and do not record any changes to the database.
-                          (Implies -s).
-  -i, --info              Rather then rebasing, just print the current base
-                          address and size of the files.  With -s, use the
-                          database.  The files are ordered by base address.
-                          A '*' at the end of the line is printed if a
-                          collisions with an adjacent file is detected.
-
-  One of the options -b, -s or -i is mandatory.  If no rebase database exists
-  yet, -b is required together with -s.
-
-  -d, --down              Treat the BaseAddress as upper ceiling and rebase
-                          files top-down from there.  Without this option the
-                          files are rebased from BaseAddress bottom-up.
-                          With the -s option, this option is implicitly set.
-  -n, --no-dynamicbase    Remove PE dynamicbase flag from rebased DLLs, if set.
-  -o, --offset=OFFSET     Specify an additional offset between adjacent DLLs
-                          when rebasing.  Default is no offset.
-  -t, --touch             Use this option to make sure the file's modification
-                          time is bumped if it has been successfully rebased.
-                          Usually rebase does not change the file's time.
-  -T, --filelist=FILE     Also rebase the files specified in FILE.  The format
-                          of FILE is one DLL per line.
-  -q, --quiet             Be quiet about non-critical issues.
-  -v, --verbose           Print some debug output.
-  -V, --version           Print version info and exit.
-  -h, --help, --usage     This help.
-
-~~~
-
-とりあえず、openssh.soがダメらしいのでそれを。
-
-~~~ bash
-$ rebase -sv ~/.rbenv/versions/2.1.1/lib/ruby/2.1.0/i386-cygwin/openssl.so
-/usr/lib/sasl2_3/cygscram-3.dll: new base = 662b0000, new size = 10000
-/usr/lib/sasl2_3/cygsasldb-3.dll: new base = 662c0000, new size = 10000
-  :
-  :
-/cygdrive/c/Users/k-yokoshima/.rbenv/versions/2.1.2/lib/ruby/2.1.0/i386-cygwin/openssl.so: new base = 6bc00000, new size = 1400000
-  :
-  The following DLLs couldn't be rebased because they were in use:
-  /usr/bin/cygreadline7.dll
-  /usr/bin/cygncursesw-10.dll
-  /usr/bin/cygintl-8.dll
-  /usr/bin/cygiconv-2.dll
-  /usr/bin/cyggcc_s-1.dll
-  :
-~~~
-
-最後の方で、cygwinのdllがrebase出来なかったというメッセージが出ているが、まあ多分問題ないだろう。
-またこれで、bundle installして警告が出てjekyllを入れる場合は下記のsoをrebaseすればよかったようだ。
-
+rebaseはこの段階では下記の3つで解決できたようである。
 ~~~ bash
 $ rebase -sv ~/.rbenv/versions/2.1.1/lib/ruby/2.1.0/i386-cygwin/digest.so
 $ rebase -sv ~/.rbenv/versions/2.1.1/lib/ruby/2.1.0/i386-cygwin/fcntl.so
 $ rebase -sv ~/.rbenv/versions/2.1.1/lib/ruby/2.1.0/i386-cygwin/date_core.so
 ~~~
 
-これでbundle installが通った。と言うかやはり、~/.rbenv/**/*.soをリスト化して-Tオプションで渡して出来るようなので、全部やっておいたほうがいいかもしれない。
+## Pygmentsのインストール
+[Pygments](http://pygments.org/)は、ざっくり言えばプログラムコードのキーワードを見やすいように強調表示させたいときに役に立つやつである。
+こういうのはSyntax highlighter等というが、Jekyllではデフォルトでこれを使っているようである。
+ただし、これはPythonのパッケージのようなのでこれを入れておく。
+さらに、setuptoolsというPythonのパッケージマネージャ？からeasy_installというこれまたパッケージマネージャ？経由でPygmentsをインストールするのが作法のようだ。（ややこしい・・・）
+
+~~~ bash
+$ apt-cyg install python curl
+$　curl 'https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py' | python
+$ easy_install Pygments
+~~~
+
+## COMSPEC環境変数の設定
+このシンタックスハイライト部分を処理するとこどろで、cmd.exeを使用するようなのだが、パスの形式がWindows形式で使用しようとするようだた。
+なので、COMSPEC環境変数に、Unix式のcmd.exeのパスを指定すれば良いようだ。
+
+~~~ bash
+$ vim ~/.bashrc
+export COMSPEC=/cygdrive/c/Windows/System32/cmd.exe
+~~~
+
+## Python実行ファイルの指定
+
+さらに、「python2」というコマンドを使用したいらしいが、pythonをインストールした時点では「/usr/bin/python」しかないと思う。
+なので、「python2」という名前でシンボリックリンクを貼る。
+
+~~~ bash
+$ ln -s /usr/bin/python /usr/local/bin/python2
+~~~
 
 ## サイト作成
 jekyllのサイトを新規作成してみる。
-最近、bundle install --binstubsがお気に入りなので、それもしておく。
-~~~ bash
-$ bundle install --binstubs
-~~~
 
 そして「site」という名前で作ってみる。もちろん適当な名前である。
 
 ~~~ bash
-$ bin/jekyll new site
-$ bin/jekyll new site
+$ jekyll new site
 DL is deprecated, please use Fiddle
 New jekyll site installed in /cygdrive/c/Users/k-yokoshima/Work/jekyll_test/site.
 ~~~
 
 そして一旦このまま生成してみる。
 ~~~ bash
-$ cd site
-$ ../bin/jekyll build
-DL is deprecated, please use Fiddle
+$ jekyll build --trace
 Configuration file: /cygdrive/c/Users/k-yokoshima/Work/jekyll_test/site/_config.yml
             Source: /cygdrive/c/Users/k-yokoshima/Work/jekyll_test/site
        Destination: /cygdrive/c/Users/k-yokoshima/Work/jekyll_test/site/_site
-      Generating...
-      0 [main] ruby 6512 child_info_fork::abort: address space needed by 'yajl.so' (0x480000) is already occupied
-      0 [main] ruby 9992 child_info_fork::abort: address space needed by 'stringio.so' (0x430000) is already occupied
-      0 [main] ruby 9824 child_info_fork::abort: address space needed by 'yajl.so' (0x480000) is already occupied
-
+      Generating... done.
 ~~~
 
-また来た！しかしもう対処策はあるのでrebaseしよう。今度は、~/.rbenvではなく、vendor/bundleにあるものをやる。
-せっかくのなのでリスト化してやってみよう。
-vendor/bundleがあるディレクトリに移動して、
+site/_siteに無事色々生成されたようであった。
 
-~~~ bash
-$ rebase -sv -T `find vendor/bundle/ -name *.so`
-~~~
-rebaseall yaji-ruby
 
-https://github.com/jekyll/jekyll/issues/1383
-export COMSPEC=/cygdrive/c/Windows/System32/cmd.exe
+元ネタは下記記事です。
 
-http://nathanielstory.com/2013/12/28/jekyll-on-windows-with-cygwin.html
+[Liquid exception under Cygwin · Issue #1383 · jekyll/jekyll](https://github.com/jekyll/jekyll/issues/1383)
+[Jekyll on Windows with Cygwin](http://nathanielstory.com/2013/12/28/jekyll-on-windows-with-cygwin.html)
