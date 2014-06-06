@@ -113,3 +113,11 @@ $ apt-cyg install openssh
 Package openssh installed
 ~~~
 
+これでとりあえずgithubへアクセスしてみよう！
+
+~~~ bash
+[k-yokoshima]% ssh -T git@github.com
+Hi kyokoshima! You've successfully authenticated, but GitHub does not provide shell access.
+~~~
+
+これでとりあえず使えるようになったと思う。
