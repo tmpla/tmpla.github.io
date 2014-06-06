@@ -50,6 +50,7 @@ $ gem i jekyll
 ~~~
 
 rebaseはこの段階では下記の3つで解決できたようである。
+
 ~~~ bash
 $ rebase -sv ~/.rbenv/versions/2.1.1/lib/ruby/2.1.0/i386-cygwin/digest.so
 $ rebase -sv ~/.rbenv/versions/2.1.1/lib/ruby/2.1.0/i386-cygwin/fcntl.so
@@ -69,8 +70,9 @@ $ easy_install Pygments
 ~~~
 
 ## COMSPEC環境変数の設定
-このシンタックスハイライト部分を処理するとこどろで、cmd.exeを使用するようなのだが、パスの形式がWindows形式で使用しようとするようだた。
-なので、COMSPEC環境変数に、Unix式のcmd.exeのパスを指定すれば良いようだ。
+このシンタックスハイライト部分を処理するところでcmd.exeを使用するようなのだが、パスの形式がWindows形式で使用しようとするようである。
+ビルド時に「 Liquid Exception: No such file or directory - C:\Windows\system32\cmd.exe」と、Windows形式のcmd.exeへのパスとなってしまうようだ。
+これはCOMSPEC環境変数に、Unix式のcmd.exeのパスを指定すれば良いようだ。
 
 ~~~ bash
 $ vim ~/.bashrc
