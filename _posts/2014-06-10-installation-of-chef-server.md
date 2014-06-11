@@ -28,6 +28,8 @@ nodeを追加した時に、変更不可能なattributesで「fqdn」「ipaddres
 これはDNSなどがあれば良いが、hostnameコマンドで直接変えたのと今回はnode側のマシンの/etc/hostsにエントリを追加して解決した。  
 追加しないと、すべて「localhost」になってしまうのでアクセス出来ない。
 
+またWorkstationにはvagrantは入っていないので、ホストマシンの~/.vagrant.d/insecure_private_keyをVagrantfileがおいてあるパスへコピーして使いまわしている。（ゲストでは/vagrant/insecure_private_keyでアクセス出来るので）
+
 ~~~ bash
 127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
