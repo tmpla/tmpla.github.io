@@ -8,12 +8,13 @@ image:
   credit:
   creditlink:
 comments:
-share:
+share: true
 ---
+
 php最新版をubuntuにインストールする方法を忘れたのでメモ。
 オプションで、なぜか5.5.9が/usr/local/bin/phpにあたってる状態です。なんでこれ覚えてないのかな…。
 
-OSバージョンはhashicorp/precise32のvagrantのboxで以下
+OSバージョンはhashicorp/precise64のvagrantのboxで以下
 
 ~~~ bash
 vagrant@precise64:/etc/apt$ cat /etc/lsb-release
