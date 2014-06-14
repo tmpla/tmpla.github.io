@@ -44,8 +44,8 @@ arkと言うリソースでは下記のようなactionがある。
 :setup\_py\_install: runs the comand "python setup.py install" in the extracted directory
 
 
-今回、defaultのactionは:installのようだが、これはアーカイブを取得して展開し、/usr/local/(リソース名)のところに置くまでしかしない。
-make installまでやってくれるのは、:install\_with\_makeを指定する。
+defaultのactionは:installのようだが、これはアーカイブを取得して展開し、/usr/local/(リソース名)のところに置くまでしかしない。
+make installまでやってくれるのは、:install\_with\_makeである。
 
 今回、Hadoopのビルドに必要だったので、[protobuf](https://code.google.com/p/protobuf/)と言うものをarkレシピでインストールしてみた。
 ちなみにchef solo環境で、レシピ名は「protobuf」で、site-cookbooks/protobufに配置し、
