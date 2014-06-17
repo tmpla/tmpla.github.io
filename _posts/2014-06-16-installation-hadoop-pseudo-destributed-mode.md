@@ -4,33 +4,33 @@ title: "Hadoop2.3を擬似分散モードで動かしてみる"
 modified: 2014-06-16 18:52:42 +0900
 tags: [hadoop,hdfs,yarn,mapreduce,hbase]
 image:
-  feature: 
-  credit: 
-  creditlink: 
-comments: 
+  feature:
+  credit:
+  creditlink:
+comments:
 share: true
-published: true 
+published: true
 ---
 
 Hadoopを使いたいが、単語だけ知ってるレベルの状態からインストールするまでに苦労したので記録する。
 
-[Hadoop](http://hadoop.apache.org/)は分散処理を行うためのライブラリである。  
-Googleが発表した[MapReduceの論文](http://research.google.com/archive/mapreduce.html)と[BigTableの論文](http://research.google.com/archive/bigtable.html)に触発された実装だそうである。  
+[Hadoop](http://hadoop.apache.org/)は分散処理を行うためのライブラリである。
+Googleが発表した[MapReduceの論文](http://research.google.com/archive/mapreduce.html)と[BigTableの論文](http://research.google.com/archive/bigtable.html)に触発された実装だそうである。
 
-BigTableというのはファイルシステムを分散管理するもの、MapReduceは処理の分散化をするもの、だと思う。  
-BigTableはHDFS, MapReduceはそのままの名前だが、2.3.0ではYARN（やーーん？）というフレームワーク？の上に乗せて作成されているようだ。  
-HDFSは、ファイルがおいてある先が勝手に分散されてるということで、使用する側は意識しなくてい良い、くらいの認識で良いんじゃないかと。  
-MapReduceについてはあまり理解出来ているわけではないのだが、MapReduceの例では転置インデックスの話がある。  
-これはMap処理でカウント、Reduceでその集計という感じだが、なぜMapとReduceで処理を分けるのか？  
-これは、大規模なデータを扱うための知恵かと。  
-Mapにも巨大ファイルを分割して、かつ複数のプロセスで集計するが、その巨大な結果をReducerに渡し、  
-Reducerでもの複数かつ並行プロセスで処理して合理的に処理しよう、ということなのだろうと思う。  
-だからメモリに収まる程度のデータだともしかしたら全然意味はないのかも（並行処理は出来るとは思うが）  
+BigTableというのはファイルシステムを分散管理するもの、MapReduceは処理の分散化をするもの、だと思う。
+BigTableはHDFS, MapReduceはそのままの名前だが、2.3.0ではYARN（やーーん？）というフレームワーク？の上に乗せて作成されているようだ。
+HDFSは、ファイルがおいてある先が勝手に分散されてるということで、使用する側は意識しなくてい良い、くらいの認識で良いんじゃないかと。
+MapReduceについてはあまり理解出来ているわけではないのだが、MapReduceの例では転置インデックスの話がある。
+これはMap処理でカウント、Reduceでその集計という感じだが、なぜMapとReduceで処理を分けるのか？
+これは、大規模なデータを扱うための知恵かと。
+Mapにも巨大ファイルを分割して、かつ複数のプロセスで集計するが、その巨大な結果をReducerに渡し、
+Reducerでもの複数かつ並行プロセスで処理して合理的に処理しよう、ということなのだろうと思う。
+だからメモリに収まる程度のデータだともしかしたら全然意味はないのかも（並行処理は出来るとは思うが）
 
 今回は、HDFS上にHBaseのストレージを構築するところまでやってみる。
 
 ## 環境
-Mac上にVirtualBoxでCentOS 6.5(64bit)を作ってvagrantで構築した。WebUI確認するため、ネットワークはpublic\_network設定にしてある。  
+Mac上にVirtualBoxでCentOS 6.5(64bit)を作ってvagrantで構築した。WebUIの確認をしたいため、ネットワークはpublic\_network設定にしてある。
 JavaはOracleの下記
 
 ~~~ bash
@@ -44,16 +44,16 @@ JAVA_HOMEはセットしておく。また、iptablesは切っておく。
 
 ## インストール
 
-[Hadoopのページ](http://hadoop.apache.org/releases.html#Download)からダウンロードして展開すればそれで終わり、と思っていたのだが、どんなサービスがどう動くかを理解していないと意味がわからない。  
-最初は、バイナリを展開してみたのだが、設定が必要なのがどことどこなのかがわからない。  
-そこで[Apache Hadoop 2.3.0 - Hadoop MapReduce Next Generation 2.3.0 - Setting up a Single Node Cluster.](http://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/SingleCluster.html)というページを見てみたが、これはソースからビルドして、さらにHDFSの話は特に書いていなさそうだったがやってみた。  
+[Hadoopのページ](http://hadoop.apache.org/releases.html#Download)からダウンロードして展開すればそれで終わり、と思っていたのだが、どんなサービスがどう動くかを理解していないと意味がわからない。
+最初は、バイナリを展開してみたのだが、設定が必要なのがどことどこなのかがわからない。
+そこで[Apache Hadoop 2.3.0 - Hadoop MapReduce Next Generation 2.3.0 - Setting up a Single Node Cluster.](http://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/SingleCluster.html)というページを見てみたが、これはソースからビルドして、さらにHDFSの話は特に書いていなさそうだったがやってみた。
 
-まずmavenが必要なのと、protobufが必要。  
-さらに、下記ページに書かれているような調整をしないとダメで、ビルドは出来たがやはりどのサービスが必要なのかがよくわからなかった。  
+まずmavenが必要なのと、protobufが必要。
+さらに、下記ページに書かれているような調整をしないとダメで、ビルドは出来たがやはりどのサービスが必要なのかがよくわからなかった。
 
 [Geting Started With Hadoop 2.2.0 -- Building - recluze](http://csrdu.org/nauman/2014/01/23/geting-started-with-hadoop-2-2-0-building/)
 
-ビルド後はこんな感じで、今のところ何が何やら、というとこでここから動かすのは断念した。  
+ビルド後はこんな感じで、今のところ何が何やら、というとこでここから動かすのは断念した。
 
 ~~~ bash
 $ ls -la
@@ -80,15 +80,15 @@ drwxr-xr-x  4 vagrant vagrant  4096 Jun 13 02:18 hadoop-yarn-project
 -rw-r--r--  1 vagrant vagrant  1366 Oct  7  2013 README.txt
 ~~~
 
-ところで、clouderaというところが、Hadoopのyumリポジトリ（他のOSのも）を用意しているというのを見つけた。  
-しかも、ここにQuick Start的なテキストもあるようなので、これを使ってインストールした。  
+ところで、clouderaというところが、Hadoopのyumリポジトリ（他のOSのも）を用意しているというのを見つけた。
+しかも、ここにQuick Start的なテキストもあるようなので、これを使ってインストールした。
 
 [CDH 5 Quick Start Guide ](http://www.cloudera.com/content/cloudera-content/cloudera-docs/CDH5/latest/CDH5-Quick-Start/CDH5-Quick-Start.html)
 
-ここで、最新版ではMapReduceの部分がYARNというフレームワーク？を使って構築されているようなことがなんとなくわかる。  
-さらに見ると、pseudo-distributed mode(擬似分散モード）というのが出来るそうなのでそれを目指す。  
+ここで、最新版ではMapReduceの部分がYARNというフレームワーク？を使って構築されているようなことがなんとなくわかる。
+さらに見ると、pseudo-distributed mode(擬似分散モード）というのが出来るそうなのでそれを目指す。
 
-yumリポジトリは[](http://www.cloudera.com/content/cloudera-content/cloudera-docs/CDH5/latest/CDH5-Installation-Guide/cdh5ig_cdh5_install.html)の中盤に書いてある、(http://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/cloudera-cdh5.repo)を使った。  
+yumリポジトリは[](http://www.cloudera.com/content/cloudera-content/cloudera-docs/CDH5/latest/CDH5-Installation-Guide/cdh5ig_cdh5_install.html)の中盤に書いてある、(http://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/cloudera-cdh5.repo)を使った。
 
 ~~~ bash
 $ cd /etc/yum/repos.d/
@@ -130,7 +130,7 @@ hadoop-mapreduce.x86_64 : The Hadoop MapReduce (MRv2)
 	:
 ~~~
 
-擬似分散モードは、hadoop-conf-pseudo（hadoop-0.20-conf-pseudoもあるが、これは旧版のようだ）をインストールすると依存関係で色々インストールしてくれる。  
+擬似分散モードは、hadoop-conf-pseudo（hadoop-0.20-conf-pseudoもあるが、これは旧版のようだ）をインストールすると依存関係で色々インストールしてくれる。
 
 ~~~ bash
 ]$ sudo yum install -y hadoop-conf-pseudo
@@ -296,18 +296,18 @@ $ rpm -ql hadoop-conf-pseudo
 
 ### JAVA\_HOMEの引き継ぎ
 
-Javaはchefのjavaレシピで入れたOracleのもの。  
-インストールパスは「/usr/lib/jvm/jdk1.7.0\_51/」になっている。  
-sudoでJAVA\_HOMEが引き継がれないようなので下記の行を追加しておく。  
-HDFSの方は、こちらの設定を見ているようなのでこのように。  
+Javaはchefのjavaレシピで入れたOracleのもの。
+インストールパスは「/usr/lib/jvm/jdk1.7.0\_51/」になっている。
+sudoでJAVA\_HOMEが引き継がれないようなので下記の行を追加しておく。
+HDFSのコマンド(hadoop-hdfs-*じゃなくてhdfsクライアント）の方は、こちらの設定を見ているようなのでこのように。
 
 ~~~ bash
 $ sudo visudo
 Defaults env_keep += "JAVA_HOME"
 ~~~
 
-また、hadoop-hdfs-*のサービスはbigtop-utils/bigtop-detect-javahomeというのを使ってJAVA\_HOMEを設定しているようだ。  
-ここには環境変数にいくら設定してもJAVA\_HOMEが設定できないようなので、「/usr/lib/jvm/jdk1.7.0\_51/」を追加した。  
+また、hadoop-hdfs-*のサービスはbigtop-utils/bigtop-detect-javahomeというのを使ってJAVA\_HOMEを設定しているようだ。
+ここには環境変数にいくら設定してもJAVA\_HOMEが設定できないようなので、「/usr/lib/jvm/jdk1.7.0\_51/」を追加した。
 
 ~~~ diff
 JAVA7_HOME_CANDIDATES='\
@@ -320,15 +320,15 @@ JAVA7_HOME_CANDIDATES='\
 +   /usr/lib/jvm/jdk1.7*'
 ~~~
 
-[bigtop](http://bigtop.apache.org/)なんて全然知らなかった・・・。  
+[bigtop](http://bigtop.apache.org/)なんて全然知らなかった・・・。
 
 ### namenodeの初期化
 
 今回は、最新版でYARNを使った方にしたいので、[Installing CDH 5 with YARN on a Single Linux Node in Pseudo-distributed mode ](http://www.cloudera.com/content/cloudera-content/cloudera-docs/CDH5/latest/CDH5-Quick-Start/cdh5qs_yarn_pseudo.html)
 の通りにやってみてる。
 
-まずnamenodeというのをフォーマットする必要があるらしい。namenodというのは一体・・・。  
-が、やってみる。  
+まずnamenodeというのをフォーマットする必要があるらしい。namenodというのは一体・・・。
+が、やってみる。
 
 ~~~ bash
 $ sudo -u hdfs hdfs namenode -format
@@ -408,8 +408,8 @@ Starting Hadoop secondarynamenode:                         [  OK  ]
 starting secondarynamenode, logging to /var/log/hadoop-hdfs/hadoop-hdfs-secondarynamenode-xxxx.out
 ~~~
 
-HDFS関係のサービスは、datanode, namenode, secondarynamenodeという3つが関わっているのがわかる。  
-ここで、このHDFSサービスのステータスをWebで確認できる。  
+HDFS関係のサービスは、datanode, namenode, secondarynamenodeという3つが関わっているのがわかる。
+ここで、このHDFSサービスのステータスをWebで確認できる。
 ホストOSから
 
 	http://ゲストOSのIPアドレス:50070
@@ -426,8 +426,8 @@ MapReduceはYARNというフレームワーク？（なんなの？）上で動�
 
 ~~~ bash
 $ sudo -u hdfs hadoop fs -mkdir -p /tmp/hadoop-yarn/staging/history/done_intermediate
-$ sudo -u hdfs hadoop fs -chown -R mapred:mapred /tmp/hadoop-yarn/staging 
-$ sudo -u hdfs hadoop fs -chmod -R 1777 /tmp 
+$ sudo -u hdfs hadoop fs -chown -R mapred:mapred /tmp/hadoop-yarn/staging
+$ sudo -u hdfs hadoop fs -chmod -R 1777 /tmp
 $ sudo -u hdfs hadoop fs -mkdir -p /var/log/hadoop-yarn
 $ sudo -u hdfs hadoop fs -chown yarn:mapred /var/log/hadoop-yarn
 $ sudo -u hdfs hadoop fs -ls -R /
@@ -498,8 +498,8 @@ $ sudo vim /etc/hbase/conf/hbase-site.xml
 </configuration>
 ~~~
 
-今現在、localhostの8020でHDFSにアクセス出来るようになっているのでこの通り。  
-しかしこれで起動し、hbase shellでアクセスしてもZooKeeperがどうとかのExceptionでアクセス出来ない。  
+今現在、localhostの8020でHDFSにアクセス出来るようになっているのでこの通り。
+しかしこれで起動し、hbase shellでアクセスしてもZooKeeperがどうとかのExceptionでアクセス出来ない。
 なので、ZooKeeperをインストールする。
 
 ~~~ bash
@@ -567,7 +567,7 @@ hbase(main):002:0>
 ~~~
 
 この時点では、
-	
+
 	http://ゲストOSのIPアドレス:60010
 
 でhbase-masterのWebUIが見れる。
