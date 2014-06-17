@@ -30,7 +30,7 @@ Reducerでもの複数かつ並行プロセスで処理して合理的に処理�
 今回は、HDFS上にHBaseのストレージを構築するところまでやってみる。
 
 ## 環境
-Mac上にVirtualBoxでCentOS 6.5(64bit)を作ってvagrantで構築した。WebUIの確認をしたいため、ネットワークはpublic\_network設定にしてある。
+Mac上にVirtualBoxでCentOS 6.5(64bit)を作ってvagrantで構築した。WebUI確認するため、ネットワークはpublic\_network設定にしてある。
 JavaはOracleの下記
 
 ~~~ bash
@@ -299,7 +299,7 @@ $ rpm -ql hadoop-conf-pseudo
 Javaはchefのjavaレシピで入れたOracleのもの。
 インストールパスは「/usr/lib/jvm/jdk1.7.0\_51/」になっている。
 sudoでJAVA\_HOMEが引き継がれないようなので下記の行を追加しておく。
-HDFSのコマンド(hadoop-hdfs-*じゃなくてhdfsクライアント）の方は、こちらの設定を見ているようなのでこのように。
+HDFSの方は、こちらの設定を見ているようなのでこのように。
 
 ~~~ bash
 $ sudo visudo
