@@ -51,7 +51,8 @@ timezone:    Asia/Tokyo
 future:      true
 # pygments:    true
 markdown:    redcarpet
-hard_wrap: true
+redcarpet:
+	extensions: ["autolink", "hard_wrap"]
 
 # https://github.com/mojombo/jekyll/wiki/Permalinks
 permalink:   /:categories/:title/
