@@ -52,7 +52,7 @@ future:      true
 # pygments:    true
 markdown:    redcarpet
 redcarpet:
-	extensions: ["autolink", "hard_wrap"]
+  extensions: ["autolink", "hard_wrap"]
 
 # https://github.com/mojombo/jekyll/wiki/Permalinks
 permalink:   /:categories/:title/
