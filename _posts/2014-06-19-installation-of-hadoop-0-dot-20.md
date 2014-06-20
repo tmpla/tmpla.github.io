@@ -11,6 +11,7 @@ comments:
 share: true
 published: true
 ---
+
 先日苦労して最新版Hadoopを動かせるようにしたのだが、最終目的であるNutch 2.2.1がHBase 0.90系じゃないとダメだった。  
 先日のインストールは[CDH5](http://www.cloudera.com/content/cloudera-content/cloudera-docs/CDH5/latest/CDH-Version-and-Packaging-Information/cdhvd_cdh_package_tarball.html)でHBaseもインストール出来たのだが、バージョンは0.96系。
 
