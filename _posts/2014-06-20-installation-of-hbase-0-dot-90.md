@@ -13,7 +13,7 @@ share: true
 
 [前回の記事]({{ site_url }}/installation-of-hadoop-0-dot-20)でCDH3を使ってHadoop 0.20をインストールしたが、
 このCDH3に含まれるHBase 0.90をインストールしてみた。
-Javaはインストール済みとして、/usr/lib/jvm/jdk1.7.0_51/がJAVA_HOMEの状態。
+Javaはインストール済みとして、/usr/lib/jvm/jdk1.7.0_51/がJAVA\_HOMEの状態。
 
 なぜHBaseの最新版ではなく0.90を使いたいかというと、[Apache Nutchのチュートリアル](http://wiki.apache.org/nutch/Nutch2Tutorial)に書いてあるし、
 実際HBase 0.96で動かして見たらダメだったようなので。
