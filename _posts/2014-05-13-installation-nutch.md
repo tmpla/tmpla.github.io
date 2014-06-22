@@ -83,11 +83,11 @@ Apache Ant(TM) version 1.8.2 compiled on December 20 2010
 
 * gora.propertiesの編集
 
-{% hightlight %}
+~~~ bash
 $ vim conf/gora.properties
 gora.datastore.default=org.apache.gora.cassandra.store.CassandraStore
 gora.cassandrastore.servers=localhost:9160
-{% endhighlight %}
+~~~
 
 * ivy/ivy.xmlの編集
 ivyは多分、jar同士の依存関係をうまく解決してくれるツールのようだ。
@@ -96,17 +96,16 @@ xmlファイルに書いておけば、依存するjarファイルをしてそ�
 
 ivy/ivy.xmlにコメントとしてcassandraの設定があると思うので、それをコメントアウトする。
 
-{% hightligh xml %}
+~~~ xml
 <dependency org="org.apache.gora" name="gora-cassandra" rev="0.3" conf="*->default" />
-{% enfhightlight %}
+~~~
 
 ## Nutchの実行
 あるディレクトリ以下のテキストファイルを読み込んでクロールするような仕組みなようで、
 下記のようなファイルを作った
 
-{% highlight %}
+~~~ bash
 $ mkdir urls
 $ vim urls/seed.txt
 http://nutch.apacht.org/
-{% endhighlight %}:wq
-
+~~~

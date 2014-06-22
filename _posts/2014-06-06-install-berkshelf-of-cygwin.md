@@ -4,18 +4,18 @@ title: ""
 modified: 2014-06-06 18:48:15 +0900
 tags: [berkshelf,chef,cygwin]
 image:
-  feature: 
-  credit: 
-  creditlink: 
-comments: 
-share: 
+  feature:
+  credit:
+  creditlink:
+comments:
+share:
 published: false
 status: draft
 ---
 CYGWINでberkshelfをインストール出来ない！最新版が！
 
 ~~~ bash
-[k-yokoshima]% gem i berkshelf
+% gem i berkshelf
 DL is deprecated, please use Fiddle
 Building native extensions.  This could take a while...
 ERROR:  Error installing berkshelf:
