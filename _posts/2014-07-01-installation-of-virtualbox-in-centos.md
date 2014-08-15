@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "CentOSに　VirtualBoxをインストールする"
+title: "CentOSにVirtualBoxをインストールする"
 modified: 2014-07-01 16:20:40 +0900
 tags: [VirtualBox,CentOS]
 image:
