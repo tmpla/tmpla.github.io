@@ -226,6 +226,7 @@ Debian GNU/Linux 8 \n \l
 ~~~
 
 Debianみたいですな。あとRubyとRailsとMySQLは入ってるかな〜？
+
 ~~~bash
 root@f7e7a95c05d3:/# rails -v
 Rails 4.2.4
