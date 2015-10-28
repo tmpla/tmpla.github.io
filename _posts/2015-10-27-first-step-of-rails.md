@@ -3,6 +3,7 @@ layout: post
 title: "Rails開発はじめの一歩"
 modified: 2015-10-27 23:36:49 +0900
 tags: [rails,]
+categories: [Rails実践講座]
 image:
   feature:
   credit:
