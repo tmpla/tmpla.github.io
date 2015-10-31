@@ -1,0 +1,65 @@
+---
+layout: post
+title: XServerでPHP
+categories:
+- PHP
+tags:
+- Excel
+- fputcsv
+- PHP4
+- PHP5
+- XServer
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>今まで別サーバで動作していたPHPのプログラムがXServerに持って行ったらなぜか動かなくなった。</p>
+<p>最初はmbstring関連の文字コードの問題かなと思い、以下の.htaccessを作成して実行してみたら500エラーが出る。</p>
+<pre lang="ini">
+php_value mbstring.http_input auto
+php_value mbstring.http_output pass
+</pre>
+<p>なんかしれないけどXServerでは使えないんだな、とこの時は思ったけど・・・。</p>
+<p>.htaccessが使えないと判断したので、コードの先頭に以下のように記載してエラーを出力するようにした。</p>
+<pre lang="php" escaped="true">
+@ini_set( 'display_errors', 'on' );
+</pre>
+<p>そしたら、どうもfputcsv()関数が実行できていない。というか定義されていないと怒られる。</p>
+<blockquote><p>Call to undefined function: fputcsv() </p></blockquote>
+<p>fputcsvという関数は比較的新しめの奴だったよな、と思って<a href="http://php.net/manual/ja/function.fputcsv.php">マニュアル</a>を見てみると、</p>
+<blockquote><p>fputcsv<br />
+(PHP 5 &gt;= 5.1.0)<br />
+fputcsv — 行を CSV 形式にフォーマットし、ファイルポインタに書き込む</p></blockquote>
+<p>とあり、5.1以降ならOKとあるのでなぜだろうと思ってハマっていたら、XServerはphp4と5がどちらも使える環境で、<br />
+デフォルトが4で動くらしいというメモを見つけた。</p>
+<p><a href="http://wordpress.matometa.net/archives/20091223012350">エックスサーバーPHP ver.5で若干速くなった？</a></p>
+<p>灯台もと暗し・・・。というかこういう基本的な部分はハマると深いよなぁ。<br />
+.htaccessを作成して無事動作を確認できた。</p>
+<pre lang="ini">
+AddHandler x-httpd-php5 .php
+</pre>
+<p>ちなみに、前述で.htaccessでInteral Server Errorが出た件も、多分php4であることを意識することが必要なのだと思う。<br />
+以下のようにすれば動いた。</p>
+<pre lang="ini" escaped="true">
+&lt;IfModule mod_php4.c&gt;
+php_value mbstring.http_input           auto
+php_value mbstring.http_output          UTF-8
+&lt;/IfModule&gt;
+</pre>
+<p>そして、そのfputcsv関数で出力したファイルを見たら、機種依存文字が化けていた。うーーーん。<br />
+内部的には文字コードはUTF-8で処理していたのですが、CSVファイルはExcelで見たいとの要望で、ファイル出力部分だけはSJISに変換して出力していました。<br />
+なぜなら、ExcelはSJISしか読めないからです。(<a href="http://support.microsoft.com/kb/821863/ja">[XL2002] UTF-8 形式のテキスト ファイルが文字化けする</a>)</p>
+<p>文字コードは色々な部分で調整が必要なので、面倒だなと思って調べていたら、<a href="http://hamamuratakuo.blog61.fc2.com/blog-entry-446.html">PHPで文字コードをSJISからUTF8に変換する方法</a><br />
+という記事があって、今まではUTF-8→SJISとやっていたのを以下のように変更してみましたらビンゴ！</p>
+<pre lang="php" escaped="true">
+mb_convert_encoding($value, &quot;sjis-win&quot;, &quot;UTF-8&quot;);
+</pre>
+<p>これで無事に機種依存文字もCSVに出力されるようになりました。</p>

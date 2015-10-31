@@ -1,0 +1,136 @@
+---
+layout: post
+title: amazon-ecsで商品検索をする
+categories:
+- Ruby
+tags:
+- amazon-ecs
+- rails
+- Ruby
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>またRailsでの話です。<br />
+先日、<a href="http://tmpla.info/archives/1585" title="Amazon Advertising APIを使ってみる">Amazon Product Advertising APIに自力でアクセスするのをやってみた </a>のですが、これを一々自力でやるのは無駄過ぎる努力だと思います。</p>
+<p>外部リソース（URLでアクセスできるやつ）をActiveModelのように扱える方法として、ActiveResourceというのの噂を聞きました。<br />
+それでAdvertising APIにアクセスするのをやってみたのですが、RESTというか、Query Stringのところを変えるだけのアクセス方法なので<br />
+なんだか原型をとどめてない感じの実装になってしまい、これはあまり向かないのかなと思って断念しました。<br />
+Objectっぽくアクセス出来るのはまあいいんだけど、それだけなら他にも方法があるし。</p>
+<p>なので、ActiveResourceはやめて、このAmazonのAPIを使うのに定評がありそうなamazon-ecsというのを使ってみようと思います。</p>
+<p>jugend/amazon-ecs · GitHub<br />
+<a href="https://github.com/jugend/amazon-ecs">https://github.com/jugend/amazon-ecs</a></p>
+<p>ちなみに環境はMacのMountain Lionで、XcodeのCommand Line Toolsが入ってます。railsとかは下記。</p>
+<pre lang="bash">
+$ ruby -v
+ruby 1.9.3p194 (2012-04-20 revision 35410) [x86_64-darwin11.4.0]
+$ rails -v
+Rails 3.2.8
+</pre>
+<p>あとは、Amazon Product Advertising APIのアクセスキーIDと秘密鍵とアソシエイトタグを取得しておきます。</p>
+<h3>下準備</h3>
+<p>プロジェクトを作成します。</p>
+<pre lang="bash">
+$ mkdir amazon-ecs-sample
+$ cd amazon-ecs-sample/
+$ rails new .
+</pre>
+<p>これでプロジェクトが出来たら、Gemfileを開いて、</p>
+<pre lang="ruby">
+gem 'amazon-ecs'
+</pre>
+<p>と入れてbundle installします。ここでよくあるんじゃないかというハマリどころは、このamazon-ecsはNokogoriというgemを使っているところです。<br />
+このNokogoriは（スゴイ名前ですが）、XMLを扱うような便利な物だそうなのですが、libxmlとかlibxsltとかのネイティブライブラリに依存するようなので、ここは頑張って乗り越えましょう。自分はXcodeのバージョンアップしたらCommand Line Toolsが入ってなかったのでちょっとハマりました。</p>
+<p>参考<br />
+Nokogiri<br />
+<a href="http://nokogiri.org/tutorials/installing_nokogiri.html">http://nokogiri.org/tutorials/installing_nokogiri.html</a></p>
+<p>上手く入れば準備完了です。</p>
+<h3>使ってみる</h3>
+<p>APIにアクセスするための三種の神器（アクセスキーID、秘密鍵、アソシエイトタグ）を設定します。<br />
+これは、アクセス前であればどこで設定してもいいはずですが、config/environment.rbに設定してます。</p>
+<pre lang="ruby">
+# config/environment.rb
+Amazon::Ecs.options = {
+  :associate_tag => [アソシエイトタグ],
+  :AWS_access_key_id => [アクセスキーID],
+  :AWS_secret_key => [秘密鍵],
+}
+</pre>
+<p>ついでに、日本のAmazonだけしか使わないようであれば、ここで国コードも指定しておいてもいいと思います。</p>
+<pre lang="ruby">
+# config/environment.rb
+Amazon::Ecs.options = {
+  :associate_tag => [アソシエイトタグ],
+  :AWS_access_key_id => [アクセスキーID],
+  :AWS_secret_key => [秘密鍵],
+  :country => 'jp',
+}
+</pre>
+<p>あとは、controllerとviewを適度に作成して実行してみます。</p>
+<pre lang="bash">
+$ rm -rf public/index.html
+$ rails g controller index index
+</pre>
+<p>続いて、index/indexにPOSTアクセスするので、config/routes.rbを書き換えます。</p>
+<pre lang="ruby">
+AmazonEcsSample::Application.routes.draw do
+  match "index/index" #get "index/index"  
+  root :to => 'index#index'
+end
+</pre>
+<p>あとcontrollerとviewはこんな感じ。</p>
+<pre lang="ruby">
+# index_controller.rb
+class IndexController < ApplicationController
+  def index
+    @keyword = params[:keyword]
+    if @keyword.present?
+      Amazon::Ecs.debug = true
+      @res = Amazon::Ecs.item_search(params[:keyword], 
+          :search_index => 'All', :response_group => 'Medium')
+    else
+      return
+    end
+  end
+end
+</pre>
+<pre lang="ruby">
+<div>
+  <%= form_tag index_index_path do %>
+    <%= text_field_tag 'keyword', @keyword %>
+    <%= submit_tag '検索' %>
+  <% end %>
+</div>
+<div>
+  <% if @res.present? %>
+    <ul style="list-style: none;">
+      <% @res.items.each do |i| %>
+        <li style="clear: both;">
+          <div style="width: 150px;float: left;text-align:center;">
+            <%= link_to i.get('DetailPageURL') do %>
+              <%= image_tag i.get('SmallImage/URL'), {:style => 'border: none;'} %>
+            <% end %>
+          </div>
+          <div style="width: 150px; float: left;"><%= i.get('ASIN') %></div>
+          <div style="width: 150px; float: left;"><%= i.get('ItemAttributes/Title') %></div>
+        </li>
+      <% end %> 
+    </ul>
+  <% end %>
+</div>
+</pre>
+<p>ControllerでAmazon::Ecs.debug = trueにしておくと、個々のパラメータとかがログに出力されるのでどうもおかしいと思ったらやってみると便利です。<br />
+これでサーバーを起動し、検索してみるとこんな感じ。<br />
+<a href="http://tmpla.info/wp-content/uploads/2012/10/d637d8886422bccd5ce13840fdbb291e.png"><img src="http://tmpla.info/wp-content/uploads/2012/10/d637d8886422bccd5ce13840fdbb291e-300x279.png" alt="" title="スクリーンショット 2012-10-29 0.25.37" width="300" height="279" class="alignnone size-medium wp-image-1592" /></a></p>
+<p>簡単で良いですね！<br />
+ただし、これでアクセス出来るAPIは、ItemSearch、ItemLookup、BrowseNodeLookupだけのようでした。（まあこれで十分だと思うけど）<br />
+例えばカートの操作とかその他のAPIの関しては自分で実装する必要があるが、拡張方法も説明ページに載っているので、それに則って書けば良い。<br />
+これはだいぶ便利ですね。</p>

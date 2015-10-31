@@ -1,0 +1,43 @@
+---
+layout: post
+title: Wordpressの投稿でリンクを記述する時に便利なEasyLinkpostプラグイン
+categories:
+- Plugin
+- WordPress
+tags:
+- Easy-linkpost
+- Plugin
+- WordPress
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>Wordpressのプラグインを作成しました。（2年ぶり2回目）</p>
+<p>ブログ記事を作成する時に、別サイトのリンクを入れるとき、最近は下記のような書式で入れます。</p>
+<p>記事タイトル<br />
+&lt;a href=&quot;http://example.com&quot;&gt;http://example.com&lt;/a&gt;</p>
+<p>この文字列を作るには、そのサイトを開いてベージのソースを見て、head内のtitleをコピーして…とかやってるのですが、<br />
+面倒くさい。<br />
+なので、せめてWordpressでURLを入力したらタイトルを自動的に取得して上記フォーマットのようにして投稿できるプラグインがないかなと思っていたのですがなかったようなので作りました。</p>
+<p>尚、TinyMCEのエディタ（ビジュアルエディタ）では動かず、普通のHTMLで投稿する方でやります。<br />
+実装的には、普通のHTMLで投稿するのをquicktags.jsというのでやっているようだったので、その処理を上書きしています。</p>
+<p>使い方は普通にリンクを追加する手順と同じです。<br />
+普通の投稿の際は、下記のようにURLを入力してリンクを作成します。</p>
+<p><a href="http://tmpla.info/wp-content/uploads/2011/09/url_input.jpg"><img src="http://tmpla.info/wp-content/uploads/2011/09/url_input-300x146.jpg" alt="" title="url_input" width="300" height="146" class="alignnone size-medium wp-image-1386" /></a></p>
+<p>この生JavaScriptのconfirmをjquery-ui.dialogを使って変更してみました。</p>
+<p><a href="http://tmpla.info/wp-content/uploads/2011/09/url_input_easylinkpost.jpg"><img src="http://tmpla.info/wp-content/uploads/2011/09/url_input_easylinkpost-300x158.jpg" alt="" title="url_input_easylinkpost" width="300" height="158" class="alignnone size-medium wp-image-1388" /></a></p>
+<p>インストールはプラグインの新規追加から「Easy-linkpost」で検索すればインストールできます。<br />
+プラグインディレクトリは下記です。<br />
+WordPress &#8250; Easy Linkpost &laquo; WordPress Plugins<br />
+<a href="http://wordpress.org/extend/plugins/easy-linkpost/">http://wordpress.org/extend/plugins/easy-linkpost/</a></p>
+<p>おおっ、↑を入力してみたら早速うまく行ったｗ<br />
+使ってもそんなに害があるものではないと思いますので、宜しければ使ってみてください。<br />
+そして可能ならばフィードバック頂ければ嬉しいです。</p>

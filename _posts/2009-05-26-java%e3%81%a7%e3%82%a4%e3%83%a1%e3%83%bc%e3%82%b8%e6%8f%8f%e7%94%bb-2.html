@@ -1,0 +1,62 @@
+---
+layout: post
+title: Javaでイメージ描画 2
+categories:
+- Java
+tags:
+- Graphic2D
+- Java
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>書く場所が確保出来たら、単純なラインを引いてみます。<br />
+<a>java.awt.Graphics</a><br />
+には<a href="http://sdc.sun.co.jp/java/docs/j2se/1.4/ja/docs/ja/api/java/awt/Graphics.html#drawLine(int, int, int, int)">drawLine(int, int, int, int)</a><br />
+というメソッドがあるのですが、ぱっと見ただけでは引数がなんなのかわからないので、別の方法で書きます。</p>
+<p>直線をあらわすクラスに<a href="http://sdc.sun.co.jp/java/docs/j2se/1.4/ja/docs/ja/api/java/awt/geom/Line2D.html">java.awt.geom.Line2D</a><br />
+というクラスがあります。個人的には前述のメソッドよりも理解しやすいので、これで作成します。</p>
+<pre lang="java">
+BufferedImage image = new BufferedImage(500, 500, BufferedImage.TYPE_INT_ARGB);
+Graphics2d gdImage = image.createGraphics();
+
+Point start = new Point(0, 0);
+Point end = new Point(500, 500);
+
+Line2D line = new Lind2D.Float(start, end);
+
+gdImage.setPaint(Color.BLUE);
+gdImage.setStroke(new BasicStroke());
+gdImage.draw(line);
+</pre>
+<p><a href="http://sdc.sun.co.jp/java/docs/j2se/1.4/ja/docs/ja/api/java/awt/Point.html">Point</a>クラスは、1点の座標を<br />
+表すクラスでx, y座標をバラバラに管理するよりかは効率的でしょう。<br />
+その後、どんな色で、どんな形状で（線なら実線とか破線とか）を指定してあげます。<br />
+これらの属性は、セットしたら変更されるまでずっと持っている属性ですので、<br />
+たとえば青色の実線を描いた後に赤色の破線を描きたい場合は、描画の前にセットしなおします。</p>
+<pre lang="java">
+gdImage.setPaint(Color.BLUE);
+gdImage.setStroke(new BasicStroke());
+gdImage.draw(line);
+
+gdImage.setPaint(Color.RED);
+gdImage.setStroke(new BasicStroke(1, BasicStroke.JOIN_BEVEL, BasicStroke.CAP_BUTT));
+gdImage.draw(line);
+</pre>
+<p>結局、直線の場合はLine2Dオブジェクトを操作したように、同じようにして以下のような形状の形を描画することが出来ます。<br />
+四角形：<a href="http://sdc.sun.co.jp/java/docs/j2se/1.4/ja/docs/ja/api/java/awt/geom/Rectangle2D.html">Rectangle2D</a><br />
+角丸四角形：<a href="http://sdc.sun.co.jp/java/docs/j2se/1.4/ja/docs/ja/api/java/awt/geom/RoundRectangle2D.html">RoundRectangle2D</a><br />
+楕円：<a href="http://sdc.sun.co.jp/java/docs/j2se/1.4/ja/docs/ja/api/java/awt/geom/Ellipse2D.html">Ellipse2D</a><br />
+弧：<a href="http://sdc.sun.co.jp/java/docs/j2se/1.4/ja/docs/ja/api/java/awt/geom/Arc2D.html">Arc2D</a><br />
+3次曲線セグメント：<a href="http://sdc.sun.co.jp/java/docs/j2se/1.4/ja/docs/ja/api/java/awt/geom/CubicCurve2D.html">CubicCurve2D</a><br />
+2次曲線セグメント:<a href="http://sdc.sun.co.jp/java/docs/j2se/1.4/ja/docs/ja/api/java/awt/geom/QuadCurve2D.html">QuadCurve2D</a></p>
+<p>そういえば正円とか八角形とかはどうするんだ？と思ったので勉強してきます。<br />
+続きます（たぶん）</p>

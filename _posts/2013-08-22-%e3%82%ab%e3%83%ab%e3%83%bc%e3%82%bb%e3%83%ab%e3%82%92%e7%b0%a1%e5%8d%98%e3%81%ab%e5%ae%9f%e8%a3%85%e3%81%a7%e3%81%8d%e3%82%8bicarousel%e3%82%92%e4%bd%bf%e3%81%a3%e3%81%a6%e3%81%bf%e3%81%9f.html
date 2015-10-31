@@ -1,0 +1,61 @@
+---
+layout: post
+title: "カルーセルを簡単に実装できるiCarouselを使ってみた"
+categories:
+- iOS
+tags:
+- cocoapods
+- iCarousel
+- iOS
+- Xcode
+- "種類"
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>iPhone開発で、横スライドでPick出来るPickerを探しにCocoapodsを眺めていたらiCarouselというのを見つけた。<br />
+既にGithubでスター2000超の有名どころのライブラリらしいが、イマイチどんな風にどんなことが出来るのかが分からなかったので使ってみた。</p>
+<p>Githubのリポジトリはこちら。<br />
+nicklockwood/iCarousel · GitHub<br />
+<a href="https://github.com/nicklockwood/iCarousel">https://github.com/nicklockwood/iCarousel</a></p>
+<p>ここからソースを落として見たので、この中の「Advanced iOS Example」を起動して、<br />
+下記にタイプ別にスクリーンショットを貼ってみる。（全然コードは見てないが…）<br />
+尚、ほとんどのタイプは水平（Horizontal)と垂直（Vertical）タイプが設定でき、<br />
+回る系の奴はInverted（カレント要素が引っ込んだような見た目）がある。<br />
+あと、Wrapと言うのは、おそらく先頭要素、最終要素が選択要素の場合に、擬似的に要素を補完してくれるものだと思う。<br />
+例えば最初の要素の前に最終要素を表示させて無限ループのように見えると。<br />
+もちろん、要素をスワイプ等することによって要素の切り替えができる。</p>
+<h3>Linear</h3>
+<p>これはフラットに並べるやつ。おそらくスタンダードなタイプ。<br />
+<a href="http://tmpla.info/wp-content/uploads/2013/08/ff2484b2b794c035918a39d5a05b61f1.png"><img src="http://tmpla.info/wp-content/uploads/2013/08/ff2484b2b794c035918a39d5a05b61f1-169x300.png" alt="" title="iOSシミュレータのスクリーンショット 2013.08.21 23.56.34" width="169" height="300" class="alignnone size-medium wp-image-1697" /></a></p>
+<h3>Rotary</h3>
+<p>これは、選択中の要素以外の要素が一歩ひいた感じの見た目で、要素が奥に向かって円形に配置されているような感じ。<br />
+Invertedなら選択要素が一番奥においてあるようにみえる。<br />
+<a href="http://tmpla.info/wp-content/uploads/2013/08/855bb8c6ecf8e478fc81d3a87f180fd6.png"><img src="http://tmpla.info/wp-content/uploads/2013/08/855bb8c6ecf8e478fc81d3a87f180fd6-169x300.png" alt="" title="iOSシミュレータのスクリーンショット 2013.08.21 23.59.47" width="169" height="300" class="alignnone size-medium wp-image-1698" /></a></p>
+<h3>Cylinder</h3>
+<p>これは、要素の端っこがくっついているような感じで、要素の並びかたはRotaryと同じ奥に向かって円形になるが、円形の壁を外から見てるようなイメージ。<br />
+Invertedなら円形の中から見ているような感じ。<br />
+<a href="http://tmpla.info/wp-content/uploads/2013/08/0fcd0700eae47a9eddb524f7a5f8bbea.png"><img src="http://tmpla.info/wp-content/uploads/2013/08/0fcd0700eae47a9eddb524f7a5f8bbea-169x300.png" alt="" title="iOSシミュレータのスクリーンショット 2013.08.22 0.03.19" width="169" height="300" class="alignnone size-medium wp-image-1699" /></a></p>
+<h3>Wheel</h3>
+<p>これは、要素を二次元に円形に並べる、というか平面上に円形に要素を置いた感じ。<br />
+<a href="http://tmpla.info/wp-content/uploads/2013/08/d44c8494c44f65e0fe3919a64cfa27b9.png"><img src="http://tmpla.info/wp-content/uploads/2013/08/d44c8494c44f65e0fe3919a64cfa27b9-169x300.png" alt="" title="iOSシミュレータのスクリーンショット 2013.08.22 0.05.36" width="169" height="300" class="alignnone size-medium wp-image-1700" /></a></p>
+<h3>CoverFlow</h3>
+<p>要素を横に並べているが、選択要素以外は奥方向に縦に引っ込む（説明がむずい）。選択要素以外は本棚に入っているような感じというかなんというか。<br />
+CoverFlow2と言うのもあるが、これは選択要素を動かすギリギリまでめくれないような動きのようだった。<br />
+<a href="http://tmpla.info/wp-content/uploads/2013/08/83312cdd4794652dddb48b7fc3bd6053.png"><img src="http://tmpla.info/wp-content/uploads/2013/08/83312cdd4794652dddb48b7fc3bd6053-169x300.png" alt="" title="iOSシミュレータのスクリーンショット 2013.08.22 0.09.25" width="169" height="300" class="alignnone size-medium wp-image-1701" /></a></p>
+<h3>TimeMachine</h3>
+<p>要素を立体的に前後させることが出来る。Windows Vistaが出た時を思い出す…。（あれは全く役に立たなかったが）<br />
+<a href="http://tmpla.info/wp-content/uploads/2013/08/05f2bcac6c6777759e563aca5e939b01.png"><img src="http://tmpla.info/wp-content/uploads/2013/08/05f2bcac6c6777759e563aca5e939b01-169x300.png" alt="" title="iOSシミュレータのスクリーンショット 2013.08.22 0.18.51" width="169" height="300" class="alignnone size-medium wp-image-1702" /></a></p>
+<p>あとCustomというのがあるがサンプルからはよく分からなかったが角度とか要素の間とかを詰めれるのではなかろうか。<br />
+ちょっとカルーセル使いたい、なんてときにお勧めです。<br />
+最後に動画を置いておきます。</p>
+<p>iCarousel Sample<br />
+<a href="https://vimeo.com/72825563">https://vimeo.com/72825563</a></p>

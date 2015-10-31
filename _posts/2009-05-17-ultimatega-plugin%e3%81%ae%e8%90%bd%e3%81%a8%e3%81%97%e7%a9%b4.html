@@ -1,0 +1,32 @@
+---
+layout: post
+title: UltimateGA PlugInの落とし穴
+categories:
+- WordPress
+tags: []
+status: private
+type: post
+published: false
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>自分のブログはひと段落したので、自社のHP(<a href="http://www.4sure.co.jp" target="_blank">http://www.4sure.co.jp</a>)の方（こちらもWordPressで作成しています）を整理するかと多分初めて管理画面にアクセスしました。</p>
+<p>こちらでもGoogle Analyticsでアクセス解析をしたいなと思い、Analyticsのコードを取得して<a class="wp-caption-dd" href="http://www.oratransplant.nl/uga/" target="_blank">Ultimate GA</a>を入れてみたのですが、どうしても入るはずのトラッキングコードが入らない。</p>
+<p>自社サイトは、先日辞職してしまったデザイナーが殆ど処理していたので、中身がよく分かっていませんでした。<br />
+自社ページもその人がほとんど管理していたので、結局テーマのphpファイルから見直す必要ががありました。</p>
+<p>ほとんど閃きに近いですが、Ultimate GAのトラッキングコードは&lt;/body&gt;タグの直前に入ると思っていたので、wp-footer.phpファイルを見たらなんか普通じゃない雰囲気。</p>
+<p>&lt;div id="footer"&gt;<br />
+&lt;p&gt;Copyright 2008 4sure Inc. All Rights Reserved.&lt;/p&gt;<br />
+&lt;/div&gt;</p>
+<p>&lt;/div&gt;<br />
+&lt;/body&gt;<br />
+&lt;/html&gt;<br />
+閉じるだけの&lt;/div&gt;を入れているのも気になるのですけど、WordPressとかは決まった文言入れないといけないんじゃなかったっけ？と思い、defaultのテーマ等を見ているとfotterには以下のようにお約束が入っているようでした。<br />
+&lt;?php wp_footer(); ?&gt;<br />
+これを入れてみたらUtlimate GApluginのコードが無事入りました。</p>

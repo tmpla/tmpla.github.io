@@ -1,0 +1,53 @@
+---
+layout: post
+title: Wordpress3.0.1jaでプラグイン有効化出来ない問題
+categories:
+- Plugin
+tags:
+- memory_limit
+- Plugin
+- WordPress
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+  _wp_old_slug: ''
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>このブログのサイトは<a href="http://px.a8.net/svt/ejp?a8mat=1NUHJB+5H2I0I+23BO+C0QPE" target="_blank">ロケットネット</a>を使っています。<br />
+<img border="0" width="1" height="1" src="http://www13.a8.net/0.gif?a8mat=1NUHJB+5H2I0I+23BO+C0QPE" alt=""><br />
+ロケットネットでは、WordPress等のインストールが簡単に出来るような仕組みがあるのですが、どうもプラグインを有効化すると画面が真っ白になってそれ以上何も出来ない状態になってしまう事がありました。<br />
+（真っ白になったら、そのプラグイン一式を削除するまで何にも出来ない）</p>
+<p>WordPressはプラグインが使えて何ぼのものなので、これは困った。ログを見てみると</p>
+<pre lang="log">
+PHP Fatal error:  Allowed memory size of 33554432 bytes exhausted
+</pre>
+<p>どうもメモリが足りないように見えます。<br />
+ロケットネットのphp.iniのmemori_limitは32Mになっているのですが、これでは少ないんじゃないか？と思ったのですが、<br />
+そもそもWordPressでは32Mしか使わない想定になっているようでした。</p>
+<p>wp-includes/default-constants.phpの15行目あたりから</p>
+<pre lang="php">
+function wp_initial_constants( ) {
+	global $blog_id;
+
+	// set memory limits
+	if ( !defined('WP_MEMORY_LIMIT') ) {
+		if( is_multisite() ) {
+			define('WP_MEMORY_LIMIT', '64M');
+		} else {
+			define('WP_MEMORY_LIMIT', '32M');
+		}
+	}
+</pre>
+<p>マルチサイトじゃない場合は32Mになっていたので、以下のようにしてみました。</p>
+<p>define('WP_MEMORY_LIMIT', '32M');<br />
+↓<br />
+define('WP_MEMORY_LIMIT', '64M');</p>
+<p>これでとりあえずプラグインなどもガンガンインストールできるようになったようでした。<br />
+でもこれはWordPressの問題なのではないだろうか・・・。</p>

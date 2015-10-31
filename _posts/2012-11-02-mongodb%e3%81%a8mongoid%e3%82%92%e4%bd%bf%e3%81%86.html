@@ -1,0 +1,151 @@
+---
+layout: post
+title: MongoDBとMongoidを使う
+categories:
+- "未分類"
+tags:
+- MongoDB
+- Mongoid
+- NoSQL
+- rails
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>階層構造データマニアの検証の時間です。</p>
+<p>ちょっと前から主にクラウド界隈でのスケーリングの問題（がメインだと思いますが）で、ずっと使われてきたRelational Databaseを使わずに、Key Value Storeというのを使ってみたりする流行りがありました（あります）<br />
+パフォーマンスは実際にどうなのかあまり良くわからないのですが、シンプルにKeyを検索して値（Value）を引き出すのがやっぱり早そうではあります。バックエンドはRDBのまま、キャッシュをKVSで持つ、みたいなのもあります。</p>
+<p>そしてその後だと思うのですが、ドキュメント指向データベースというものが出てきて、その単語からはもはや想像ができなくなってしまったのですが、自分の解釈だと、KVSのValueの部分をもうちょっとリッチにしたようなものだと思っています。<br />
+そのドキュメント指向DBの一つである、MongoDBというのがRailsのActiveRecordの代わりに使えるという話だったので、ちょっと使ってみて例の階層型データはどういう実装になるのかをやってみました。</p>
+<p>自分は結構SQL好き好き野郎で、実際触ってみるまではスキーマがないというのがどうにも受け入れがたかったのですが、<br />
+使ってみるとこれはこれでありなのかも、と思ったりしました。</p>
+<p>環境はMountain Lionで、Homebrewが入ってます、Railsは3.2.8です。後は察してください。</p>
+<h3>MongoDBのインストール</h3>
+<p>Homebrewのコマンドでインストールします。</p>
+<pre lang="bash">
+brew install mongodb
+</pre>
+<p>インストールは特に問題ないかと思いますが、下記の内容で/usr/local/etc/mongod.confというファイルが出来ると思います。</p>
+<pre lang="bash">
+# Store data in /usr/local/var/mongodb instead of the default /data/db
+dbpath = /usr/local/var/mongodb
+
+# Append logs to /usr/local/var/log/mongodb/mongo.log
+logpath = /usr/local/var/log/mongodb/mongo.log
+logappend = true
+
+# Only accept local connections
+bind_ip = 127.0.0.1
+</pre>
+<p>起動時にこのconfファイルを指定してあげる事でdbpathにあるところにジャーナルファイルが作成されるようです。<br />
+指定しない場合は「/data/db」になるようですが、フォルダがないと起動に失敗します。</p>
+<p>起動コマンド</p>
+<pre lang="bash">
+$ mongod run --config /usr/local/etc/mongod.conf
+</pre>
+<p>なんかよくわからないけど、このコマンドでうまいことバックグラウンドで起動してくれているようです。(&をつけたりするのかと思った）</p>
+<h3>mongoクライアントで確認</h3>
+<p>先ほど起動したのはサーバー側で、これにアクセスするための対話シェルがあります。</p>
+<pre lang="bash">
+$ mongo
+MongoDB shell version: 2.2.0
+connecting to: test
+> show dbs
+local	(empty)
+> use test
+switched to db test
+> db.test.save({name:'aaaa'})
+> db.test.find()
+{ "_id" : ObjectId("509291660df3039e41211ac8"), "name" : "aaaa" }
+> db.test.save({name:"aaaa, child:{name:"child"}})
+> db.test.save({name:'aaaa', child:{name:"child"}})
+> db.test.find()
+{ "_id" : ObjectId("509291660df3039e41211ac8"), "name" : "aaaa" }
+{ "_id" : ObjectId("509292940df3039e41211ac9"), "name" : "aaaa", "child" : { "name" : "child" } }
+</pre>
+<p>これ見るとわかるように、内容はすべてJSONになっています。ただ、実際はJSONではなく、BSONというBinary形式のJSONで保存されているそうです。<br />
+このシェルなのですが、SpiderMonkeyを拡張したものなのだそうです。つまりなんとJavaScriptで色々書くのです。<br />
+色々出来るのですが、詳しいことはマニュアルで。</p>
+<p>mongo - The Interactive Shell - MongoDB<br />
+<a href="http://www.mongodb.org/display/DOCS/mongo+-+The+Interactive+Shell">http://www.mongodb.org/display/DOCS/mongo+-+The+Interactive+Shell</a></p>
+<p>BSON - Binary JSON<br />
+<a href="http://bsonspec.org/">http://bsonspec.org/</a></p>
+<p>あと、MongoDBと言えばShardingという分散処理についての最大の特徴があるのですが、ここでは全然意識しません。</p>
+<h3>Mongoid</h3>
+<p>これをRubyで使うのに、Mongoidというマッパー？があります。<br />
+（直接クエリ発行はどうやるんだろうか…？）<br />
+まずサンプルを作ってみます。ActiveRecordの代わりにMongoidを使うので、<br />
+-O(--skip-active-record)を指定してプロジェクトを作成します。</p>
+<pre lang="bash">
+$ mkdir mongoid-sample
+$ cd mongoid-sample/
+$ rails new . -O
+</pre>
+<p>そして、Gemfileを開いて</p>
+<pre lang="ruby">
+gem 'mongoid'
+</pre>
+<p>で、bundle installします。<br />
+3.0.0のマニュアル見ると、bson_extというgemが書いてないので要らなくなったのかな？ということで入れてません。</p>
+<p>Mongoid: Installation<br />
+<a href="http://mongoid.org/en/mongoid/docs/installation.html">http://mongoid.org/en/mongoid/docs/installation.html</a></p>
+<p>次に、このMongoidを使うための設定を生成します。</p>
+<pre lang="bash">
+$ rails g mongoid:config
+
+Mongoid config not found. Create a config file at: config/mongoid.yml
+to generate one run: rails generate mongoid:config
+
+      create  config/mongoid.yml
+</pre>
+<p>これで生成されたmongoid.ymlは下記のようになっています。（コメント部分は削除しました）<br />
+これは特にこのまま使用すればよろしい。</p>
+<pre lang="yml">
+development:
+  sessions:
+    default:
+      database: mongoid_sample_development
+      hosts:
+        - localhost:27017
+      options:
+
+  options:
+
+test:
+  sessions:
+    default:
+      database: mongoid_sample_test
+      hosts:
+        - localhost:27017
+      options:
+        consistency: :strong
+        max_retries: 1
+        retry_interval: 0
+</pre>
+<p>これで準備出来ました。<br />
+この状態でモデルを作ってみます。今回は階層構造のよくありがちな組織のモデルを作ってみます。</p>
+<pre lang="rails">
+$ rails g model dept
+      invoke  mongoid
+      create    app/models/dept.rb
+      invoke    test_unit
+      create      test/unit/dept_test.rb
+      create      test/fixtures/depts.yml
+</pre>
+<p>app/model/dept.rb</p>
+<pre lang="ruby">
+class Dept
+  include Mongoid::Document
+end
+</pre>
+<p>おお、なんかちゃんとできてる。ActiveRecordの場合と比べると、マイグレーションスクリプトが生成されてませんね。<br />
+mongoid(mongodb)はマイグレーションが不要で、モデルだけで定義するのです。</p>
+<p>ちょっと長すぎなので続こう。</p>

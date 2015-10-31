@@ -1,0 +1,29 @@
+---
+layout: page
+title:  Categories
+permalink: /categories/
+---
+
+<ul class="tag-cloud">
+{% for category in site.categories %}
+  <li style="font-size: {{ category | last | size | times: 100 | divided_by: site.categories.size | plus: 70  }}%">
+    <a class="post-tag" href="#{{ category | first | slugize }}">
+      {{ category | first }}
+    </a>
+  </li>
+{% endfor %}
+</ul>
+
+<div class="tag-list">
+{% for category in site.categories %}
+  <div class="tag-group">
+    {% capture category_name %}{{ category | first }}{% endcapture %}
+    <h4 class="tag-group-title" id="{{ tag_name | slugize }}">{{ category_name }}</h4>
+    {% for post in site.categories[category_name] %}
+    <article class="tag-item">
+      <a class="tag-item-title" href="{{ site.url }}{{ post.url }}">{{post.title}}</a>
+    </article>
+    {% endfor %}
+  </div>
+{% endfor %}
+</div>

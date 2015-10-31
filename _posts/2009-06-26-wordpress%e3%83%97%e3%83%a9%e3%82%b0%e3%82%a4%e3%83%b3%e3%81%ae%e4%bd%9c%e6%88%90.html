@@ -1,0 +1,107 @@
+---
+layout: post
+title: WordPressプラグインの作成
+categories:
+- Plugin
+tags:
+- Plugin
+- Wordpres
+status: private
+type: post
+published: false
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p><a href="http://blog.4sure.jp/yokoshima/2009/06/24/wpでスタイルシートを使用するためのplugin/">wpでスタイルシートを使用するためのplugin</a><br />
+で、一時的ではない自分のスタイルシートを使いたいという要望があったのですが、<br />
+それをかなえるプラグインがなさそうでしたので、作成してみることにしました。</p>
+<p>WordPressのプラグイン作成は初めてなので、まず理解しておくことがたくさんあります。</p>
+<p><a href="http://zone.maple4ever.net/blog/archives/440/">WordPress プラグイン作成時のノウハウ – 前編</a>にわかりやすいように記事がありましたので、それにならって作成したいと思います。</p>
+<p>とりあえず作ればよいファイルは、wp-content/pluginsに作るディレクトリ、メイン処理のphpファイルを作ります。<br />
+今回は、自分のスタイルシートを追加したいということにして、add-my-cssという名前にしました。add-my-cssディレクトリの中にadd-my-css.phpファイルを作成します。</p>
+<p>作成したら中身を考えますが、何も考えずに入れれるのはWordpress標準ヘッダとライセンス事項です。(<a href="http://wpdocs.sourceforge.jp/プラグインの作成">ここ</a>参照)</p>
+<p>こんな感じで</p>
+<pre lang="php" escaped="true">
+&lt;?php
+
+/*
+Plugin Name: Add My CSS
+Plugin URI: http://blog.4sure.jp/yokoshima/
+Description: My Style Sheet is inserted in the header.
+Version: 0.1
+Author: yokoshima
+Author URI:  http://blog.4sure.jp/yokoshima/
+*/
+/*  Copyright 2009 yokoshima (email : k.yokoshima@4sure.co.jp:)
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+*/
+</pre>
+<p>次に、ちょっと謎の言葉である「フック」ですが、これはWordPressがある処理を行うところを定義しておき、そのタイミングで実行させることを定義しておくものです。<br />
+今回の場合、Wordpressがheaderを出力するタイミングでスタイルシート定義を出力したいので、アクションフックの「<a href="http://codex.wordpress.org/Hook_Reference/wp_head">wp_head</a>」がいいタイミングです。<br />
+とりあえずは見よう見まねで、クラスの作成と、アクションフックの登録だけ記載しました。<br />
+いかが現時点のソースです。<br />
+ヘッダ内に&lt;!-- add_my_css 0.1 --&gt;と表示されれば今回はＯＫです。</p>
+<pre lang="php" escaped="true">
+&lt;?php
+
+/*
+Plugin Name: Add My CSS
+Plugin URI: http://blog.4sure.jp/yokoshima/
+Description: My Style Sheet is inserted in the header.
+Version: 0.1
+Author: yokoshima
+Author URI:  http://blog.4sure.jp/yokoshima/
+*/
+/*  Copyright 2009 yokoshima (email : k.yokoshima@4sure.co.jp:)
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+*/
+ class Add_My_CSS {
+
+        var $version = "0.1";
+
+        function Add_My_CSS(){}
+
+        function wp_head() {
+                echo "\n<!-- add_my_css $this-&gt;version -->\n";
+        }
+}
+
+$_add_my_css = new Add_My_CSS();
+add_action('wp_head', array($_add_my_css, 'wp_head'));
+
+?&gt;
+</pre>
+<p>これで、プラグインを有効にすると、&lt;!-- add_my_css 0.1 --&gt;と表示されました。<br />
+結構簡単にできちゃうんじゃないかな？</p>

@@ -1,0 +1,124 @@
+---
+layout: post
+title: Wordpressの記事でJavaScriptを動かす
+categories:
+- jQuery
+- "開発"
+tags:
+- jQuery
+- WordPress
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>WordPressのエントリー内でJavaScriptは動かせるのかと思ってやってみました。<br />
+こんな感じに。<br />
+下記は、投稿時に直接コードを書きました。</p>
+<pre lang="javascript" escaped="false">
+<script type="text/javascript">
+function doPush(){
+alert('pushed!');
+}
+</script>
+<input type="button" id="test" onclick="doPush()" value="push me" />
+</pre>
+<p><script type="text/javascript"><br />
+function pushButton(){<br />
+alert('pushed!');<br />
+}<br />
+</script><br />
+<input type="button" id="test1" onclick="pushButton" value="push me 1" /></p>
+<p>そして生成されたページを見るとどうもonclickの値が消えてる・・・。<br />
+じゃあしょうが無いので、jQueryでやってみます。</p>
+<pre lang="javascript" escaped="false">
+<script type="text/javascript">
+jQuery(document).ready(function($){
+    $('#test2').click(function(){
+        alert('pushed');
+    });
+});
+</script>
+<input type="button" id="test2" value="push me 2" />
+</pre>
+<p><script type="text/javascript"><br />
+jQuery(document).ready(function($){<br />
+$('#test2').click(function(){<br />
+ alert('pushed');<br />
+});<br />
+});<br />
+</script><br />
+<input type="button" id="test2" value="push me 2" /></p>
+<p>あれ？行けちゃうのか？どうも書けるらしいよ。<br />
+多分ダメだと思って先にPluginを探しておいたのに・・・。<br />
+<a href="http://www.ooso.net/inline-js">inline-js —— wordpress plugin &#8211; 某人的栖息地</a></p>
+<p>行けちゃうのでちょっと遊んでみよう。<br />
+jQueryで要素を動かすデモ。<br />
+下の赤い四角を左右に動かしてみる。<br />
+赤い四角をクリックすると動きます。</p>
+<pre lang="javascript" escaped="false">
+<script type="text/javascript">
+jQuery(document).ready(function($){
+$('#redbox').toggle(
+    function(){
+        $(this).animate({"marginLeft": "+=150px"}, "slow"); 
+    },
+    function(){
+        $(this).animate({"marginLeft": "-=150px"}, "slow"); 
+    }
+);
+});
+</script>
+<div id="redbox" style="background-color: red;width: 50px; height: 50px" ></div>
+</pre>
+<p><script type="text/javascript"><br />
+jQuery(document).ready(function($){<br />
+$('#redbox').toggle(<br />
+    function(){<br />
+        $(this).animate({"marginLeft": "+=150px"}, "slow");<br />
+    },<br />
+    function(){<br />
+        $(this).animate({"marginLeft": "-=150px"}, "slow");<br />
+    }<br />
+);<br />
+});<br />
+</script></p>
+<div id="redbox" style="background-color: red;width: 50px; height: 50px" ></div>
+<p>青い四角を上下に動かしてみる。青い四角をクリックすると動きます。</p>
+<pre lang="javascript" escaped="false">
+<script type="text/javascript">
+jQuery(document).ready(function($){
+$('#bluebox').toggle(
+    function(){
+        $(this).animate({"marginTop": "+=150px"}, "slow"); 
+    },
+    function(){
+        $(this).animate({"marginTop": "-=150px"}, "slow"); 
+    }
+);
+});
+</script>
+<div id="bluebox" style="background-color: blue;width: 50px; height: 50px" ></div>
+</pre>
+<p><script type="text/javascript"><br />
+jQuery(document).ready(function($){<br />
+$('#bluebox').toggle(<br />
+    function(){<br />
+        $(this).animate({"marginTop": "+=150px"}, "slow");<br />
+    },<br />
+    function(){<br />
+        $(this).animate({"marginTop": "-=150px"}, "slow");<br />
+    }<br />
+);<br />
+});<br />
+</script></p>
+<div id="bluebox" style="background-color: blue;width: 50px; height: 50px" ></div>
+<p>jQueryのサンプルをどんどん試せそうでした。<br />
+結論。jQueryを動かす場合はプラグインはとりあえずいらなさそう。（当然jQuery本体はいるけど）</p>

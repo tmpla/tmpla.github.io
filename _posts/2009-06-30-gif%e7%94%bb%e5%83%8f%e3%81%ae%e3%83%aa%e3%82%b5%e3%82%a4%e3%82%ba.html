@@ -1,0 +1,63 @@
+---
+layout: post
+title: gif画像のリサイズ
+categories:
+- Java
+tags:
+- gif
+- Graphic2D
+- ImageIO
+- Java
+- "透過"
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+  _wp_old_slug: '456'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p><a>透過色のあるgif画像の出力</a><br />
+で、透過色付きgif画像の出力は出来たが、出力したgifファイルをリサイズする必要が出てきました。</p>
+<p>これを実現するには、アフィン変換（<a href="http://ja.wikipedia.org/wiki/アフィン写像">アフィン写像</a>参照）という考え方を使って行うらしい。<br />
+アフィーンというかギャフンという感じだ。</p>
+<p>実装は<a href="http://sdc.sun.co.jp/java/docs/j2se/1.4/ja/docs/ja/api/java/awt/image/AffineTransformOp.html">AffineTransformOp</a>を使って元イメージをフィルタさせるらしい。</p>
+<blockquote><p>
+このクラスは、アフィン変換を使用して、ソースのイメージまたは Raster の 2 次元座標からデスティネーションのイメージまたは Raster の 2 次元座標への線形マッピングを実行します。使用される補間のタイプは、コンストラクタを介して、RenderingHints オブジェクトまたはこのクラスで定義されている整数型補間タイプのうちの 1 つによって指定されます。
+</p></blockquote>
+<p>それにしてもいつもすごく分かりにくい説明ですね。</p>
+<p>ちなみに、java.awt.imageパッケージのxxxxOpというクラスは、操作対象があって、その対象に対しての操作が出来るモノらしいです。<br />
+AffineTransformOpは、文字通りアフィン変換を対象に対して行うものです。</p>
+<p>アフィン変換にはいくつか種類があって、リサイズということは拡大縮小（スケーリング）なので、その内容を指定して<br />
+<a href="http://sdc.sun.co.jp/java/docs/j2se/1.4/ja/docs/ja/api/java/awt/geom/AffineTransform.html">AffineTransform</a>を引数として<br />
+AffineTransformOpに渡します。</p>
+<p>AffineTransformは、スケーリング変換の場合<a href="http://72.5.124.55/javase/ja/6/docs/ja/api/java/awt/geom/AffineTransform.html#getScaleInstance(double, double)">AffineTransform#getScaleInstance</a>で<br />
+取得できますが、この引数はリサイズ後のサイズではなく、元画像とリサイズ後画像の比率（リサイズ後画像/元画像）を指定します。</p>
+<pre lang="java">
+	//比率を出す
+	double resizeWidthRatio = (double)resizeWidth / (double)src.getWidth();
+	double resizeHeightRatio = (double)resizeHeight / (double)src.getHeight();
+
+	AffineTransform at = AffineTransform.getScaleInstance(resizeWidthRatio, resizeHeightRatio);
+	AffineTransformOp atOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BICUBIC);
+</pre>
+<p>このAffineTransformOpの第二引数には以下の3つのどれかを指定します。</p>
+<ul>
+<li>
+<a href="http://www.j2ee.me/javase/ja/6/docs/ja/api/java/awt/image/AffineTransformOp.htmll#TYPE_BICUBIC">TYPE_BICUBIC</a>
+</li>
+<li>
+<a href="http://www.j2ee.me/javase/ja/6/docs/ja/api/java/awt/image/AffineTransformOp.html#TYPE_BILINEAR">TYPE_BILINEAR</a>
+</li>
+<li>
+<a href="http://www.j2ee.me/javase/ja/6/docs/ja/api/java/awt/image/AffineTransformOp.html#TYPE_NEAREST_NEIGHBOR">TYPE_NEAREST_NEIGHBOR</a>
+</li>
+</ul>
+<p><a href="http://yougo.ascii.jp/caltar/%E3%83%90%E3%82%A4%E3%82%AD%E3%83%A5%E3%83%BC%E3%83%93%E3%83%83%E3%82%AF%E6%B3%95">バイキュービック法</a>によると、TYPE_BICUBICを選択するのが画質が良さそう。</p>
+<p>しかし、これでgifファイルを書き込みしても透過されてくれないので、自力でやる必要がある。<br />
+記事が埋もれそうなので次回に。</p>

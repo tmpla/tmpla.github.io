@@ -1,0 +1,13 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    jekyll-gist (1.3.5)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  jekyll-gist
+
+BUNDLED WITH
+   1.10.6

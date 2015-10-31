@@ -1,0 +1,92 @@
+---
+layout: post
+title: WordPress運用時のユーザー
+categories:
+- "サーバー管理"
+tags:
+- apache
+- CentOS
+- putty
+- SSH
+- WinSCP
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>WordPressを使用している場合、テーマやプラグインを導入したり削除したりするのはダッシュボードのプラグイン設定から出来るのですが、<br />
+多分FTPか、FTPSのアカウントが必要です。（少なくともWP2.8 MUでは）</p>
+<p>自身が管理するサーバーの場合は、FTPサーバーは立てずに、操作やファイル転送等はSSH関連で全て行いたいところです。<br />
+（レンタルサーバー事業でもやるなら利便性のために必要かもしれませんが）</p>
+<p>なので、ダッシュボードの削除機能は使わないとして、テーマやプラグインのインストールはSFTPを使うことにしています。</p>
+<p>クライアントは、WinSCPとPuttyを使っていますが、<br />
+普通にApacheを導入した場合、httpdの実行ユーザー（2.2系の場合デフォルトはapache.apache）はでシェル実行は出来ないので、プラグインやテーマをインストールする場合は<br />
+・WinSCPでSSH用のユーザーでログインし、そのログインユーザーのホームディレクトリあたりにファイル転送して、<br />
+・その後PuttyでログインしてsuしてホームディレクトリからDocumentRootに移動し、<br />
+・chown apache.apache</p>
+<p>しないといけないので面倒でしょうがない。<br />
+SSHログインユーザーをapacheグループに所属させるという手もありますが、<br />
+特に何も指定しない場合、ファイルパーミッションは755で、所有者しかファイルの更新削除が出来ないはず。<br />
+なので、操作予定のファイルのパーミッションを775に変更しないといけないが、それもどうかな～。</p>
+<p>apacheユーザーでSSHログイン出来れば良いとは思うのですが、そういう運用は一般的なんだろうか。<br />
+「apache」ユーザーは、システムアカウントと言って普通はログインして作業するようなものではないのだが・・・。<br />
+とりあえずはSSHなので秘密鍵がない限り大丈夫だと思い、apacheユーザーでSSHログイン出来るように設定してみました。</p>
+<p>apacheユーザーはhttpdが起動しているので、そもそもあるかと思いますが、<br />
+ホームディレクトリはないので作成してさらにssh用のディレクトリを作成します。</p>
+<pre lang="bash">#mkdir -p /home/apache/.ssh
+#chown -R apache.apache /home/apache
+#chmod 700 /home/apache/.ssh/</pre>
+<p>ここで、SSHの鍵を生成するために、apacheユーザーにsuしてみると・・・。</p>
+<pre lang="bash">#su apache
+This account is currently not available.</pre>
+<p>これはshellが有効でない場合に出るらしい。<br />
+（参考：<a href="http://bingobingobingo.blog49.fc2.com/blog-entry-366.html">Apacheの動作についての考察</a>）</p>
+<p>以下のように、Shellを有効にして再度suする。（ついでに、ホームディレクトリも変えてみる。）</p>
+<pre lang="bash">
+#chsh apache
+apache のシェルを変更します。
+新しいシェル [/sbin/nologin]: /bin/bash
+シェルを変更しました。
+
+#usermod -d /home/apache apache
+#cp /etc/skel/.b* /home/apache
+#chown -R apache.apache /home/apache
+
+# su apache
+$
+</pre>
+<p>SSH鍵を生成します。</p>
+<pre lang="bash">
+$ ssh-keygen -t rsa
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/apache/.ssh/id_rsa):
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /home/apache/.ssh/id_rsa.
+Your public key has been saved in /home/apache/.ssh/id_rsa.pub.
+The key fingerprint is:
+23:9a:2d:06:0a:81:f2:25:1e:a8:09:cf:c0:4c:52:54 apache@xxx.xxx
+</pre>
+<p>出来た公開鍵「id_rsa.pub」を「authorized_keys」にリネームします。</p>
+<pre lang="bash">
+$ mv id_rsa.pub authorized_keys
+$ chmod 600 authorized_keys
+</pre>
+<p>あとは一時的に秘密鍵のパーミッションを変更して、現在のSSHログインユーザーでダウンロードできるようにします。</p>
+<p>これでログイン出来るようになったか試してみると、</p>
+<blockquote><p> No supported authentication methods available</p></blockquote>
+<p>と出てログイン出来ない。<br />
+Server側のログを見てみると</p>
+<pre lang="">
+ User apache from xxx.xxx.xxx.xxx not allowed because not listed in AllowUsers
+</pre>
+<p><a href="http://lunatear.net/archives/000300.html">sshのPermission denied</a><br />
+がすぐ見つかったので、sshd_configのAllowUsersにapacheを追記して再起動したら無事にWinSCPでログイン出来たようです。</p>
+<p>これから様子見でどうするかを決めたいと思います。</p>

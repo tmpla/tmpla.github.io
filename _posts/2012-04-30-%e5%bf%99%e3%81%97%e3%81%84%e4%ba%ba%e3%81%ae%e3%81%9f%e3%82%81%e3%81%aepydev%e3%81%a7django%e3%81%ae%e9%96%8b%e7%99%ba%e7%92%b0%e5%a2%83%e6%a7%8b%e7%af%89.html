@@ -1,0 +1,115 @@
+---
+layout: post
+title: "忙しい人のためのPyDevでdjangoの開発環境構築"
+categories:
+- Python
+- "開発"
+tags:
+- Django
+- Eclipse
+- PyDev
+- Python
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+  _oembed_c7fe5bb4d5086ce218e838707b138b8a: "{{unknown}}"
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>Google App EngineでPythonのアプリを作りたいのですが、Python自体がよくわからない。<br />
+Pythonに関しての知識がほぼ皆無の人がPythonのWebアプリケーションフレームワークのdjangoのプロジェクトが作成出来るようになったまでの感動の軌跡です。</p>
+<p>環境は下記です。一言で言えばMacです。</p>
+<pre lang="bash">
+sw_vers
+ProductName:	Mac OS X
+ProductVersion:	10.7.3
+BuildVersion:	11D50d
+</pre>
+<h3>EclipeとPyDevのインストール</h3>
+<p>Eclipseは下記から3.7.2のClassicを入れました。</p>
+<p>Eclipse Downloads<br />
+<a href="http://www.eclipse.org/downloads/">http://www.eclipse.org/downloads/</a></p>
+<p>PyDevは下記にあるとおり、</p>
+<p>Download<br />
+<a href="http://pydev.org/download.html">http://pydev.org/download.html</a></p>
+<p>メニューからHelp > Install New Softwareを開いてWork Withに下記更新サイトを指定し、</p>
+<p>http://pydev.org/updates</p>
+<p>PyDev For Eclipseを選択してNextやFinishを押下してインストールします。ここらへんは特に迷うとこもないと思います。</p>
+<p><a href="http://tmpla.info/wp-content/uploads/2012/04/c3c5352f047f962b44079d5ab32a7859.png"><img src="http://tmpla.info/wp-content/uploads/2012/04/c3c5352f047f962b44079d5ab32a7859-300x165.png" alt="" title="スクリーンショット 2012-04-30 14.21.42" width="300" height="165" class="alignnone size-medium wp-image-1495" /></a></p>
+<h3>djangoのインストール</h3>
+<p>djangoは、よくあるphpのフレームワークみたいに見えるとこにコピーしてはい終わり、というわけでもなさそうです。<br />
+空気感もよくわからないのでMacPortsでインストールしてしまいます。（後述のPythonのインストールと前後してしまいますが・・・）</p>
+<pre lang="bash">
+# port install py27-django
+</pre>
+<p>で良いかと思います。とりあえずね。</p>
+<h3>PyDev環境の設定</h3>
+<p>PyDevを使用するためにPythonの実行パスを指定する必要があります。<br />
+MacにはPythonは既にインストールされているので、それを使えばいいか、と思ってました。<br />
+少なくともLionには2.3, 2.5, 2.6, 2.7が入っているようです。（最初からこうだったかどうかは不明）</p>
+<pre lang="bash">
+$ ls -l /System/Library/Frameworks/Python.framework/Versions
+total 8
+drwxr-xr-x   7 root  wheel  238 10 11  2011 2.3
+drwxr-xr-x  11 root  wheel  374  4 21 20:15 2.5
+drwxr-xr-x  11 root  wheel  374  4 21 20:15 2.6
+drwxr-xr-x  11 root  wheel  374  4 21 20:15 2.7
+lrwxr-xr-x   1 root  wheel    3 10 11  2011 Current -> 2.7
+</pre>
+<p>実行パスの指定はEclipseメニューの環境設定 > PyDev > Interpreter - Pythonで「autoconfig」で勝手にパスを推測してくれるんですが、<br />
+その際にプリインストールのPythonのパス設定に失敗します。<br />
+このエラーがどんなメッセージだかは、今（これを書いている時点）では出なくなってしまったのでスクリーンショット等が撮れなかったのですが、<br />
+多分「Error: Python stdlib not found」みたいなメッセージだと思います。</p>
+<p>メッセージ的には</p>
+<p>PyDev Eclipse Python interpreters Error: stdlib not found - Stack Overflow<br />
+<a href="http://stackoverflow.com/questions/5595276/pydev-eclipse-python-interpreters-error-stdlib-not-found">http://stackoverflow.com/questions/5595276/pydev-eclipse-python-interpreters-error-stdlib-not-found</a></p>
+<p>と同じだと思うのですが、上記エントリの解決方法は通用しないようでした。<br />
+なんとなくPythonのコンパイル済みファイル（多分*.pyc）だけじゃなくてソースファイル(*py)も必要だとかというメッセージだと思ったのですが、<br />
+標準ライブラリに手を加えるのはどうも嫌だな・・・。<br />
+そこでMacPortsの出番でした。</p>
+<p>MacPortsでPython2.7を入れる手順は「<a href="http://tmpla.info/archives/1487" title="LionでMacPortsをインストールする">LionでMacPortsをインストールする</a>」の通りです。<br />
+MacPortsで2.7をインストールしたらInterpreterの設定をして、先程出ていた「Python stdlib not found」のエラーが出なくなりました。何故？<br />
+MacPortsで新たにインストールしたPythonの指定をしていた場合にそのエラーが出なくなるのはまだわかるのですが、「autoconfig」でも出なくなった。不思議だがどこかでうまいこと*.pyファイルへのリンクがされているのだろう・・・。</p>
+<p>しかしこれで「autoconfig」で設定されたPythonを使っても（そのままでは）多分ダメです。なぜならdjangoを知らないからです。<br />
+なので、MacPortsで入れたPythonを指定してあげます。<br />
+OS全体で使用するPythonを切り替える方法もあるようなのですが、とりあえずEclipse上でだけ使えればよいので直接Pythonの実行ファイルを指定すればOK。<br />
+MacPortsでインストールされる奴は、どうも/opt/local/に入るらしい。<br />
+そこで、Pythonの実行パス(Interpreter)には下記を指定してみました。</p>
+<p>/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin/python2.7</p>
+<p>同じパスにdjango-admin.pyも入っているので大丈夫そう。<br />
+通なら標準pythonを使用してdjangoにシンボリックリンクを貼る等でもイケそうですが通ではないのでこうしてみました。</p>
+<p><a href="http://tmpla.info/wp-content/uploads/2012/04/96156d84b61484026e97877ea7ee22dc.png"><img src="http://tmpla.info/wp-content/uploads/2012/04/96156d84b61484026e97877ea7ee22dc-300x191.png" alt="" title="スクリーンショット 2012-04-30 15.26.33" width="300" height="191" class="alignnone size-medium wp-image-1496" /></a></p>
+<h3>プロジェクトの作成</h3>
+<p>ここまで出来たらやっとプロジェクトを作る事ができます。<br />
+djangoのプロジェクトを作成する際には普通、コマンドラインで下記のようにしてひな形を作るのが王道のようです。</p>
+<pre lang="bash">
+$ django-admin.py startproject mysite
+</pre>
+<p>というか、これで作成される設定用のファイル等は後でむちゃくちゃ使用するので半ば強制的にこれを使わないと苦労します。<br />
+でもせっかくEclipseなんだしこんなのはIDEでやってほしいのですが、やってくれます。<br />
+普通にdjangoプロジェクトとして作成すれば良いです。<br />
+Project > PyDev > PyDev Django Projectで作成するとdjango-admin.py startprojectと同じファイルが出来ます。<br />
+<a href="http://tmpla.info/wp-content/uploads/2012/04/c5c452b0da3bc1af5518e7141087ae97.png"><img src="http://tmpla.info/wp-content/uploads/2012/04/c5c452b0da3bc1af5518e7141087ae97-300x227.png" alt="" title="スクリーンショット 2012-04-30 15.30.42" width="300" height="227" class="alignnone size-medium wp-image-1497" /></a></p>
+<p>ここでちょっと苦労した点が。まず、djangoのチュートリアルでは、「mysite」という名前でプロジェクトを作成しますが、「my」というのがなんとなく嫌なので「site」でずっとやってたらどうもうまくプロジェクトが作成されない。<br />
+djangoにパス等が通ってないのかなといろいろ調べていたところどうも「site」という名前が悪いらしい。<br />
+コマンドでやってみたらエラーが出てました。</p>
+<pre lang="bash">
+$ django-admin-2.7.py startproject site
+Error: 'site' conflicts with the name of an existing Python module and cannot be used as a project name. Please try another name.
+</pre>
+<p>このエラーはEclipseからだと出ないで空のプロジェクトが作成されるだけなので注意です。<br />
+「site」という名前じゃなくても、プロジェクト名に使用できない文字は他にもあるでしょう。</p>
+<p>あともう一点。<br />
+djangoの場合は、「サイト（全体）」-「個々のアプリケーション」という構成になるので、<br />
+ディレクトリ構造のトップはサイトになります。例えば「mysite」の中の「polls」というアプリケーションになるので、<br />
+「polls」というサイトの「polls」というアプリケーションにしちゃうとやな感じの構造になります。<br />
+しかもEclipseのプロジェクトを「polls」とかにしちゃってたら<br />
+[polls] - [polls] - [polls]<br />
+なんてディレクトリ構造になってしまってもう見てらんない。<br />
+まあ名前だけの問題かもしれないのですが、後で気になることもあるかと思います。</p>

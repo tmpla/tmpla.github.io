@@ -1,0 +1,146 @@
+---
+layout: post
+title: Wordpress MUのソースを読む
+categories:
+- "未分類"
+tags: []
+status: draft
+type: post
+published: false
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>Wordpress MUのソース読み</p>
+<p>WordPressの構造を理解したいので、ソースを順に読んでメモしたいと思います。<br />
+対象バージョンはWordPres MU 2.8.1です。</p>
+<p>/index.php</p>
+<p>まず何はともあれ通常にそのブログにアクセスしたらこのファイルが呼ばれると思います。<br />
+内容は、</p>
+<pre lang="php" escaped="true" line="1">
+&lt;?php
+/**
+ * Front to the WordPress application. This file doesn't do anything, but loads
+ * wp-blog-header.php which does and tells WordPress to load the theme.
+ *
+ * @package WordPress
+ */
+
+/**
+ * Tells WordPress to load the WordPress theme and output it.
+ *
+ * @var bool
+ */
+define('WP_USE_THEMES', true);
+
+/** Loads the WordPress Environment and Template */
+require('./wp-blog-header.php');
+?&gt;
+</pre>
+<p>WP_USE_THEMESという定数をtrueに定義しています。<br />
+その後、./wp-blog-header.phpを読んでいます。</p>
+<p>/wp-blog-header.php<br />
+/index.phpから呼ばれるファイルです。</p>
+<pre lang="php" escaped="true" line="1">
+&lt;?php
+/**
+ * Loads the WordPress environment and template.
+ *
+ * @package WordPress
+ */
+
+if ( !isset($wp_did_header) ) {
+	// WPMU Runs installer if things aren't set up correctly
+	if ( !file_exists( dirname(__FILE__) . '/wp-config.php') &amp;&amp; !file_exists( dirname( dirname(__FILE__) ) . '/wp-config.php')) {
+		if (strpos($_SERVER['PHP_SELF'], 'wp-admin') !== false) $path = '';
+		else $path = 'wp-admin/';
+		include( "index-install.php" ); // install WPMU!
+		die();
+	}
+
+	$wp_did_header = true;
+
+	require_once( dirname(__FILE__) . '/wp-load.php' );
+
+	wp();
+
+	require_once( ABSPATH . WPINC . '/template-loader.php' );
+
+}
+
+?&gt;
+</pre>
+<p>$wp_did_headerという変数が定義されていなければ、<br />
+__FILE__と同じディレクトリ、または一つへのディレクトリにwp-config.phpというファイルを探し、<br />
+無ければ現在実行しているファイル名（/wp-blog-header.phpのはず）にwp-adminという文字列が含まれているかを判定し、<br />
+含まれていれば$path変数はブランク、含まれていなければ$path変数に'wp-admin/'を設定し、"index-install.php"をインクルードして処理を終了します。<br />
+$wp_did_headerが定義されていれば<br />
+・$wp_did_headerをtrue<br />
+・wp-load.phpを読み込み（require_once使用）<br />
+・wp()関数実行<br />
+・ABSPATH . WPINC . template-loader.phpを読み込み（require_once使用）</p>
+<p>この時点ではまだwp()関数とABSPATH, WPINC定数がまだ出てきていませんね。</p>
+<p>/wp-load.php<br />
+/index.phpから呼ばれるファイルです。</p>
+<pre lang="php" escaped="true" line="1">
+&lt;?php
+/**
+ * Bootstrap file for setting the ABSPATH constant
+ * and loading the wp-config.php file. The wp-config.php
+ * file will then load the wp-settings.php file, which
+ * will then set up the WordPress environment.
+ *
+ * If the wp-config.php file is not found then an error
+ * will be displayed asking the visitor to set up the
+ * wp-config.php file.
+ *
+ * Will also search for wp-config.php in WordPress' parent
+ * directory to allow the WordPress directory to remain
+ * untouched.
+ *
+ * @package WordPress
+ */
+
+/** Define ABSPATH as this files directory */
+define( 'ABSPATH', dirname(__FILE__) . '/' );
+
+if ( defined('E_RECOVERABLE_ERROR') )
+	error_reporting(E_ERROR | E_WARNING | E_PARSE | E_USER_ERROR | E_USER_WARNING | E_RECOVERABLE_ERROR);
+else
+	error_reporting(E_ERROR | E_WARNING | E_PARSE | E_USER_ERROR | E_USER_WARNING);
+
+if ( file_exists( ABSPATH . 'wp-config.php') ) {
+
+	/** The config file resides in ABSPATH */
+	require_once( ABSPATH . 'wp-config.php' );
+
+} elseif ( file_exists( dirname(ABSPATH) . '/wp-config.php' ) &amp;&amp; ! file_exists( dirname(ABSPATH) . '/wp-settings.php' ) ) {
+
+	/** The config file resides one level above ABSPATH but is not part of another install*/
+	require_once( dirname(ABSPATH) . '/wp-config.php' );
+
+} else {
+
+	// A config file doesn't exist
+
+	// Set a path for the link to the installer
+	if (strpos($_SERVER['PHP_SELF'], 'wp-admin') !== false) $path = '../';
+	else $path = '';
+
+	// Die with an error message
+	require_once( ABSPATH . '/wp-includes/classes.php' );
+	require_once( ABSPATH . '/wp-includes/functions.php' );
+	require_once( ABSPATH . '/wp-includes/plugin.php' );
+	$text_direction = /*WP_I18N_TEXT_DIRECTION*/"ltr"/*/WP_I18N_TEXT_DIRECTION*/;
+	wp_die(sprintf(/*WP_I18N_NO_CONFIG*/"There doesn't seem to be a <code>wp-config.php</code> file. I need this before we can get started.<p><a href='%sindex.php' class='button'>Create a Configuration File</a>"/*/WP_I18N_NO_CONFIG*/, $path), /*WP_I18N_ERROR_TITLE*/"WordPress &rsaquo; Error"/*/WP_I18N_ERROR_TITLE*/);
+
+}
+
+?&gt;
+
+</pre>

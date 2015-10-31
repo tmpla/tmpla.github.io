@@ -1,0 +1,176 @@
+---
+layout: post
+title: Commons-Lang StringUtils
+categories:
+- Java
+tags:
+- Commons-Lang
+- Jakarta
+- Java
+- program
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>Javaで文字列操作をするとき、値がnullの場合も考えなければいけない場合が多い。</p>
+<pre lang="java">	//文字列が指定されている場合
+	String strNotNull = "not null";
+	if(strNotNull.equals("not null")){
+		System.out.println("OK");
+	}
+
+	//文字列がブランクの場合
+	String strBlank = "";
+	if(strBlank.equals("")){
+		System.out.println("OK");
+	}
+
+	//文字列がnullの場合
+	String strNull = null;
+	if(strNull.equals("")){ //←ここでNullPointerExceptionになる。
+		;
+	}</pre>
+<p>実行結果</p>
+<pre lang="dos">OK
+OK
+java.lang.NullPointerException</pre>
+<p>これを処理したい場合には、自前で以下のような処理を行う必要がある。</p>
+<pre lang="java">	//文字列がnullの場合
+	String strNull = null;
+	if(strNull != null){
+		if(strNull.equals("")){
+			;
+		}
+	}else{
+		System.out.println("value is null");
+	}</pre>
+<p>実行結果</p>
+<pre lang="dos">value is null</pre>
+<p>つまりnullかどうかの判定をしつつ比較をする必要がありますが、 ちょっとのことですが面倒くさい。 かといって、わざわざユーティリティを作るのもな～。なんてとき Commons-LangのStringUtilsはそんな時に使えるユーティリティです。</p>
+<pre lang="java">	//文字列が指定されている場合
+	String strNotNull = "not null";
+	if(org.apache.commons.lang.StringUtils.equals(strNotNull, "not null")){
+		System.out.println("OK");
+	}
+
+	//文字列がブランクの場合
+	String strBlank = "";
+	if(org.apache.commons.lang.StringUtils.equals(strBlank, "")){
+		System.out.println("OK");
+	}
+
+	//文字列がnullの場合
+	String strNull = null;
+	if(org.apache.commons.lang.StringUtils.equals(strNull, null)){
+		System.out.println("OK");
+	}</pre>
+<p>実行結果</p>
+<pre lang="dos">OK
+OK
+OK</pre>
+<p>上記のequals以外にも便利なメソッドがたくさんあるのでそれを紹介したいと思います。 <a>javadoc</a>にはそれぞれの例が丁寧に説明されているし、メソッド名でなんとなく処理が分かるので 一度使うようになると病み付きです。</p>
+<h4>文字列比較系</h4>
+<table class="DocTable">
+<tbody>
+<tr class="TableHeadingColor">
+<th class="DocTableHead">メソッド</th>
+<th class="DocTableHead">処理内容</th>
+</tr>
+<tr class="TableRowColor">
+<td class="DocTableHead">equals</td>
+<td class="DocTableHead">String.equalsと同じですが、比較元と比較先が双方nullならtrueを返します。</td>
+</tr>
+<tr class="TableRowColor">
+<td class="DocTableHead">startWiths</td>
+<td class="DocTableHead">String.startWithと同様ですが、比較元と比較先がnullの場合にもtrueを返します。</td>
+</tr>
+<tr class="TableRowColor">
+<td class="DocTableHead">endsWith</td>
+<td class="DocTableHead">String.endsWithと同様ですが、比較元と比較先がnullの場合にもtrueを返します。</td>
+</tr>
+<tr class="TableRowColor">
+<td class="DocTableHead">indexOf</td>
+<td class="DocTableHead">String.indexOfと同じですが、比較元か検索文字列がnullの場合にも-1（見つからない）を返します。</td>
+</tr>
+<tr class="TableRowColor">
+<td class="DocTableHead">ordinalIndexOf</td>
+<td class="DocTableHead">「第三引数で渡した」番目の検索文字列の位置を返します。1を渡せば1番目の、10を渡せば10番目の検索文字列の位置を返します。 nullはindexOfと同様です。</td>
+</tr>
+<tr class="TableRowColor">
+<td class="DocTableHead">indexOfAny</td>
+<td class="DocTableHead">第二引数の検索文字列のどれかの一番最初の位置を返します。nullはindexOfと同様です。</td>
+</tr>
+<tr class="TableRowColor">
+<td class="DocTableHead">indexOfAnyBut</td>
+<td class="DocTableHead">第一引数の文字列のうち、第二引数で指定した文字列のどれかがが途絶えた最初の位置を返します。（多分） 第一引数か第二引数がnull、または第二引数の全ての文字列が第一引数に存在すれば-1を返します。 （あまり自信なし）</td>
+</tr>
+<tr class="TableRowColor">
+<td class="DocTableHead">containsAny</td>
+<td class="DocTableHead">第二引数の検索文字列のどれかがあればtrueを返します。比較元か検索文字列がnullの場合にもfalseを返します。</td>
+</tr>
+<tr class="TableRowColor">
+<td class="DocTableHead">containsNone</td>
+<td class="DocTableHead">第一引数の文字列の中に、第二引数の文字列のどれも無ければtrueを返します。第一引数、第二引数のいずれかがnullならば trueを返します。</td>
+</tr>
+<tr class="TableRowColor">
+<td class="DocTableHead">containsOnly</td>
+<td class="DocTableHead">第一引数の文字列が、第二引数の文字列のどれかでのみ形成されている場合にtrueを返します。</td>
+</tr>
+<tr class="TableRowColor">
+<td class="DocTableHead">countMatches</td>
+<td class="DocTableHead">第一引数の文字列に、第二引数で指定された文字列がいくつあるかをカウントします。 第一引数か第二引数がnullならば0を返します。</td>
+</tr>
+<tr class="TableRowColor">
+<td class="DocTableHead">difference</td>
+<td class="DocTableHead">第一引数の文字列と第二引数の文字列の異なっている文字列を返します。</td>
+</tr>
+<tr class="TableRowColor">
+<td class="DocTableHead">isEmpty<br />
+isNotEmpty</td>
+<td class="DocTableHead">isEmptyは値がnullか長さ0の文字列（""）ならtrueを返します。<br />
+isNotEmptyは値がnullか長さ0の文字列（""）以外ならtrueを返します</td>
+</tr>
+<tr class="TableRowColor">
+<td class="DocTableHead">isBlank<br />
+isNotBlank</td>
+<td class="DocTableHead">isBlankは値がnullか長さ0の文字列（""）ならtrueを返します。<br />
+isNotEmptyは値がnullか長さ0の文字列（""）以外ならtrueを返します</td>
+</tr>
+<tr class="TableRowColor">
+<td class="DocTableHead">isAlpha<br />
+isAlphanumerics<br />
+isAlphanumericSpace<br />
+isAlphaSpace<br />
+isNumeric<br />
+isNumericSpace<br />
+isWhitespace
+</td>
+<td class="DocTableHead">名が示すとおりで、Alphaは英字、Numericは数字、Spaceは空白を含むかどうかを返します。<br />
+複数の定義（例えば、isAlphanumericSpaceの場合は英字、数字、空白のどれかが含まれている場合にtrue）<br />
+厳密に言えば、Alphaの判定は内部的に<a href="http://java.sun.com/j2se/1.5.0/ja/docs/ja/api/java/lang/Character.html#isLetter(char)">Charactor#isLetter(char)</a>を呼んでいて、英字だけということもなさそうですが。</td>
+</tr>
+<tr class="TableRowColor">
+<td class="DocTableHead">isAsciiPrintable</td>
+<td class="DocTableHead"><a href="http://e-words.jp/p/r-ascii.html">ASCIIコード</a>の32番から127番目であればtrueを返します。</td>
+</tr>
+<tr class="TableRowColor">
+<td class="DocTableHead">isBlank<br />
+isEmpty<br />
+isNotEmpty<br />
+isNotBlank
+</td>
+<td class="DocTableHead">
+isBlankは、nullか""か、" "であればtrueを返します。<br />
+isEmptyはnullか""であればtrueを返します。<br />
+Notがつくのはその反対です。</td>
+</tr>
+</tbody>
+</table>

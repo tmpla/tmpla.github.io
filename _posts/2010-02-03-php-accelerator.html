@@ -1,0 +1,91 @@
+---
+layout: post
+title: PHP accelerator
+categories:
+- PHP
+tags:
+- APC
+- eAccelerator
+- PHP
+- Symfony
+- xampp
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p><a href="http://blog.4sure.jp/yokoshima/2010/01/30/yahoo%E3%82%AA%E3%83%BC%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%A7%E8%A4%87%E6%95%B0%E6%9D%A1%E4%BB%B6%E4%B8%A6%E3%81%B9%E6%9B%BF%E3%81%88/">Yahoo!オークションで複数条件並べ替え</a></p>
+<p>で、YahooのWeb APIを使って自分でオークションの（とりあえずは）並べ替えをやってみようと思ったのだが、<br />
+どうしよう？index.phpとか作ってベタで書くかどうしようか悩んだのだが、<br />
+フレームワークを使うとformとかリストとかの記述が楽そうなので、なんかしらのPHPフレームワークを使ってみようと思った。<br />
+さらに、Yahooでは<a href="http://www.asial.co.jp/business/symfony/symfony_detail.php">Symfonyを使って構築するのが（会社内で）流行り</a>だそうなので、Symfonyを使うことにした。</p>
+<p>マニュアルはPDFではあるが、<a href="http://cloud.github.com/downloads/masakielastic/masakielastic.github.com/jobeet-1.3-1.4-doctrine-ja.pdf">日本語訳</a>があったので、それを見てとりあえずはローカル機（Windows）で動かしてみることにした。<br />
+どうせなら最新版を、ということでSymfony1.4を導入することにした。</p>
+<p>最初の方で、Symfonyをインストールするための設定チェックの記述があって、</p>
+<p><a href="http://sf-to.org/1.4/check.php">http://sf-to.org/1.4/check.php</a></p>
+<p>にブラウザでアクセスすると、check_configuration.phpが手に入るので、<br />
+これをローカルマシンでPHPが動く場所に置いてブラウザからアクセスすると、以下のような結果が出た。</p>
+<pre>
+********************************
+*                              *
+*  symfony requirements check  *
+*                              *
+********************************
+
+php.ini used by PHP: D:\xampp\xampp\php\php.ini
+
+
+** Mandatory requirements **
+
+  OK        PHP version is at least 5.2.4 (5.3.1)
+
+** Optional checks **
+
+  OK        PDO is installed
+  OK        PDO has some drivers installed: mysql, odbc, sqlite, sqlite2
+  OK        PHP-XML module is installed
+  OK        XSL module is installed
+  OK        The token_get_all() function is available
+  OK        The mb_strlen() function is available
+  OK        The iconv() function is available
+  OK        The utf8_decode() is available
+[[WARNING]] A PHP accelerator is installed: FAILED
+            *** Install a PHP accelerator like APC (highly recommended) ***
+[[WARNING]] php.ini has short_open_tag set to off: FAILED
+            *** Set it to off in php.ini ***
+  OK        php.ini has magic_quotes_gpc set to off
+  OK        php.ini has register_globals set to off
+  OK        php.ini has session.auto_start set to off
+  OK        PHP version is not 5.2.9
+</pre>
+<p>short_open_tagはいいとして、「PHP accelerator」とは一体なんだろう？<br />
+調べてみると、</p>
+<p><a href="http://php.y-110.net/wiki/index.php?PHP%A1%A7eAccelerator%20%A4%C7%20PHP%20%B9%E2%C2%AE%B2%BD">eAccelerator で PHP 高速化</a></p>
+<p>で説明されている通り、PHPの実行速度を体感的に速くするものらしい。全然知らなかった！<br />
+そう大した規模でもないので効果はどうなのかはわからないが、XAMPP for Windows(1.7.3)なら、php.iniの以下コメントを外すだけ。(XAMPPはDドライブ直下にある）</p>
+<pre lang="ini">
+;extension=php_apc.dll
+;zend_extension = "D:\xampp\xampp\php\ext\php_eaccelerator.dll"
+</pre>
+<p>CentOSでも、yumのリポジトリからeAcceleratorはあったようだ。（APCはないみたい）</p>
+<pre lang="bash" escaped="true">
+[root@localhost httpd]# yum search eaccelerator
+Loaded plugins: fastestmirror
+Loading mirror speeds from cached hostfile
+ * base: www.ftp.ne.jp
+ * updates: www.ftp.ne.jp
+ * centosplus: www.ftp.ne.jp
+ * addons: www.ftp.ne.jp
+ * extras: www.ftp.ne.jp
+====================================== Matched: eaccelerator ======================================
+php-eaccelerator.i386 : PHP accelerator, optimizer, encoder and dynamic content cacher
+
+</pre>
+<p>yumで入るならちょっといれてみようかな。</p>

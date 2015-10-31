@@ -1,0 +1,99 @@
+---
+layout: post
+title: Amazon Advertising APIを使ってみる
+categories:
+- Ruby
+tags:
+- advertising API
+- amazon
+- rails
+- Ruby
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>Amazonの商品などを検索して自作Webアプリケーションなどで使用したいけどどうやるのだろう。<br />
+そんな時、Amazon Advertising APIが使えます。</p>
+<p>まず使うために3つのキーを取得します。<br />
+Product Advertising API<br />
+<a href="https://affiliate.amazon.co.jp/gp/advertising/api/detail/main.html">https://affiliate.amazon.co.jp/gp/advertising/api/detail/main.html</a></p>
+<p>上記から下記の2つと<br />
+・AWS公開アクセスキー<br />
+・AWS秘密アクセスキー</p>
+<p>Amazon アソシエイト (アフィリエイト): アフィリエイトで副収入！<br />
+<a href="https://affiliate.amazon.co.jp">https://affiliate.amazon.co.jp</a><br />
+からアソシエイトタグを取得します。</p>
+<h3>RESTリクエスト</h3>
+<p>APIのリファレンスは下記</p>
+<p>Product Advertising API<br />
+<a href="https://images-na.ssl-images-amazon.com/images/G/09/associates/paapi/dg/index.html">https://images-na.ssl-images-amazon.com/images/G/09/associates/paapi/dg/index.html</a><br />
+に書いてあります。<br />
+使用する方法としてRESTでリクエストをするかSOAPでリクエストをするかの二種類があるのですが、<br />
+SOAPはあまり興味が沸かないのでRESTでやることにします。</p>
+<p>とにかく仕様に従ってURLを組み立ててみます。<br />
+Amazonには下記のようなURLのサンプルがあります。(改行は見やすいように入っているだけです）</p>
+<blockquote><p>http://ecs.amazonaws.com/onca/xml?<br />
+Service=AWSECommerceService&<br />
+Operation=ItemSearch&<br />
+AWSAccessKeyId=[アクセスキー ID]&<br />
+AssociateTag=[ID]&<br />
+SearchIndex=Apparel&<br />
+Keywords=Shirt</p></blockquote>
+<p>上記はAmazon usへのURLサンプルですが、今回は日本のAmazonを使いたいのでエンドポイント（ベースURL）は下記のようにしました。</p>
+<blockquote><p>http://ecs.amazonaws.jp/onca/xml</p></blockquote>
+<p>ちなみに、SSLアクセスの場合は「https://aws.amazonaws.jp/onca/xml」を使うと書いてあるのですが、ここ繋がらないんですけど…。</p>
+<h3>署名</h3>
+<p>URLを組み立ててそのままアクセスして結果が帰ってきてくれれば楽なのですが、これら文字列に対してダイジェストを付与する必要があります。<br />
+これを下記のように行いました。ちょっとはまって色々参考にさせて頂きました。（rubyでやってます）</p>
+<pre lang="ruby">
+    queries = {
+       :AWSAccessKeyId => [アクセスキー ID],
+       :AssociateTag => [ID],
+       :Service => 'AWSECommerceService',
+       :Operation => 'ItemSearch',
+       :SearchIndex => 'Apparel',
+       :Keywords => 'Shirt',
+       :Timestamp => Time.now.strftime('%Y-%m-%dT%H:%M:%SZ'),
+    }.sort_by{|k, v| k}.map {|k, v| CGI.escape(k.to_s) + "=" + CGI.escape(v.to_s)}.join("&")
+
+    body = ["GET", SITE, BASE_PATH, queries].join("\n")
+    signature = CGI.escape(
+      Base64.encode64(
+        OpenSSL::HMAC::digest(
+          OpenSSL::Digest::SHA256.new, SECRET_KEY, body)).chomp)
+    signed_url = "http://#{SITE}#{BASE_PATH}?" + queries + "&Signature=" + signature
+
+</pre>
+<p>参考<br />
+ Amazon Product Advertising APIの認証の件 - zorioの日記<br />
+<a href="http://d.hatena.ne.jp/zorio/20090509/1241886502">http://d.hatena.ne.jp/zorio/20090509/1241886502</a></p>
+<p>これ何やっているかというと、<br />
+まず、「Timestamp」というパラメータを追加し、ISO8601で定義された日付の形式（YYYY-MM-DDThh:mm:ssZだそうです。TとZは固定）を値とします。この日付はそんなに厳密じゃなくてもよさそうです。<br />
+次に、クエリストリングの値名？を辞書昇順に並べ替えます。<br />
+それをkey=value&...の普通のクエリストリング形式にします。<br />
+その後、</p>
+<pre>
+GET
+ecs.amazonaws.jp
+/onca/xml
+[クエリストリング]
+</pre>
+<p>の形式に並べ替えた文字列を、AWS秘密アクセスキーを使ってHMAC-SHA256のMAC値を算出します。<br />
+このあたりに説明は下記に。<br />
+Product Advertising API<br />
+<a href="https://images-na.ssl-images-amazon.com/images/G/09/associates/paapi/dg/index.html">https://images-na.ssl-images-amazon.com/images/G/09/associates/paapi/dg/index.html</a></p>
+<p>これ自体の処理は、Rubyの標準ライブラリ等を使って簡単なのですが、「/onca/xml」のスラッシュ値を抜かしてたり、join("¥n")で上手く改行文字が入らなかったりしてハマりました。</p>
+<p>動作確認の際には、Timestampを固定値にして、下記で検証してチェックすると良いです。</p>
+<p>Signed Requests Helper - Amazon Product Advertising API<br />
+<a href="http://associates-amazon.s3.amazonaws.com/signed-requests/helper/index.html">http://associates-amazon.s3.amazonaws.com/signed-requests/helper/index.html</a></p>
+<p>とりあえずは、これで生成されたURLをそのままブラウザに貼り付けてみるとXML形式で結果が帰ってきます。<br />
+ダメならダメっぽい結果になります。</p>
+<p>これは自力でやってみたのですが、gemで色々このAPIをラップしてくれるモジュールがあります。amazon-ecsとか良さそうです。</p>

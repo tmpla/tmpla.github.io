@@ -1,0 +1,171 @@
+---
+layout: post
+title: Linuxでrbenvを使う方法決定版
+categories:
+- Ruby
+tags:
+- linux
+- rbenv
+- ruby-build
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '2'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>MacだとHomebrew一発なのだが、Linuxでやる場合は色々手順が必要であり、さらに色々前提知識も必要である。<br />
+断片的な情報は色々あったのだけれども、rbenvとruby-build入れるとこまでをまとめています。<br />
+環境はAWSのAmazon Linuxである。（バージョンよくわかんないけど64bitのやつ）<br />
+尚、全てのユーザで使用できるように今回は検討している。<br />
+なので、インストールディレクトリは/usr/local/rbenvにした。</p>
+<p>元々の情報は下記を参考にさせて頂いた。<br />
+LinuxにRuby on Railsをインストールする | tsuchikazu blog<br />
+<a href="http://tsuchikazu.net/linux_ruby_on_rails_install/">http://tsuchikazu.net/linux_ruby_on_rails_install/</a><br />
+CentOSでsystem wideなrbenv+ruby-build環境を構築する - 飲んだり寝たり<br />
+<a href="http://nomnel.net/blog/centos-system-wide-rbenv-and-ruby-build/">http://nomnel.net/blog/centos-system-wide-rbenv-and-ruby-build/</a><br />
+ruby-buildをインストールしたのに「rbenv: no such command `install`」と怒られた時 - tyn-iMarketの技術メモ<br />
+<a href="http://d.hatena.ne.jp/tyn_iMarket/20130910/1378784972">http://d.hatena.ne.jp/tyn_iMarket/20130910/1378784972</a></p>
+<h3>rbenvとは</h3>
+<p>簡単にいえば、複数バージョンのRubyをインストールだけしておいて、使いたい時に使いたいバージョンに切り替える事が出来るものである。<br />
+sstephenson/rbenv · GitHub<br />
+<a href="https://github.com/sstephenson/rbenv">https://github.com/sstephenson/rbenv</a></p>
+<h3>ruby-buildとは</h3>
+<p>rbenvは色んなバージョンのRubyをインストールしてくれるところまではやってくれないが、ruby-buildと言うrbenvのプラグインでrbenvで使用できる形でインストールしてくれるものである。<br />
+sstephenson/ruby-build · GitHub<br />
+<a href="https://github.com/sstephenson/ruby-build">https://github.com/sstephenson/ruby-build</a></p>
+<h3>rbenvとruby-buildのインストール</h3>
+<p>gitが必要なのでgitはインストールしておく。<br />
+rbenvをコピーしたら、その中に「plugins」と言うディレクトリを作成し、その中にruby-buildをコピーする形にする。</p>
+<pre lang="bash">
+# cd /usr/local/
+# git clone git://github.com/sstephenson/rbenv.git
+Cloning into 'rbenv'...
+remote: Counting objects: 1743, done.
+remote: Compressing objects: 100% (749/749), done.
+remote: Total 1743 (delta 1131), reused 1517 (delta 962)
+Receiving objects: 100% (1743/1743), 254.66 KiB | 163.00 KiB/s, done.
+Resolving deltas: 100% (1131/1131), done.
+# mkdir rbenv/plugins
+# cd rbenv/plugins/
+# git clone git://github.com/sstephenson/ruby-build.git
+Cloning into 'ruby-build'...
+remote: Counting objects: 2554, done.
+remote: Compressing objects: 100% (1435/1435), done.
+remote: Total 2554 (delta 1153), reused 2278 (delta 914)
+Receiving objects: 100% (2554/2554), 363.45 KiB | 200.00 KiB/s, done.
+Resolving deltas: 100% (1153/1153), done.
+</pre>
+<p>この時点では、/usr/local/rbenvにrbenvが、/usr/local/rbenv/plugins/ruby-buildにruby-buildがコピーされている状態である。<br />
+そんで、全ユーザで環境変数を共有するために下記ファイルを作成する。</p>
+<pre lang="bash">
+# vim /etc/profile.d/rbenv.sh 
+export RBENV_ROOT="/usr/local/rbenv"
+export PATH="/usr/local/rbenv/bin:$PATH"
+eval "$(rbenv init -)"
+</pre>
+<p>ここで重要なのが「RBENV_ROOT」環境変数である。どこで使われているかというと、rbenvでもruby-buildでもホームディレクトリの位置をこの環境変数から読み込んでいる。<br />
+この環境変数設定がないと、$HOME/.rbenvを見るようなので、この場合は/root/.rbenvと言うことになってしまう。これはもうゴミである。</p>
+<p>そしてこれを読みこむ処理を行う。今使っているAmazon Linuxの場合だと、/etc/profileでprofile.d/*を読み込むようなのでbashを起動するだけ。</p>
+<pre lang="bash">
+# bash
+</pre>
+<p>これで「rbenv install」で確認してみる。<br />
+ついでに一般ユーザで出来るか。</p>
+<pre lang="bash">
+[ec2-user@server ~]$ rbenv install -l
+Available versions:
+  1.8.6-p383
+  1.8.6-p420
+  1.8.7-p249
+  1.8.7-p302
+  1.8.7-p334
+  1.8.7-p352
+  1.8.7-p357
+  1.8.7-p358
+  1.8.7-p370
+  1.8.7-p371
+  1.8.7-p374
+  1.9.1-p378
+  1.9.1-p430
+  1.9.2-p0
+  1.9.2-p180
+  1.9.2-p290
+  1.9.2-p318
+  1.9.2-p320
+  1.9.3-dev
+  1.9.3-p0
+  1.9.3-p125
+  1.9.3-p194
+  1.9.3-p286
+  1.9.3-p327
+  1.9.3-p362
+  1.9.3-p374
+  1.9.3-p385
+  1.9.3-p392
+  1.9.3-p429
+  1.9.3-p448
+  1.9.3-preview1
+  1.9.3-rc1
+  2.0.0-dev
+  2.0.0-p0
+  2.0.0-p195
+  2.0.0-p247
+  2.0.0-preview1
+  2.0.0-preview2
+  2.0.0-rc1
+  2.0.0-rc2
+  2.1.0-dev
+  2.1.0-preview1
+  jruby-1.5.6
+  jruby-1.6.3
+  jruby-1.6.4
+  jruby-1.6.5
+  jruby-1.6.5.1
+  jruby-1.6.6
+  jruby-1.6.7
+  jruby-1.6.7.2
+  jruby-1.6.8
+  jruby-1.7.0
+  jruby-1.7.0-preview1
+  jruby-1.7.0-preview2
+  jruby-1.7.0-rc1
+  jruby-1.7.0-rc2
+  jruby-1.7.1
+  jruby-1.7.2
+  jruby-1.7.3
+  jruby-1.7.4
+  jruby-1.7.5
+  jruby-1.7.6
+  jruby-1.7.7
+  jruby-1.7.8
+  maglev-1.0.0
+  maglev-1.1.0-dev
+  maglev-2.0.0-dev
+  mruby-dev
+  rbx-1.2.4
+  rbx-2.0.0
+  rbx-2.0.0-dev
+  rbx-2.0.0-rc1
+  rbx-2.1.0
+  rbx-2.1.1
+  rbx-2.2.0
+  rbx-2.2.1
+  ree-1.8.6-2009.06
+  ree-1.8.7-2009.09
+  ree-1.8.7-2009.10
+  ree-1.8.7-2010.01
+  ree-1.8.7-2010.02
+  ree-1.8.7-2011.03
+  ree-1.8.7-2011.12
+  ree-1.8.7-2012.01
+  ree-1.8.7-2012.02
+  topaz-dev
+
+</pre>
+<p>おお、出来た。ここまで出来れば後は好きにインストールするだけである。</p>

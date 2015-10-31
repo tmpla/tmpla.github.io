@@ -1,0 +1,97 @@
+---
+layout: post
+title: gifイメージの出力
+categories:
+- Java
+tags:
+- BufferedImage
+- gif
+- ImageIO
+- Java
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>javaのImageIOで画像の出力が出来るが、今のところ、pngだと特に問題なく出力出来る。</p>
+<pre lang="java" escaped="false">
+//サーブレットで使う場合
+	private void writeImage(BufferedImage image){
+
+		HttpServletResponse response = ResponseUtil.getResponse();
+		ServletOutputStream sos = null;
+		ImageOutputStream ios = null;
+		try{
+		sos = response.getOutputStream();
+		response.setContentType("image/png");
+		ios = ImageIO.createImageOutputStream(sos);
+
+		ImageWriter iw = ImageIO.getImageWritersByMIMEType("image/png").next();
+
+		iw.setOutput(ios);
+		iw.write(image);
+		iw.dispose();
+
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			try {
+				ios.close();
+				sos.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
+</pre>
+<p>上記の場合、BufferedImageをTYPE_INT_ARGBにして、生成したBufferedImageのgraphicsに<br />
+以下のように指定すると背景がとりあえず透過色になるようです。</p>
+<pre lang="java" escaped="false">
+BufferedImage image = new BufferedImage(500, 500, BufferedImage.TYPE_INT_ARGB);
+Graphics2D gdImage = image.createGraphics();
+gdImage.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR, 0.0f));
+</pre>
+<p>しかし、gifで出力した際に、上記指定をして出力すると背景が真っ黒になってしまう。<br />
+なぜだろう？と思ったが、gifは256色までしか扱えないが、pngはフルカラーをサポートし、<br />
+さらにアルファチャンネルというのを持ち、半透明などの色も扱える。<br />
+gifは透過色を1色しか指定出来ない。</p>
+<p>なので、pngで微妙に透過された表示できていた色が滅色されて真っ黒になってしまったのだろうと思いました。<br />
+じゃあgifで透過色を指定するのはどうやるの？</p>
+<p>色々調べたところ、この</p>
+<pre lang="java" escaped="false">
+BufferedImage image = new BufferedImage(500, 500, BufferedImage.TYPE_INT_ARGB);
+</pre>
+<p>のところで第三引数にTYPE_INT_ARGBを指定した場合<br />
+<a href="http://sdc.sun.co.jp/java/docs/j2se/1.4/ja/docs/ja/api/java/awt/image/BufferedImage.html#TYPE_INT_ARGB">JavaDocによると</a></p>
+<blockquote><p>
+整数型ピクセルにパックされた 8 ビット RGBA 色成分によるイメージを表します。このイメージは、DirectColorModel (アルファあり) を持ちます。このイメージのカラーデータには、アルファがあらかじめ乗算されていません。このタイプが BufferedImage コンストラクタへの imageType 引数として使用される場合、作成されるイメージは JDK 1.1 以前のリリースで作成されるイメージと一貫性があります。
+</p></blockquote>
+<p>と記載があり、DirectColorModelとかいうものを使っているらしいということがわかりました。<br />
+さらに<a href="http://sdc.sun.co.jp/java/docs/j2se/1.4/ja/docs/ja/api/java/awt/image/DirectColorModel.html">その説明を見る</a>と<br />
+なにやらよく分かりませんが、</p>
+<blockquote><p>
+このカラーモデルは X11 の TrueColor に類似しています。
+</p></blockquote>
+<p>とあるので、約1670万色を扱っているのだとわかります。<br />
+gifでサポートしているのは256色が限度なので、ImageIOで書き込みする際には微妙な色は滅色されることが予想されます。<br />
+じゃあどうするのか。</p>
+<p>BufferedImageには<br />
+<a href="http://sdc.sun.co.jp/java/docs/j2se/1.4/ja/docs/ja/api/java/awt/image/BufferedImage.html#BufferedImage(int, int, int, java.awt.image.IndexColorModel)"><br />
+public BufferedImage(int width,<br />
+                     int height,<br />
+                     int imageType,<br />
+                     IndexColorModel cm)<br />
+                     </a><br />
+なコンストラクタがあります。<br />
+先ほど出てきたDirectColorModelの仲間っぽい「IndexColorModel」というのが出てきます。<br />
+これはなんだ？と思って<a href="http://wisdom.sakura.ne.jp/system/java/awt/Gjava40.html">こちら</a>に分かりやすく説明してくれているページを見つけたのですが、<br />
+どうしても理解できず、それでまずは<a href="http://blog.4sure.jp/yokoshima/2009/06/05/論理演算の基本/">ビット演算</a>や、<a href="http://blog.4sure.jp/yokoshima/2009/06/08/シフト演算/">シフト演算</a><br />
+を最初から勉強しなおしたのでした。</p>

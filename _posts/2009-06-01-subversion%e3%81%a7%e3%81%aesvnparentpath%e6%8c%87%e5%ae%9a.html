@@ -1,0 +1,30 @@
+---
+layout: post
+title: SubversionでのSVNParentPath指定
+categories:
+- Subversion
+tags:
+- '301'
+- Subversion
+- SVNParentPath
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p>Subversionがどうしてもうまく動いてくれない。</p>
+<p>現象は、ブラウザからアクセスするとうまくリポジトリの中身まで参照できるのですが、Subversionのクライアント(TortoiseSVNとかEclipseのプラグイン等）でリポジトリ階層を参照すると、</p>
+<p>Repository moved permanently to 'https://ｘｘｘ/repos/'; please relocate</p>
+<p>とメッセージが出て参照出来ない。<br />
+この辺はよくある話のようで、<a href="http://www.hinet.mydns.jp/tdiary/?date=200707">ここ</a>のページで解決しています。</p>
+<p>が、ウチの場合はちょっと状況が違っていて、DocumentRootとSubversionのリポジトリの場所はもともと全然違うところにあるのでこれは問題ないはずです。</p>
+<p><a href="http://d.hatena.ne.jp/TakamiChie/20070623/1182608221">こちら</a>と状況は同じで、SVNParentPathの指定をするとどうしてもリポジトリのルートから下の階層が参照出来ません。（まあ、その下の子リポジトリのパスを直接指定すると見えるのですが・・・）</p>
+<p>ちなみに、SVNParentPathをSVNPathに変更すると子リポジトリは見えませんがルートだけは参照可能になります。（何も入ってない状態ですが・・・）</p>
+<p>まあ、リポジトリルートだけを知っていればその下が全部わかっちゃうのがダメということなのかな？SVNParentPathの指定をして運用している方のお話が聞きたいです。</p>

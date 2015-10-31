@@ -1,0 +1,59 @@
+---
+layout: post
+title: PHP 5.3.0が出たその４
+categories:
+- PHP
+tags:
+- Install
+- MySQL
+- PHP
+- xampp
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '3'
+  _oembed_7c1e64754fab13f3a0a945406ceeed31: "{{unknown}}"
+author:
+  login: yokoshima
+  email: k.yokoshima@gmail.com
+  display_name: yokoshima
+  first_name: ''
+  last_name: ''
+---
+<p><a href="http://blog.4sure.jp/yokoshima/2009/07/12/php-530が出たその３/">PHP 5.3.0が出たその３</a>の続きです。</p>
+<p>PHPがインストール出来たので、MySQLを入れます。最近MySQLの持ち主の<a href="http://jp.techcrunch.com/archives/20090420oracle-to-buy-sun-hold-on-to-your-hats/">SunがOracleに買収された</a>そうなので、OracleのメインビジネスであるデータベースであるMySQLがどうなるか（お金を取るようになるか）が注目するところですが、日本MySQLユーザ会によると、<a href="http://www.mysql.gr.jp/frame/modules/news/article.php?storyid=142">5.1.36が2009/7/3にがリリースされている</a>のでまだ大丈夫ぽいです。</p>
+<p>ところで、現在は<a href="http://ja.wikipedia.org/wiki/LAMP">LAMP</a>なんて言葉があるように、Linux, Apache, MySQL, PHPはただで高機能が揃えられる代名詞となっています。<br />
+ローカルで色々動かすにはなんかのデータベースを入れる必要が出てきますが、MySQLがやはり使いやすい（WordPressもそうですが）ので、動かせるようにしたいと思います。</p>
+<p>MySQLを以下サイトからダウンロードします。</p>
+<p>http://dev.mysql.com/downloads/mysql/5.1.html#win32</p>
+<p>現時点での最新安定版は5.1.36です。<br />
+Windows Downloadsから、Windows MSI Installer (x86)を選びダウンロードしたらインストーラを起動します。</p>
+<p>今回は、Dドライブにインストールしたかったので、Setup Typeを「Custom」にして、MySQL Serverを</p>
+<p>D:\Program Files\MySQL\MySQL Server 5.1\</p>
+<p>に、MySQL Server Datafilesを</p>
+<p>D:\ProgramData\MySQL\MySQL Server 5.1\</p>
+<p>に設定しました。Datafilesは「MySQL Server」の子要素なので、うっかりしてるとデフォルトのCに入ってしまいます。</p>
+<p>インストールが始まるとVistaの場合はまず「MySQL AB」というのの実行許可画面が出ますので「許可」を選択、その後MySQL Enterpriseというタイトルの画面が出るので<br />
+<a href="http://tmpla.info/wp-content/uploads/2009/07/mysqlenterprise.jpg"><img src="http://tmpla.info/wp-content/uploads/2009/07/mysqlenterprise.jpg" alt="mysqlenterprise" width="514" height="391" class="alignnone size-full wp-image-646" /></a></p>
+<p>[Next]を何度か押下するとSetup Wizard画面が出ます。<br />
+<a href="http://tmpla.info/wp-content/uploads/2009/07/mysqlsetupwizard.jpg"><img src="http://tmpla.info/wp-content/uploads/2009/07/mysqlsetupwizard.jpg" alt="mysqlsetupwizard" width="514" height="391" class="alignnone size-full wp-image-647" /></a></p>
+<p>下の「Register the MySQL Server now」は色々面倒なのでチェックを外し、finishボタンを押すと、また「MySQL AB」というのの実行許可画面が出るので許可します。</p>
+<p>でなんかとまると思ったら、操作できないほどの小さい画面でConfig画面が出ているようだった。（原因はちょっと不明）<br />
+操作できないのでConfig画面はキャンセルして、インストール後に「MySQL Instance Config Wizard」というのがあるのでそれで設定する。<br />
+あとは以下のように設定しました。</p>
+<p>・Detailed Configration<br />
+・Developer Machine<br />
+・Multifunctional Database<br />
+・InnoDB Tablespace SettingsはInstallation Path<br />
+・Decision Support(DSS)/OLAP<br />
+・Enable TCP/IP NetworkingとEnable Strict Modeはデフォルトのまま<br />
+・Best Support For Multilingualism<br />
+・Install As Windows Serviceはチェック（デフォルトのまま）<br />
+・Include Bin Directory in Windows PATHはコマンドラインから使うような気がするのでチェック<br />
+・Modify Security SettingsでROOTのパスワードを入力</p>
+<p>これでExecuteを押せばやっと終わりだ！と思ったのですが、</p>
+<blockquote><p>Cannot create Windows service for MySQL. Error:0</p></blockquote>
+<p>と出て設定出来ない。サービスを見ると、そういや以前にXAMPPを入れたことがあったので、それが残っていた。とりあえずXAMPPをアンインストール。<br />
+でも「MySQL」サービスは消えてくれない。<br />
+まずはこれを消さないといかん。</p>
