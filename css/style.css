@@ -1,0 +1,44 @@
+@charset "UTF-8";
+
+* { padding: 0; margin: 0; }
+#top {
+  width: 100%;
+  height: 30vh;
+  background-image: url(../../../images/tmpla/head.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  margin-bottom: 24px;
+}
+#top-layer {
+  background-color: rgba(0, 0, 0, 0.5);
+  height: 100%;
+ 	display: table;
+ 	width: 100%;
+}
+
+#top-layer h1 {
+	display: table-cell;
+	vertical-align: middle;
+	text-align: center;
+	color: white;
+}
+
+
+
+
+.posts {
+	width: 90%;
+	margin: 0 auto;
+}
+.post h2 {
+	margin-bottom: 24px;
+}
+
+.post-header {
+	margin-bottom: 24px;
+}
+
+footer {
+	text-align: center;
+}

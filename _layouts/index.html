@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>日本の天ぷら情報</title>
+  <link rel="stylesheet" href="css/font-awesome.min.css">
+  <link rel="stylesheet" href="css/style.css">
+
+</head>
+<body>
+  <header id="top">
+    <div id="top-layer">
+   		<h1>日本の天ぷら情報</h1>
+    </div>
+  </header>
+
+  {% for post in site.posts limit: 1 %}
+  <section class="posts">
+  	<!-- {{ post }} -->
+  	<article class="post">
+  		<div class="post-header">
+	  		<h2>{{ post.title }}</h2>
+	  		<h6><i class="fa fa-calendar fa-fw"></i><time>{{ post.date }}</time></h6>
+	  		<h6><i class="fa fa-tag fa-fw"></i>{{ post.tags }}</h6>
+	  		<h6><i class="fa fa-object-group fa-fw"></i>{{ post.categories }}</h6>
+  		</div>
+  	{{ post.content }}
+  	</article>
+  </section>
+  {% endfor %}
+
+	<footer>
+		<p><small>Created by {{ owner.name }}</small></p>
+	</footer>
+</body>
+</html>
