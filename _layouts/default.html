@@ -1,22 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
+<head>
+{% include head.html %}
+</head>
+<body>
 
-  {% include head.html %}
+  {{ content }}
 
-  <body>
-
-    <div class="container-fluid" id="main-layout">
-      <div class="sidebar col-sm-12 col-md-3">
-        {% include sidebar.html %}
-      </div>
-      <div class="content col-sm-12 col-md-9">
-        {{ content }}
-        {% include footer.html %}
-      </div>
-    </div>
-
-  </body>
-
-  {% include js.html %}
-
+	<footer>
+		<p><small>Created by {{ owner.name }}</small></p>
+	</footer>
+</body>
 </html>

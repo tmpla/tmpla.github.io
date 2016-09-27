@@ -1,3 +1,21 @@
 ---
-layout: index
+layout: post-index
 ---
+{% for post in site.posts limit: 1 %}
+<section class="posts">
+  <!-- {{ post }} -->
+  <article class="post">
+    <div class="post-header">
+      <h2>
+        <a href="{{ site.url }}{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a></h2>
+      <ul class="belongs clearfix">
+        <li><h6><i class="fa fa-calendar fa-fw"></i><time>{{ post.date }}</time></h6></li>
+        <li><h6><i class="fa fa-tag fa-fw"></i>{{ post.tags }}</h6></li>
+        <li><h6><i class="fa fa-object-group fa-fw"></i>{{ post.categories }}</h6></li>
+      </ul>
+    </div>
+    {{ site.url }}{{ post.url }}
+  {{ post.content }}
+  </article>
+</section>
+{% endfor %}

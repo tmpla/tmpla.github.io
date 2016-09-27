@@ -1,9 +1,9 @@
-@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro);
+// @import url(http://fonts.googleapis.com/css?family=Source+Code+Pro);
 
 // Our variables
-$base-font-family: Arial, sans-serif;
+$base-font-family: "游ゴシック体", "Yu Gothic", YuGothic, "ヒラギノ角ゴ Pro", "Hiragino Kaku Gothic Pro", "Futura", "メイリオ", "Meiryo", sans-serif;
 $heading-font-family: 'Helvetica Neue', Helvetica, $base-font-family;
-$monospace-font-family: 'Source Code Pro', Menlo, monospace;
+$monospace-font-family: Menlo, monospace;
 $base-font-size:   16px;
 $small-font-size:  $base-font-size * 0.875;
 $base-line-height: 1.5;
