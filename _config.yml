@@ -30,6 +30,7 @@ kramdown:
   toc_levels: 1..6
   enable_coderay: false
 
+paginate: 10
 #
 ###################################
 # Jekyll configuration
